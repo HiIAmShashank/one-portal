@@ -39,19 +39,8 @@ const APPS = [
     source: path.join(ROOT_DIR, 'apps/remote-reports/dist'),
     destination: path.join(BUILD_DIR, 'reports'),
     description: 'Reports Remote App'
-  },
-  {
-    name: 'analytics',
-    source: path.join(ROOT_DIR, 'apps/remote-analytics/dist'),
-    destination: path.join(BUILD_DIR, 'analytics'),
-    description: 'Analytics Dashboard Remote App'
-  },
-  {
-    name: 'inventory',
-    source: path.join(ROOT_DIR, 'apps/remote-inventory/dist'),
-    destination: path.join(BUILD_DIR, 'inventory'),
-    description: 'Inventory Management Remote App'
   }
+,
 
 ];
 
@@ -115,17 +104,6 @@ async function combineBuilds() {
     console.log('   ⚠ staticwebapp.config.json not found (optional)');
   }
   console.log('✅ Configuration copied\n');
-
-  // Step 6: Print summary
-  console.log('📊 Deployment Structure:');
-  console.log('   dist-deploy/');
-  console.log('   ├── index.html                    (Shell)');
-  console.log('   ├── assets/                       (Shell assets)');
-  console.log('   ├── billing/');
-  console.log('   │   └── assets/remoteEntry.js     (Module Federation)');
-  console.log('   └── reports/');
-  console.log('       └── assets/remoteEntry.js     (Module Federation)\n');
-
   console.log('✅ Build combination complete!\n');
   console.log('🚀 Ready to deploy with:');
   console.log('   swa start dist-deploy --port 4280\n');

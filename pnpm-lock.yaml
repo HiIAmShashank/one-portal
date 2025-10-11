@@ -42,76 +42,6 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
 
-  apps/remote-analytics:
-    dependencies:
-      '@one-portal/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      '@one-portal/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      react:
-        specifier: ^19.2.0
-        version: 19.2.0
-      react-dom:
-        specifier: ^19.2.0
-        version: 19.2.0(react@19.2.0)
-      zod:
-        specifier: ^4.1.12
-        version: 4.1.12
-    devDependencies:
-      '@eslint/js':
-        specifier: ^9.37.0
-        version: 9.37.0
-      '@originjs/vite-plugin-federation':
-        specifier: ^1.4.1
-        version: 1.4.1
-      '@tailwindcss/vite':
-        specifier: ^4.1.14
-        version: 4.1.14(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
-      '@types/node':
-        specifier: ^24.6.2
-        version: 24.7.1
-      '@types/react':
-        specifier: ^19.2.0
-        version: 19.2.2
-      '@types/react-dom':
-        specifier: ^19.2.0
-        version: 19.2.1(@types/react@19.2.2)
-      '@vitejs/plugin-react':
-        specifier: ^5.0.4
-        version: 5.0.4(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
-      autoprefixer:
-        specifier: ^10.4.21
-        version: 10.4.21(postcss@8.5.6)
-      eslint:
-        specifier: ^9.37.0
-        version: 9.37.0(jiti@2.6.1)
-      eslint-plugin-react-hooks:
-        specifier: ^5.2.0
-        version: 5.2.0(eslint@9.37.0(jiti@2.6.1))
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.23
-        version: 0.4.23(eslint@9.37.0(jiti@2.6.1))
-      globals:
-        specifier: ^16.4.0
-        version: 16.4.0
-      postcss:
-        specifier: ^8.5.6
-        version: 8.5.6
-      tailwindcss:
-        specifier: ^4.1.14
-        version: 4.1.14
-      typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
-      vite:
-        specifier: ^7.1.9
-        version: 7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1)
-
   apps/remote-billing:
     dependencies:
       react:
@@ -154,76 +84,6 @@ importers:
       globals:
         specifier: ^16.4.0
         version: 16.4.0
-      tailwindcss:
-        specifier: ^4.1.14
-        version: 4.1.14
-      typescript:
-        specifier: ~5.9.3
-        version: 5.9.3
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
-      vite:
-        specifier: ^7.1.9
-        version: 7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1)
-
-  apps/remote-inventory:
-    dependencies:
-      '@one-portal/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      '@one-portal/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      react:
-        specifier: ^19.2.0
-        version: 19.2.0
-      react-dom:
-        specifier: ^19.2.0
-        version: 19.2.0(react@19.2.0)
-      zod:
-        specifier: ^4.1.12
-        version: 4.1.12
-    devDependencies:
-      '@eslint/js':
-        specifier: ^9.37.0
-        version: 9.37.0
-      '@originjs/vite-plugin-federation':
-        specifier: ^1.4.1
-        version: 1.4.1
-      '@tailwindcss/vite':
-        specifier: ^4.1.14
-        version: 4.1.14(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
-      '@types/node':
-        specifier: ^24.6.2
-        version: 24.7.1
-      '@types/react':
-        specifier: ^19.2.0
-        version: 19.2.2
-      '@types/react-dom':
-        specifier: ^19.2.0
-        version: 19.2.1(@types/react@19.2.2)
-      '@vitejs/plugin-react':
-        specifier: ^5.0.4
-        version: 5.0.4(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
-      autoprefixer:
-        specifier: ^10.4.21
-        version: 10.4.21(postcss@8.5.6)
-      eslint:
-        specifier: ^9.37.0
-        version: 9.37.0(jiti@2.6.1)
-      eslint-plugin-react-hooks:
-        specifier: ^5.2.0
-        version: 5.2.0(eslint@9.37.0(jiti@2.6.1))
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.23
-        version: 0.4.23(eslint@9.37.0(jiti@2.6.1))
-      globals:
-        specifier: ^16.4.0
-        version: 16.4.0
-      postcss:
-        specifier: ^8.5.6
-        version: 8.5.6
       tailwindcss:
         specifier: ^4.1.14
         version: 4.1.14
@@ -285,6 +145,64 @@ importers:
       tailwindcss:
         specifier: ^4.1.14
         version: 4.1.14
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: ^8.46.0
+        version: 8.46.0(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
+      vite:
+        specifier: ^7.1.9
+        version: 7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1)
+
+  apps/remote-test-1st-app:
+    dependencies:
+      '@one-portal/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@one-portal/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      react:
+        specifier: ^19.2.0
+        version: 19.2.0
+      react-dom:
+        specifier: ^19.2.0
+        version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.37.0
+        version: 9.37.0
+      '@originjs/vite-plugin-federation':
+        specifier: ^1.4.1
+        version: 1.4.1
+      '@types/node':
+        specifier: ^24.6.2
+        version: 24.7.1
+      '@types/react':
+        specifier: ^19.2.0
+        version: 19.2.2
+      '@types/react-dom':
+        specifier: ^19.2.0
+        version: 19.2.1(@types/react@19.2.2)
+      '@vitejs/plugin-react':
+        specifier: ^5.0.4
+        version: 5.0.4(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
+      eslint:
+        specifier: ^9.37.0
+        version: 9.37.0(jiti@2.6.1)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.37.0(jiti@2.6.1))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.23
+        version: 0.4.23(eslint@9.37.0(jiti@2.6.1))
+      globals:
+        specifier: ^16.4.0
+        version: 16.4.0
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
@@ -489,6 +407,9 @@ importers:
       '@eslint/js':
         specifier: ^9.37.0
         version: 9.37.0
+      '@tailwindcss/cli':
+        specifier: ^4.1.14
+        version: 4.1.14
       '@types/node':
         specifier: ^24.6.2
         version: 24.7.1
@@ -1115,6 +1036,88 @@ packages:
     resolution: {integrity: sha512-Uo08jW5pj1t58OUKuZNkmzcfTN2pqeVuAWCCiKf/75/oll4Efq4cHOqSE1FXMlvwZNGDziNdDyBbQ5IANem3CQ==}
     engines: {node: '>=14.0.0', pnpm: '>=7.0.1'}
 
+  '@parcel/watcher-android-arm64@2.5.1':
+    resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [android]
+
+  '@parcel/watcher-darwin-arm64@2.5.1':
+    resolution: {integrity: sha512-eAzPv5osDmZyBhou8PoF4i6RQXAfeKL9tjb3QzYuccXFMQU0ruIc/POh30ePnaOyD1UXdlKguHBmsTs53tVoPw==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@parcel/watcher-darwin-x64@2.5.1':
+    resolution: {integrity: sha512-1ZXDthrnNmwv10A0/3AJNZ9JGlzrF82i3gNQcWOzd7nJ8aj+ILyW1MTxVk35Db0u91oD5Nlk9MBiujMlwmeXZg==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@parcel/watcher-freebsd-x64@2.5.1':
+    resolution: {integrity: sha512-SI4eljM7Flp9yPuKi8W0ird8TI/JK6CSxju3NojVI6BjHsTyK7zxA9urjVjEKJ5MBYC+bLmMcbAWlZ+rFkLpJQ==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@parcel/watcher-linux-arm-glibc@2.5.1':
+    resolution: {integrity: sha512-RCdZlEyTs8geyBkkcnPWvtXLY44BCeZKmGYRtSgtwwnHR4dxfHRG3gR99XdMEdQ7KeiDdasJwwvNSF5jKtDwdA==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@parcel/watcher-linux-arm-musl@2.5.1':
+    resolution: {integrity: sha512-6E+m/Mm1t1yhB8X412stiKFG3XykmgdIOqhjWj+VL8oHkKABfu/gjFj8DvLrYVHSBNC+/u5PeNrujiSQ1zwd1Q==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm]
+    os: [linux]
+
+  '@parcel/watcher-linux-arm64-glibc@2.5.1':
+    resolution: {integrity: sha512-LrGp+f02yU3BN9A+DGuY3v3bmnFUggAITBGriZHUREfNEzZh/GO06FF5u2kx8x+GBEUYfyTGamol4j3m9ANe8w==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@parcel/watcher-linux-arm64-musl@2.5.1':
+    resolution: {integrity: sha512-cFOjABi92pMYRXS7AcQv9/M1YuKRw8SZniCDw0ssQb/noPkRzA+HBDkwmyOJYp5wXcsTrhxO0zq1U11cK9jsFg==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@parcel/watcher-linux-x64-glibc@2.5.1':
+    resolution: {integrity: sha512-GcESn8NZySmfwlTsIur+49yDqSny2IhPeZfXunQi48DMugKeZ7uy1FX83pO0X22sHntJ4Ub+9k34XQCX+oHt2A==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@parcel/watcher-linux-x64-musl@2.5.1':
+    resolution: {integrity: sha512-n0E2EQbatQ3bXhcH2D1XIAANAcTZkQICBPVaxMeaCVBtOpBZpWJuf7LwyWPSBDITb7In8mqQgJ7gH8CILCURXg==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@parcel/watcher-win32-arm64@2.5.1':
+    resolution: {integrity: sha512-RFzklRvmc3PkjKjry3hLF9wD7ppR4AKcWNzH7kXR7GUe0Igb3Nz8fyPwtZCSquGrhU5HhUNDr/mKBqj7tqA2Vw==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@parcel/watcher-win32-ia32@2.5.1':
+    resolution: {integrity: sha512-c2KkcVN+NJmuA7CGlaGD1qJh1cLfDnQsHjE89E60vUEMlqduHGCdCLJCID5geFVM0dOtA3ZiIO8BoEQmzQVfpQ==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@parcel/watcher-win32-x64@2.5.1':
+    resolution: {integrity: sha512-9lHBdJITeNR++EvSQVUcaZoWupyHfXe1jZvGZ06O/5MflPcuPLtEphScIBL+AiCWBO46tDSHzWyD0uDmmZqsgA==}
+    engines: {node: '>= 10.0.0'}
+    cpu: [x64]
+    os: [win32]
+
+  '@parcel/watcher@2.5.1':
+    resolution: {integrity: sha512-dfUnCxiN9H4ap84DvD2ubjw+3vUNpstxa0TneY/Paat8a3R4uQZDLSvWjmznAY/DoahqTHl9V46HF/Zs3F29pg==}
+    engines: {node: '>= 10.0.0'}
+
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
@@ -1658,6 +1661,10 @@ packages:
   '@sindresorhus/merge-streams@4.0.0':
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
+
+  '@tailwindcss/cli@4.1.14':
+    resolution: {integrity: sha512-2cErQRcsI8jIObUMVwcd1H2AWgGxwzozHJk7AKM2KB1taOp7L15xQ8kEsZrvVbOjNrb8yXtnSvNtJ+mhCB7EBg==}
+    hasBin: true
 
   '@tailwindcss/node@4.1.14':
     resolution: {integrity: sha512-hpz+8vFk3Ic2xssIA3e01R6jkmsAhvkQdXlEbRTk6S10xDAtiQiM3FyvZVGsucefq764euO/b8WUW9ysLdThHw==}
@@ -2486,6 +2493,11 @@ packages:
   destroy@1.2.0:
     resolution: {integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
+
+  detect-libc@1.0.3:
+    resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
+    engines: {node: '>=0.10'}
+    hasBin: true
 
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
@@ -3587,6 +3599,10 @@ packages:
   moo@0.5.2:
     resolution: {integrity: sha512-iSAJLHYKnX41mKcJKjqvnAN9sf0LMDTXDEvFv+ffuRR9a1MIuXLjMNL6EsnDHSkKLTWNqQQ5uo61P4EbU4NU+Q==}
 
+  mri@1.2.0:
+    resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
+    engines: {node: '>=4'}
+
   ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
 
@@ -3651,6 +3667,9 @@ packages:
 
   node-addon-api@4.3.0:
     resolution: {integrity: sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ==}
+
+  node-addon-api@7.1.1:
+    resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
 
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
@@ -5560,6 +5579,66 @@ snapshots:
       estree-walker: 3.0.3
       magic-string: 0.27.0
 
+  '@parcel/watcher-android-arm64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-darwin-arm64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-darwin-x64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-freebsd-x64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-arm-glibc@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-arm-musl@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-arm64-glibc@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-arm64-musl@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-x64-glibc@2.5.1':
+    optional: true
+
+  '@parcel/watcher-linux-x64-musl@2.5.1':
+    optional: true
+
+  '@parcel/watcher-win32-arm64@2.5.1':
+    optional: true
+
+  '@parcel/watcher-win32-ia32@2.5.1':
+    optional: true
+
+  '@parcel/watcher-win32-x64@2.5.1':
+    optional: true
+
+  '@parcel/watcher@2.5.1':
+    dependencies:
+      detect-libc: 1.0.3
+      is-glob: 4.0.3
+      micromatch: 4.0.8
+      node-addon-api: 7.1.1
+    optionalDependencies:
+      '@parcel/watcher-android-arm64': 2.5.1
+      '@parcel/watcher-darwin-arm64': 2.5.1
+      '@parcel/watcher-darwin-x64': 2.5.1
+      '@parcel/watcher-freebsd-x64': 2.5.1
+      '@parcel/watcher-linux-arm-glibc': 2.5.1
+      '@parcel/watcher-linux-arm-musl': 2.5.1
+      '@parcel/watcher-linux-arm64-glibc': 2.5.1
+      '@parcel/watcher-linux-arm64-musl': 2.5.1
+      '@parcel/watcher-linux-x64-glibc': 2.5.1
+      '@parcel/watcher-linux-x64-musl': 2.5.1
+      '@parcel/watcher-win32-arm64': 2.5.1
+      '@parcel/watcher-win32-ia32': 2.5.1
+      '@parcel/watcher-win32-x64': 2.5.1
+
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
@@ -6037,6 +6116,16 @@ snapshots:
   '@sideway/pinpoint@2.0.0': {}
 
   '@sindresorhus/merge-streams@4.0.0': {}
+
+  '@tailwindcss/cli@4.1.14':
+    dependencies:
+      '@parcel/watcher': 2.5.1
+      '@tailwindcss/node': 4.1.14
+      '@tailwindcss/oxide': 4.1.14
+      enhanced-resolve: 5.18.3
+      mri: 1.2.0
+      picocolors: 1.1.1
+      tailwindcss: 4.1.14
 
   '@tailwindcss/node@4.1.14':
     dependencies:
@@ -6941,6 +7030,8 @@ snapshots:
   depd@2.0.0: {}
 
   destroy@1.2.0: {}
+
+  detect-libc@1.0.3: {}
 
   detect-libc@2.1.2: {}
 
@@ -8063,6 +8154,8 @@ snapshots:
 
   moo@0.5.2: {}
 
+  mri@1.2.0: {}
+
   ms@2.0.0: {}
 
   ms@2.1.3: {}
@@ -8129,6 +8222,8 @@ snapshots:
       semver: 7.7.3
 
   node-addon-api@4.3.0: {}
+
+  node-addon-api@7.1.1: {}
 
   node-domexception@1.0.0: {}
 

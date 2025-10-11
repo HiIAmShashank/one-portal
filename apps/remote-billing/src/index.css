@@ -1,2 +1,2 @@
-@import "tailwindcss";
-
+/* Tailwind is imported by the shell app - remotes just use the classes */
+/* Do not import Tailwind here as it will override the shell's styles */

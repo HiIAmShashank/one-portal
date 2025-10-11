@@ -49,7 +49,8 @@ function AppComponent() {
       moduleName: 'inventory',
       scope: 'inventory',
       displayOrder: 4,
-    },
+    },  
+
 
   ];
 

@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import App from './App';
-import './index.css';
+// CSS is provided by the shell - no need to import here
 
 /**
  * Bootstrap file for Reports Remote App

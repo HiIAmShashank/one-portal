@@ -4,6 +4,7 @@ import { RouterProvider } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { router } from './router';
 import './style.css';
+import '@one-portal/ui/styles.css';
 
 // Create Query Client for data fetching
 const queryClient = new QueryClient({

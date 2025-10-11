@@ -27,22 +27,7 @@ export const Route = createRootRoute({
         moduleName: 'reports',
         scope: 'reports',
         displayOrder: 2,
-      },  {
-    id: 'analytics',
-    name: 'Analytics Dashboard',
-    remoteEntryUrl: '/analytics/assets/remoteEntry.js',
-    moduleName: 'analytics',
-    scope: 'analytics',
-    displayOrder: 3,
-  },  {
-    id: 'inventory',
-    name: 'Inventory Management',
-    remoteEntryUrl: '/inventory/assets/remoteEntry.js',
-    moduleName: 'inventory',
-    scope: 'inventory',
-    displayOrder: 4,
-  },
-
+      },  
 
     ];
 
