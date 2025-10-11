@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (for future config API)
+  postgres:
+    image: postgres:16-alpine
+    container_name: oneportal-postgres
+    environment:
+      POSTGRES_USER: oneportal
+      POSTGRES_PASSWORD: oneportal_dev
+      POSTGRES_DB: oneportal
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - oneportal-network
+
+  # Shell Application (Main Host)
+  swa-shell:
+    image: node:20-alpine
+    container_name: oneportal-swa-shell
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '4280:4280'
+    command: >
+      sh -c "
+        npm install -g @azure/static-web-apps-cli@latest &&
+        swa start apps/shell/dist --port 4280 --host 0.0.0.0
+      "
+    depends_on:
+      - postgres
+    networks:
+      - oneportal-network
+    environment:
+      - NODE_ENV=production
+
+  # Billing Remote App
+  swa-billing:
+    image: node:20-alpine
+    container_name: oneportal-swa-billing
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '5001:5001'
+    command: >
+      sh -c "
+        npm install -g @azure/static-web-apps-cli@latest &&
+        swa start apps/remote-billing/dist --port 5001 --host 0.0.0.0
+      "
+    networks:
+      - oneportal-network
+    environment:
+      - NODE_ENV=production
+
+  # Reports Remote App
+  swa-reports:
+    image: node:20-alpine
+    container_name: oneportal-swa-reports
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '5002:5002'
+    command: >
+      sh -c "
+        npm install -g @azure/static-web-apps-cli@latest &&
+        swa start apps/remote-reports/dist --port 5002 --host 0.0.0.0
+      "
+    networks:
+      - oneportal-network
+    environment:
+      - NODE_ENV=production
+
+networks:
+  oneportal-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

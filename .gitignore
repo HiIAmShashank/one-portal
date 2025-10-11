@@ -1,0 +1,25 @@
+node_modules
+dist
+.turbo
+.specify
+speckit.*
+
+# Ignore all markdown files
+*.md
+
+# Except README files (case-insensitive)
+!README.md
+!readme.md
+!Readme.md
+
+.vscode
+.DS_Store
+.env
+.env.local
+.env.*.local
+.specify/*
+.specify/memory/constitution.md
+.specify/templates/plan-template.md
+.specify/templates/spec-template.md
+.specify/templates/tasks-template.md
+dist-deploy
