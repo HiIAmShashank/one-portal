@@ -36,22 +36,14 @@ function AppComponent() {
       moduleName: 'reports',
       scope: 'reports',
       displayOrder: 2,
-    },
-    {
-      id: 'analytics',
-      name: 'Analytics Dashboard',
-      remoteEntryUrl: '/analytics/assets/remoteEntry.js',
-      moduleName: 'analytics',
-      scope: 'analytics',
-      displayOrder: 3,
     },    {
-      id: 'inventory',
-      name: 'Inventory Management',
-      remoteEntryUrl: '/inventory/assets/remoteEntry.js',
-      moduleName: 'inventory',
-      scope: 'inventory',
-      displayOrder: 4,
-    },  
+      id: 'testgenerator1',
+      name: 'Test Gen 1',
+      remoteEntryUrl: '/testgenerator1/assets/remoteEntry.js',
+      moduleName: 'testgenerator1',
+      scope: 'testgenerator1',
+      displayOrder: 3,
+    },
 
 
   ];

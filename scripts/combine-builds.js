@@ -39,8 +39,13 @@ const APPS = [
     source: path.join(ROOT_DIR, 'apps/remote-reports/dist'),
     destination: path.join(BUILD_DIR, 'reports'),
     description: 'Reports Remote App'
+  },
+  {
+    name: 'testgenerator1',
+    source: path.join(ROOT_DIR, 'apps/remote-testgenerator1/dist'),
+    destination: path.join(BUILD_DIR, 'testgenerator1'),
+    description: 'Test Gen 1 Remote App'
   }
-,
 
 ];
 

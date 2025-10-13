@@ -23,3 +23,5 @@ speckit.*
 .specify/templates/spec-template.md
 .specify/templates/tasks-template.md
 dist-deploy
+
+turbo/generators.backup*

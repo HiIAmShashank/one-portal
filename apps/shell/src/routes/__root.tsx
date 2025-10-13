@@ -58,7 +58,15 @@ export const Route = createRootRoute({
         moduleName: 'reports',
         scope: 'reports',
         displayOrder: 2,
-      },  
+      },  {
+    id: 'testgenerator1',
+    name: 'Test Gen 1',
+    remoteEntryUrl: '/testgenerator1/assets/remoteEntry.js',
+    moduleName: 'testgenerator1',
+    scope: 'testgenerator1',
+    displayOrder: 3,
+  },
+   
 
     ];
 

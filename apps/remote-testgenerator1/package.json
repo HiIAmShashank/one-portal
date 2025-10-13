@@ -1,5 +1,5 @@
 {
-  "name": "@one-portal/remote-{{ appName }}",
+  "name": "@one-portal/remote-testgenerator1",
   "version": "0.0.0",
   "private": true,
   "type": "module",

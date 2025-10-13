@@ -8,7 +8,7 @@ export default defineConfig({
     TanStackRouterVite(),
     react(),
     federation({
-      name: '{{ appName }}',
+      name: 'testgenerator1',
       filename: 'remoteEntry.js',
       exposes: {
         './App': './src/App.tsx',
@@ -17,7 +17,7 @@ export default defineConfig({
       shared: ['react', 'react-dom'],
     }),
   ],
-  base: process.env.NODE_ENV === 'production' ? '/{{ appName }}/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/testgenerator1/' : '/',
   build: {
     modulePreload: false,
     target: 'esnext',

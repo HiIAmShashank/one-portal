@@ -2,6 +2,21 @@
 // Utilities barrel export
 
 export {
+  formatAuthError,
+  type FormattedAuthError,
+} from './formatAuthError';
+
+export {
+  showAuthError,
+  displayFormattedError,
+  showAuthPromise,
+} from './showAuthError';
+
+export {
+  isAuthError,
+} from './isAuthError';
+
+export {
   accountToUserProfile,
   getLoginHint,
   getAccessToken,
@@ -24,17 +39,6 @@ export {
   getAndClearReturnUrl,
   isStorageAvailable,
 } from './storage';
-
-export {
-  formatAuthError,
-  type FormattedAuthError,
-} from './formatAuthError';
-
-export {
-  showAuthError,
-  displayFormattedError,
-  showAuthPromise,
-} from './showAuthError';
 
 export {
   isAuthenticated,

@@ -4,7 +4,7 @@ import { isAuthError } from '@one-portal/auth/utils';
 import { routeTree } from './routeTree.gen';
 
 /**
- * {{ displayName }} Remote Application
+ * Test Gen 1 Remote Application
  * 
  * Main component exposed via Module Federation with:
  * - TanStack Router for client-side routing
@@ -63,7 +63,7 @@ const router = createRouter({
   routeTree,
   context: undefined!,
   // basepath must match where Shell mounts this remote app
-  basepath: '/apps/{{ appName }}',
+  basepath: '/apps/testgenerator1',
 });
 
 // Register router for type safety
