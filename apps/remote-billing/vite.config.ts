@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import federation from '@originjs/vite-plugin-federation';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -13,6 +14,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [
     tailwindcss(),
+    tanstackRouter(),
     react(),
     federation({
       name: 'billing',
@@ -21,6 +23,8 @@ export default defineConfig({
         './App': './src/App',
         './bootstrap': './src/bootstrap',
       },
+      // CRITICAL: React/React-DOM are shared as singletons across all apps
+      // MSAL packages are NOT shared - each app has its own instance with unique client ID
       shared: ['react', 'react-dom'],
     }),
   ],

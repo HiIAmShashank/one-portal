@@ -3,11 +3,13 @@ import { RemoteMount } from '../components/RemoteMount';
 
 /**
  * Dynamic route for remote applications
- * Path: /apps/$appId
+ * Path: /apps/$appId (matches all sub-routes via splat)
  * 
  * This route loads and renders remote applications dynamically
- * using Module Federation based on the appId parameter
- * Requirements: FR-006, FR-003
+ * using Module Federation based on the appId parameter.
+ * The route captures all sub-paths so the remote app's router can handle them.
+ * 
+ * Requirements: FR-006, FR-003, US2
  */
 export const Route = createFileRoute('/apps/$appId')({
   component: AppComponent,

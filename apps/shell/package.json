@@ -11,6 +11,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@azure/msal-browser": "^3.30.0",
+    "@azure/msal-react": "^2.2.0",
+    "@one-portal/auth": "workspace:*",
     "@one-portal/types": "workspace:*",
     "@one-portal/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.2",

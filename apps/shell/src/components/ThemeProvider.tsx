@@ -28,44 +28,31 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
     const stored = localStorage.getItem(storageKey) as Theme;
-    console.log('[ThemeProvider] Initial state - stored:', stored, 'defaultTheme:', defaultTheme);
     return stored || defaultTheme;
   });
 
   useEffect(() => {
-    console.log('[ThemeProvider] useEffect triggered - theme:', theme);
     const root = window.document.documentElement;
-
     root.classList.remove('light', 'dark');
-    console.log('[ThemeProvider] Removed light/dark classes');
 
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light';
-
-      console.log('[ThemeProvider] System theme detected:', systemTheme);
       root.classList.add(systemTheme);
-      console.log('[ThemeProvider] Applied system theme class:', systemTheme, 'classList:', root.classList.toString());
       return;
     }
 
-    console.log('[ThemeProvider] Applying theme class:', theme);
     root.classList.add(theme);
-    console.log('[ThemeProvider] Applied theme class:', theme, 'classList:', root.classList.toString());
   }, [theme]);
 
   const value = {
     theme,
     setTheme: (newTheme: Theme) => {
-      console.log('[ThemeProvider] setTheme called - old:', theme, 'new:', newTheme);
       localStorage.setItem(storageKey, newTheme);
-      console.log('[ThemeProvider] Saved to localStorage:', storageKey, '=', newTheme);
       setTheme(newTheme);
     },
   };
-
-  console.log('[ThemeProvider] Rendering with theme:', theme);
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>

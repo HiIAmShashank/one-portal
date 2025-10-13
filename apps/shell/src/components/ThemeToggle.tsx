@@ -15,10 +15,7 @@ import { useTheme } from './ThemeProvider';
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
-  console.log('[ThemeToggle] Current theme from useTheme:', theme);
-
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
-    console.log('[ThemeToggle] handleThemeChange called:', newTheme);
     setTheme(newTheme);
   };
 
