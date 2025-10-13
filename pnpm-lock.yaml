@@ -44,6 +44,24 @@ importers:
 
   apps/remote-billing:
     dependencies:
+      '@azure/msal-browser':
+        specifier: ^3.30.0
+        version: 3.30.0
+      '@azure/msal-react':
+        specifier: ^2.2.0
+        version: 2.2.0(@azure/msal-browser@3.30.0)(react@19.2.0)
+      '@one-portal/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@one-portal/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@tanstack/react-query':
+        specifier: ^5.90.2
+        version: 5.90.2(react@19.2.0)
+      '@tanstack/react-router':
+        specifier: ^1.110.10
+        version: 1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -60,6 +78,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.14
         version: 4.1.14(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
+      '@tanstack/router-plugin':
+        specifier: ^1.132.51
+        version: 1.132.51(@tanstack/react-router@1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
       '@types/node':
         specifier: ^24.6.2
         version: 24.7.1
@@ -96,9 +117,30 @@ importers:
       vite:
         specifier: ^7.1.9
         version: 7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.9.3)(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
 
   apps/remote-reports:
     dependencies:
+      '@azure/msal-browser':
+        specifier: ^3.30.0
+        version: 3.30.0
+      '@azure/msal-react':
+        specifier: ^2.2.0
+        version: 2.2.0(@azure/msal-browser@3.30.0)(react@19.2.0)
+      '@one-portal/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
+      '@one-portal/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@tanstack/react-query':
+        specifier: ^5.90.2
+        version: 5.90.2(react@19.2.0)
+      '@tanstack/react-router':
+        specifier: ^1.110.10
+        version: 1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -115,6 +157,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.14
         version: 4.1.14(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
+      '@tanstack/router-plugin':
+        specifier: ^1.132.51
+        version: 1.132.51(@tanstack/react-router@1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
       '@types/node':
         specifier: ^24.6.2
         version: 24.7.1
@@ -154,15 +199,33 @@ importers:
       vite:
         specifier: ^7.1.9
         version: 7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1)
+      vite-tsconfig-paths:
+        specifier: ^5.1.4
+        version: 5.1.4(typescript@5.9.3)(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
 
-  apps/remote-test-1st-app:
+  apps/remote-testgenerator1:
     dependencies:
+      '@azure/msal-browser':
+        specifier: ^3.30.0
+        version: 3.30.0
+      '@azure/msal-react':
+        specifier: ^2.2.0
+        version: 2.2.0(@azure/msal-browser@3.30.0)(react@19.2.0)
+      '@one-portal/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@one-portal/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@one-portal/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@tanstack/react-query':
+        specifier: ^5.67.0
+        version: 5.90.2(react@19.2.0)
+      '@tanstack/react-router':
+        specifier: ^1.115.4
+        version: 1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -179,6 +242,12 @@ importers:
       '@originjs/vite-plugin-federation':
         specifier: ^1.4.1
         version: 1.4.1
+      '@tanstack/router-cli':
+        specifier: ^1.115.4
+        version: 1.132.51
+      '@tanstack/router-plugin':
+        specifier: ^1.115.4
+        version: 1.132.51(@tanstack/react-router@1.132.47(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1))
       '@types/node':
         specifier: ^24.6.2
         version: 24.7.1
@@ -215,6 +284,15 @@ importers:
 
   apps/shell:
     dependencies:
+      '@azure/msal-browser':
+        specifier: ^3.30.0
+        version: 3.30.0
+      '@azure/msal-react':
+        specifier: ^2.2.0
+        version: 2.2.0(@azure/msal-browser@3.30.0)(react@19.2.0)
+      '@one-portal/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@one-portal/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -297,6 +375,37 @@ importers:
       vite:
         specifier: ^7.1.9
         version: 7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.20.6)(yaml@2.8.1)
+
+  packages/auth:
+    dependencies:
+      '@azure/msal-browser':
+        specifier: ^3.0.0
+        version: 3.30.0
+      '@azure/msal-react':
+        specifier: ^2.0.0
+        version: 2.2.0(@azure/msal-browser@3.30.0)(react@19.2.0)
+      '@one-portal/ui':
+        specifier: workspace:*
+        version: link:../ui
+      react:
+        specifier: ^19.0.0
+        version: 19.2.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.0(react@19.2.0)
+    devDependencies:
+      '@one-portal/types':
+        specifier: workspace:*
+        version: link:../types
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.2
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.1(@types/react@19.2.2)
+      typescript:
+        specifier: ^5.9.0
+        version: 5.9.3
 
   packages/config:
     devDependencies:
@@ -497,6 +606,10 @@ packages:
     resolution: {integrity: sha512-fCqPIfOcLE+CGqGPd66c8bZpwAji98tZ4JI9i/mlTNTlsIWslCfpg48s/ypyLxZTump5sypjrKn2/kY7q8oAbA==}
     engines: {node: '>=20.0.0'}
 
+  '@azure/msal-browser@3.30.0':
+    resolution: {integrity: sha512-I0XlIGVdM4E9kYP5eTjgW8fgATdzwxJvQ6bm2PNiHaZhEuUz47NYw1xHthC9R+lXz4i9zbShS0VdLyxd7n0GGA==}
+    engines: {node: '>=0.8.0'}
+
   '@azure/msal-browser@4.25.0':
     resolution: {integrity: sha512-kbL+Ae7/UC62wSzxirZddYeVnHvvkvAnSZkBqL55X+jaSXTAXfngnNsDM5acEWU0Q/SAv3gEQfxO1igWOn87Pg==}
     engines: {node: '>=0.8.0'}
@@ -512,6 +625,13 @@ packages:
   '@azure/msal-node@3.8.0':
     resolution: {integrity: sha512-23BXm82Mp5XnRhrcd4mrHa0xuUNRp96ivu3nRatrfdAqjoeWAGyD0eEAafxAOHAEWWmdlyFK4ELFcdziXyw2sA==}
     engines: {node: '>=16'}
+
+  '@azure/msal-react@2.2.0':
+    resolution: {integrity: sha512-2V+9JXeXyyjYNF92y5u0tU4el9px/V1+vkRuN+DtoxyiMHCtYQpJoaFdGWArh43zhz5aqQqiGW/iajPDSu3QsQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@azure/msal-browser': ^3.27.0
+      react: ^16.8.0 || ^17 || ^18
 
   '@azure/static-web-apps-cli@2.0.7':
     resolution: {integrity: sha512-bF9sFrC9Ew1jF8VlMUWJbkIvj6tkPUdhYgwV9g4mKcH0Atwgg65G+ye1CMogkDWqw32a/Cfuv9IrO+xxt3UwjQ==}
@@ -1780,6 +1900,11 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tanstack/router-cli@1.132.51':
+    resolution: {integrity: sha512-Kibdf2iIZWbTgr1bPQvSVw0YTHEBrQpH2MqPCWhJE2tzahojhBEHwLbI63kDEE1Ka0JOFW5jzbWLnZnbfLi28g==}
+    engines: {node: '>=12'}
+    hasBin: true
 
   '@tanstack/router-core@1.132.47':
     resolution: {integrity: sha512-8YKFHmG6VUqXaWAJzEqjyW6w31dARS2USd2mtI5ZeZcihqMbskK28N4iotBXNn+sSKJnPRjc7A4jTnnEf8Mn8Q==}
@@ -5004,6 +5129,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@azure/msal-browser@3.30.0':
+    dependencies:
+      '@azure/msal-common': 14.16.1
+
   '@azure/msal-browser@4.25.0':
     dependencies:
       '@azure/msal-common': 15.13.0
@@ -5017,6 +5146,11 @@ snapshots:
       '@azure/msal-common': 15.13.0
       jsonwebtoken: 9.0.2
       uuid: 8.3.2
+
+  '@azure/msal-react@2.2.0(@azure/msal-browser@3.30.0)(react@19.2.0)':
+    dependencies:
+      '@azure/msal-browser': 3.30.0
+      react: 19.2.0
 
   '@azure/static-web-apps-cli@2.0.7':
     dependencies:
@@ -6224,6 +6358,14 @@ snapshots:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
       use-sync-external-store: 1.6.0(react@19.2.0)
+
+  '@tanstack/router-cli@1.132.51':
+    dependencies:
+      '@tanstack/router-generator': 1.132.51
+      chokidar: 3.6.0
+      yargs: 17.7.2
+    transitivePeerDependencies:
+      - supports-color
 
   '@tanstack/router-core@1.132.47':
     dependencies:

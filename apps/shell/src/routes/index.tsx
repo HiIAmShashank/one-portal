@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { useMsal } from '@azure/msal-react';
 import {
   Card,
   CardContent,
@@ -18,8 +19,17 @@ export const Route = createFileRoute('/')({
 });
 
 function IndexComponent() {
+  const { accounts } = useMsal();
+  const isAuthenticated = accounts.length > 0;
+
+  // Route guard handles redirect, but we still need to prevent rendering
+  // during the brief moment before redirect completes
+  if (!isAuthenticated) {
+    return <></>;
+  }
+
   return (
-    <div className="container mx-auto py-10 px-4">
+    <div className="py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Hero Section */}
         <div className="text-center space-y-4">

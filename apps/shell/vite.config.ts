@@ -49,6 +49,8 @@ export default defineConfig({
     federation({
       name: 'shell',
       remotes,
+      // CRITICAL: React/React-DOM are shared as singletons across all apps
+      // MSAL packages are NOT shared - each app has its own instance with unique client ID
       shared: ['react', 'react-dom'],
     }),
   ],

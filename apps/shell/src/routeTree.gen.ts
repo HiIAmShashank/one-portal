@@ -9,12 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AppsAppIdRouteImport } from './routes/apps.$appId'
+import { Route as AppsAppIdSplatRouteImport } from './routes/apps.$appId.$'
 
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppsAppIdRoute = AppsAppIdRouteImport.update({
@@ -22,40 +41,100 @@ const AppsAppIdRoute = AppsAppIdRouteImport.update({
   path: '/apps/$appId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppsAppIdSplatRoute = AppsAppIdSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => AppsAppIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/apps/$appId': typeof AppsAppIdRoute
+  '/dashboard': typeof DashboardRoute
+  '/sign-in': typeof SignInRoute
+  '/apps/$appId': typeof AppsAppIdRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
+  '/apps/$appId/$': typeof AppsAppIdSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/apps/$appId': typeof AppsAppIdRoute
+  '/dashboard': typeof DashboardRoute
+  '/sign-in': typeof SignInRoute
+  '/apps/$appId': typeof AppsAppIdRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
+  '/apps/$appId/$': typeof AppsAppIdSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/apps/$appId': typeof AppsAppIdRoute
+  '/dashboard': typeof DashboardRoute
+  '/sign-in': typeof SignInRoute
+  '/apps/$appId': typeof AppsAppIdRouteWithChildren
+  '/auth/callback': typeof AuthCallbackRoute
+  '/apps/$appId/$': typeof AppsAppIdSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/apps/$appId'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/sign-in'
+    | '/apps/$appId'
+    | '/auth/callback'
+    | '/apps/$appId/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/apps/$appId'
-  id: '__root__' | '/' | '/apps/$appId'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/sign-in'
+    | '/apps/$appId'
+    | '/auth/callback'
+    | '/apps/$appId/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/sign-in'
+    | '/apps/$appId'
+    | '/auth/callback'
+    | '/apps/$appId/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppsAppIdRoute: typeof AppsAppIdRoute
+  DashboardRoute: typeof DashboardRoute
+  SignInRoute: typeof SignInRoute
+  AppsAppIdRoute: typeof AppsAppIdRouteWithChildren
+  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apps/$appId': {
@@ -65,12 +144,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppsAppIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apps/$appId/$': {
+      id: '/apps/$appId/$'
+      path: '/$'
+      fullPath: '/apps/$appId/$'
+      preLoaderRoute: typeof AppsAppIdSplatRouteImport
+      parentRoute: typeof AppsAppIdRoute
+    }
   }
 }
 
+interface AppsAppIdRouteChildren {
+  AppsAppIdSplatRoute: typeof AppsAppIdSplatRoute
+}
+
+const AppsAppIdRouteChildren: AppsAppIdRouteChildren = {
+  AppsAppIdSplatRoute: AppsAppIdSplatRoute,
+}
+
+const AppsAppIdRouteWithChildren = AppsAppIdRoute._addFileChildren(
+  AppsAppIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppsAppIdRoute: AppsAppIdRoute,
+  DashboardRoute: DashboardRoute,
+  SignInRoute: SignInRoute,
+  AppsAppIdRoute: AppsAppIdRouteWithChildren,
+  AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

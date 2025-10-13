@@ -19,7 +19,7 @@ export interface RemoteMetadata {
   /** The loaded module (remoteEntry exports) */
   module: any;
   /** Mount function from the remote bootstrap */
-  mountFn?: (containerId: string) => Root;
+  mountFn?: (containerId: string) => Root | Promise<Root>;
   /** Unmount function from the remote bootstrap */
   unmountFn?: (instance: Root) => void;
   /** Currently mounted React root instance */
@@ -55,11 +55,8 @@ export async function loadRemote(
   remoteEntryUrl: string,
   scope: string
 ): Promise<RemoteMetadata> {
-  console.log(`[RemoteLoader] Loading remote: ${scope} from ${remoteEntryUrl}`);
-
   // Check if already loaded and cached
   if (remoteRegistry.has(scope)) {
-    console.log(`[RemoteLoader] Using cached remote: ${scope}`);
     return remoteRegistry.get(scope)!;
   }
 
@@ -82,10 +79,8 @@ export async function loadRemote(
       
       metadata.mountFn = bootstrapModule.mount;
       metadata.unmountFn = bootstrapModule.unmount;
-      
-      console.log(`[RemoteLoader] ✓ Loaded bootstrap for ${scope}`);
     } catch (error) {
-      console.warn(`[RemoteLoader] ⚠️  No bootstrap module for ${scope}, falling back to App`, error);
+      console.error(`[RemoteLoader] Bootstrap load failed for ${scope}:`, error);
       
       // Fallback: if no bootstrap, try to get the App directly
       const app = await module.get('./App');
@@ -95,7 +90,6 @@ export async function loadRemote(
     // Cache in registry
     remoteRegistry.set(scope, metadata);
     
-    console.log(`[RemoteLoader] ✓ Remote loaded and cached: ${scope}`);
     return metadata;
 
   } catch (error) {
@@ -121,8 +115,6 @@ export async function mountRemote(
   scope: string,
   containerId: string
 ): Promise<Root> {
-  console.log(`[RemoteLoader] Mounting remote: ${scope} into #${containerId}`);
-
   const metadata = remoteRegistry.get(scope);
   
   if (!metadata) {
@@ -134,18 +126,17 @@ export async function mountRemote(
   }
 
   try {
-    // Call the remote's mount function
-    const instance = metadata.mountFn(containerId);
+    // Call the remote's mount function (may be async)
+    const instance = await metadata.mountFn(containerId);
     
     // Update metadata with instance and container
     metadata.instance = instance;
     metadata.containerId = containerId;
     
-    console.log(`[RemoteLoader] ✓ Remote mounted: ${scope}`);
     return instance;
 
   } catch (error) {
-    console.error(`[RemoteLoader] ✗ Failed to mount remote: ${scope}`, error);
+    console.error(`[RemoteLoader] Mount failed for ${scope}:`, error);
     throw new Error(`Failed to mount remote "${scope}": ${error}`);
   }
 }
@@ -159,17 +150,9 @@ export async function mountRemote(
  * unmountRemote('billing');
  */
 export function unmountRemote(scope: string): void {
-  console.log(`[RemoteLoader] Unmounting remote: ${scope}`);
-
   const metadata = remoteRegistry.get(scope);
   
-  if (!metadata) {
-    console.warn(`[RemoteLoader] ⚠️  Remote "${scope}" not found in registry`);
-    return;
-  }
-
-  if (!metadata.instance) {
-    console.warn(`[RemoteLoader] ⚠️  Remote "${scope}" not currently mounted`);
+  if (!metadata || !metadata.instance) {
     return;
   }
 
@@ -182,11 +165,9 @@ export function unmountRemote(scope: string): void {
     // Clear instance and container references
     metadata.instance = undefined;
     metadata.containerId = undefined;
-    
-    console.log(`[RemoteLoader] ✓ Remote unmounted: ${scope}`);
 
   } catch (error) {
-    console.error(`[RemoteLoader] ✗ Failed to unmount remote: ${scope}`, error);
+    console.error(`[RemoteLoader] Unmount failed for ${scope}:`, error);
     // Continue cleanup even if unmount fails
     metadata.instance = undefined;
     metadata.containerId = undefined;
@@ -221,8 +202,6 @@ export function getRemoteMetadata(scope: string): RemoteMetadata | undefined {
  * USE WITH CAUTION: This will unmount all remotes
  */
 export function clearRemoteRegistry(): void {
-  console.log('[RemoteLoader] Clearing remote registry');
-
   // Unmount all mounted remotes
   remoteRegistry.forEach((metadata, scope) => {
     if (metadata.instance) {
@@ -232,8 +211,6 @@ export function clearRemoteRegistry(): void {
 
   // Clear the registry
   remoteRegistry.clear();
-  
-  console.log('[RemoteLoader] ✓ Registry cleared');
 }
 
 /**

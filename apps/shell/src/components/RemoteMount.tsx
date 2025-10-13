@@ -40,7 +40,6 @@ export function RemoteMount({ app, className = '' }: RemoteMountProps) {
 
     const loadAndMount = async () => {
       try {
-        console.log(`[RemoteMount] Loading remote app: ${app.name}`);
         setIsLoading(true);
         setLoading(true);
 
@@ -64,10 +63,9 @@ export function RemoteMount({ app, className = '' }: RemoteMountProps) {
           instanceRef.current = instance;
           setIsLoading(false);
           setLoading(false);
-          console.log(`[RemoteMount] ✓ Successfully loaded remote: ${app.name}`);
         }
       } catch (err) {
-        console.error(`[RemoteMount] ✗ Failed to load remote: ${app.name}`, err);
+        console.error(`[RemoteMount] Load failed for ${app.name}:`, err);
         if (isMounted) {
           const error = err instanceof Error ? err : new Error(String(err));
           setError(error);
@@ -85,7 +83,6 @@ export function RemoteMount({ app, className = '' }: RemoteMountProps) {
       isMounted = false;
       
       if (instanceRef.current) {
-        console.log(`[RemoteMount] Cleaning up remote: ${app.name}`);
         unmountRemote(app.scope);
         instanceRef.current = null;
       }

@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
+import { ReportsMSALProvider } from './auth/MSALProvider';
 import App from './App';
 // CSS is provided by the shell - no need to import here
 
@@ -22,20 +23,20 @@ import App from './App';
  * @example
  * const root = mount('reports-container');
  */
-export function mount(containerId: string): Root {
+export async function mount(containerId: string): Promise<Root> {
   const container = document.getElementById(containerId);
   
   if (!container) {
     throw new Error(`[Reports] Container element with ID "${containerId}" not found`);
   }
-
-  console.log(`[Reports] Mounting into container: ${containerId}`);
   
   const root = createRoot(container);
   
   root.render(
     <StrictMode>
-      <App />
+      <ReportsMSALProvider>
+        <App />
+      </ReportsMSALProvider>
     </StrictMode>
   );
 
@@ -51,7 +52,6 @@ export function mount(containerId: string): Root {
  * unmount(root);
  */
 export function unmount(root: Root): void {
-  console.log('[Reports] Unmounting application');
   root.unmount();
 }
 

@@ -12,6 +12,7 @@
     "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "clean": "turbo clean && rm -rf node_modules",
+    "validate:auth": "node scripts/validate-auth-config.js",
     "swa:start": "swa start dist-deploy --port 4280",
     "docker:build": "pnpm build:deploy && docker-compose build",
     "docker:up": "pnpm build:deploy && docker-compose up -d",

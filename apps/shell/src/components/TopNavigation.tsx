@@ -26,7 +26,7 @@ export function TopNavigation({ apps = [], className = '' }: TopNavigationProps)
 
   return (
     <div className={`border-b ${className}`}>
-      <div className="container mx-auto px-4">
+      <div className="px-4">
         <NavigationMenu>
           <NavigationMenuList>
             {/* Home link */}

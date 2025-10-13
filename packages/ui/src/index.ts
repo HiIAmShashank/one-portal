@@ -32,6 +32,14 @@ export {
   TooltipContent,
   TooltipProvider,
 } from './components/ui/tooltip';
+export {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+  EmptyMedia,
+} from './components/ui/empty';
 
 // Shadcn UI Components - Overlays
 export {
@@ -64,6 +72,7 @@ export {
   DropdownMenuRadioGroup,
 } from './components/ui/dropdown-menu';
 export { Toaster as Sonner } from './components/ui/sonner';
+export { toast } from 'sonner';
 
 // Shadcn UI Components - Forms
 export { Input } from './components/ui/input';
@@ -72,6 +81,10 @@ export { Switch } from './components/ui/switch';
 
 // Legacy components (deprecated - use shadcn equivalents)
 export { Spinner, type SpinnerProps } from './components/spinner';
+
+// Auth Components
+export { SignInPrompt } from '../components/auth/SignInPrompt';
+export { AuthLoadingSpinner } from '../components/auth/AuthLoadingSpinner';
 
 // Utilities
 export { cn } from './lib/utils';

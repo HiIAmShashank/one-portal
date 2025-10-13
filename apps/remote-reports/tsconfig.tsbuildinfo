@@ -1,1 +1,1 @@
-{"root":["./src/App.tsx","./src/bootstrap.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/Sidebar.tsx"],"version":"5.9.3"}
+{"root":["./src/App.tsx","./src/bootstrap.tsx","./src/main.tsx","./src/routeTree.gen.ts","./src/vite-env.d.ts","./src/auth/MSALProvider.tsx","./src/auth/msalInstance.ts","./src/components/Sidebar.tsx","./src/routes/__root.tsx","./src/routes/analytics.tsx","./src/routes/index.tsx","./src/routes/auth/callback.tsx"],"version":"5.9.3"}

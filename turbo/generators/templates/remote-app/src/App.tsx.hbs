@@ -1,48 +1,84 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@one-portal/ui';
+import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { isAuthError } from '@one-portal/auth/utils';
+import { routeTree } from './routeTree.gen';
 
 /**
- * Main App component for the {{ displayName }} remote application
- * This component is exported via Module Federation and loaded by the shell
+ * {{ displayName }} Remote Application
  * 
- * Requirements: FR-003 (Remote Application Integration)
+ * Main component exposed via Module Federation with:
+ * - TanStack Router for client-side routing
+ * - TanStack Query with auth-aware configuration
+ * - Protected routes (all routes require authentication)
+ * 
+ * Requirements: FR-003 (Remote App Loading), US2 (Protected Routes), US7 (Error Handling)
  */
-export default function App() {
+
+/**
+ * Auth-aware QueryClient configuration
+ * 
+ * Smart error handling:
+ * 1. Network errors → Retry up to 2 times
+ * 2. Auth errors (401/403) → NO retry, redirect to sign-in
+ * 3. Failed queries marked stale → Refresh after re-authentication
+ * 4. 5-minute cache → Reduce unnecessary API calls
+ */
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Cache successful queries for 5 minutes
+      staleTime: 1000 * 60 * 5,
+      
+      // Smart retry: Skip auth errors, retry network errors
+      retry: (failureCount, error) => {
+        // Don't retry authentication errors - user needs to sign in
+        if (isAuthError(error)) {
+          return false; // Stop immediately → redirect to /sign-in
+        }
+        
+        // Retry network/transient errors up to 2 times
+        return failureCount < 2;
+      },
+      
+      // Refetch when user returns (useful after signing in)
+      refetchOnWindowFocus: true,
+      
+      // Refetch when network reconnects
+      refetchOnReconnect: true,
+    },
+    mutations: {
+      // Don't retry mutations on auth errors
+      retry: (failureCount, error) => {
+        if (isAuthError(error)) {
+          return false;
+        }
+        return failureCount < 1; // Only retry once
+      },
+    },
+  },
+});
+
+// Create the router instance
+const router = createRouter({
+  routeTree,
+  context: undefined!,
+  // basepath must match where Shell mounts this remote app
+  basepath: '/apps/{{ appName }}',
+});
+
+// Register router for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+function App() {
   return (
-    <div className="p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{{ displayName }}</CardTitle>
-          <CardDescription>
-            {{ description }}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            This is a placeholder. Add your application content here.
-          </p>
-          
-          {/* Example content */}
-          <div className="mt-6 space-y-4">
-            <div className="rounded-lg border p-4">
-              <h3 className="font-semibold mb-2">Getting Started</h3>
-              <p className="text-sm text-muted-foreground">
-                Start building your features in this App.tsx file.
-                Use components from @one-portal/ui for consistent styling.
-              </p>
-            </div>
-            
-            <div className="rounded-lg border p-4">
-              <h3 className="font-semibold mb-2">Available Tools</h3>
-              <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                <li>shadcn/ui components from @one-portal/ui</li>
-                <li>Tailwind CSS for styling (with dark mode support)</li>
-                <li>TypeScript for type safety</li>
-                <li>TanStack Query (available via shell)</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   );
 }
+
+export default App;

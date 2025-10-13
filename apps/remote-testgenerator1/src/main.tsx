@@ -1,0 +1,14 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+// CSS is provided by the shell - no need to import here
+
+/**
+ * Standalone entry point for local development
+ * This file is only used when running `pnpm dev` in this app's directory
+ */
+createRoot(document.getElementById('app')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);

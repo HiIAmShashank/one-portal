@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/bootstrap.tsx","./src/main.tsx","./src/routeTree.gen.ts","./src/vite-env.d.ts","./src/auth/MSALProvider.tsx","./src/auth/msalInstance.ts","./src/routes/__root.tsx","./src/routes/index.tsx"],"version":"5.9.3"}
