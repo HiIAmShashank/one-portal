@@ -94,6 +94,8 @@ export function DataTable<TData>({
   onDensityChange,
   filterMode: filterModeProp,
   onFilterModeChange,
+  stickyHeader = false,
+  stickyColumns,
 }: DataTableProps<TData>) {
   // Manage table state with persistence
   const {
@@ -477,7 +479,12 @@ export function DataTable<TData>({
           items={columnOrder}
           strategy={horizontalListSortingStrategy}
         >
-          <div className="data-table-container overflow-x-auto rounded-md border">
+          <div 
+            className={cn(
+              "data-table-container overflow-x-auto rounded-md border",
+              stickyHeader && "max-h-[600px] overflow-y-auto"
+            )}
+          >
             <table className="data-table-root w-full caption-bottom text-sm">
               <TableHeader
                 table={table}
@@ -488,6 +495,8 @@ export function DataTable<TData>({
                 density={actualDensity}
                 filterMode={actualFilterMode}
                 enableColumnFilters={enableColumnFilters}
+                stickyHeader={stickyHeader}
+                stickyColumns={stickyColumns}
               />
               <TableBody
                 table={table}

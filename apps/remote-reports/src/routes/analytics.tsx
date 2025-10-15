@@ -96,6 +96,7 @@ function Analytics() {
         enableRowSelection={true}
         selectionMode="multiple"
         enableInlineEditing={true}
+        stickyHeader={true}
       />
     </>
   );

@@ -17,6 +17,11 @@ interface TableHeaderProps<TData> {
   density?: Density;
   filterMode?: FilterMode;
   enableColumnFilters?: boolean;
+  stickyHeader?: boolean;
+  stickyColumns?: {
+    left?: number;
+    right?: number;
+  };
 }
 
 /**
@@ -31,11 +36,18 @@ export function TableHeader<TData>({
   density = 'default',
   filterMode = 'toolbar',
   enableColumnFilters = true,
+  stickyHeader = false,
+  stickyColumns: _stickyColumns,
 }: TableHeaderProps<TData>) {
   const showInlineFilters = enableColumnFilters && filterMode === 'inline';
 
+  // Apply sticky header classes
+  const theadClassName = stickyHeader 
+    ? 'sticky top-0 z-20 bg-background border-b shadow-sm' 
+    : 'border-b';
+
   return (
-    <thead className="border-b">
+    <thead className={theadClassName}>
       {table.getHeaderGroups().map((headerGroup) => (
         <tr key={headerGroup.id}>
           {headerGroup.headers.map((header) => (
