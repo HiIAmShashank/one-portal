@@ -18,6 +18,7 @@ import { TableBody } from './components/table-body';
 import { TablePagination } from './components/table-pagination';
 import { TableToolbar } from './components/table-toolbar';
 import { TableRowActions } from './components/table-row-actions';
+import { numberRangeFilterFn } from './components/filters/number-range-filter';
 import { Checkbox } from '../components/ui/checkbox';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortable';
@@ -360,6 +361,9 @@ export function DataTable<TData>({
   const table = useReactTable({
     data,
     columns: columnsWithActions as any, // Use columns with actions, Type compatibility with TanStack Table
+    filterFns: {
+      numberRange: numberRangeFilterFn,
+    },
     state: {
       pagination,
       sorting,

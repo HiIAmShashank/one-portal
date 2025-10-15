@@ -179,7 +179,6 @@ function InlineFilterCell<TData>({
           onClear={() => column.setFilterValue(undefined)}
           min={numberRange?.min}
           max={numberRange?.max}
-          step={numberRange?.step}
           inline
         />
       );

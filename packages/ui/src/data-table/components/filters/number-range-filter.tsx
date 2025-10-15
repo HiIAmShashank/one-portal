@@ -20,7 +20,6 @@ export interface NumberRangeFilterProps {
   onClear?: () => void;
   min?: number;
   max?: number;
-  step?: number;
   inline?: boolean;
   className?: string;
 }
@@ -32,9 +31,6 @@ export function NumberRangeFilter({
   value,
   onChange,
   onClear,
-  min,
-  max,
-  step = 1,
   inline = false,
   className,
 }: NumberRangeFilterProps) {
@@ -94,24 +90,20 @@ export function NumberRangeFilter({
     <div className={cn('flex items-center gap-1', className)}>
       <div className="flex items-center gap-1 flex-1">
         <Input
-          type="number"
+          type="text"
+          inputMode="decimal"
           value={minValue}
           onChange={(e) => handleMinChange(e.target.value)}
-          placeholder={min !== undefined ? `Min (${min})` : 'Min'}
-          min={min}
-          max={max}
-          step={step}
+          placeholder="Enter a number"
           className={cn(inputHeight, inputSize, inline && 'border-input/50')}
         />
         <span className="text-muted-foreground text-xs">-</span>
         <Input
-          type="number"
+          type="text"
+          inputMode="decimal"
           value={maxValue}
           onChange={(e) => handleMaxChange(e.target.value)}
-          placeholder={max !== undefined ? `Max (${max})` : 'Max'}
-          min={min}
-          max={max}
-          step={step}
+          placeholder="Enter a number"
           className={cn(inputHeight, inputSize, inline && 'border-input/50')}
         />
       </div>
