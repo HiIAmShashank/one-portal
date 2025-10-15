@@ -25,3 +25,5 @@ speckit.*
 dist-deploy
 
 turbo/generators.backup*
+
+*.txt

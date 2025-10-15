@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.turbo/
+dist-deploy/
+
+# Coverage
+coverage/
+
+# Minified files
+*.min.js
+
+# Generated files
+*.tsbuildinfo
+
+# Config files (already validated)
+.prettierrc
+.eslintrc*
+eslint.config.*
+
+# Turbo generators backup
+turbo/generators.backup*/

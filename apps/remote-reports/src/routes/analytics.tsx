@@ -3,6 +3,10 @@
 
 import { createFileRoute } from '@tanstack/react-router';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { DataTable}from '@one-portal/ui';
+import { useQuery } from '@tanstack/react-query';
+import { User, userColumns } from '../columns/userColumns';
+import { useEffect } from 'react';
 
 /**
  * Analytics route - accessible at /reports/analytics
@@ -12,10 +16,62 @@ export const Route = createFileRoute('/analytics')({
   component: Analytics,
 });
 
+
+const fetchData = async (): Promise<User[]> => {
+  let response = await fetch('http://localhost:3000/users');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+}
+
+
 function Analytics() {
   const isAuthenticated = useIsAuthenticated();
   const { accounts } = useMsal();
   const account = accounts[0];
+
+  const info = useQuery({ queryKey: ['users'], queryFn: fetchData })
+  useEffect(() => {
+    console.log('Data fetched:', info.data);
+  }, [info.data]);
+
+  // Define bulk actions for testing Phase 6
+  // const bulkUserActions: BulkAction<User>[] = [
+  //   {
+  //     id: 'delete-users',
+  //     label: 'Delete Selected',
+  //     icon: <Trash className="h-4 w-4" />,
+  //     variant: 'destructive',
+  //     onClick: async (users) => {
+  //       if (confirm(`Delete ${users.length} user${users.length > 1 ? 's' : ''}?`)) {
+  //         console.log('Deleting users:', users.map(u => u.id));
+  //         alert(`Deleted ${users.length} user${users.length > 1 ? 's' : ''} (simulated)`);
+  //       }
+  //     },
+  //     minSelection: 1,
+  //     tooltip: 'Delete all selected users',
+  //   },
+  //   {
+  //     id: 'export-users',
+  //     label: 'Export to CSV',
+  //     icon: <Download className="h-4 w-4" />,
+  //     onClick: (users) => {
+  //       // Simple CSV export simulation
+  //       const csv = 'ID,Username,Name,Role\n' + users.map(u => 
+  //         `${u.id},${u.username},"${u.firstName} ${u.lastName}",${u.role}`
+  //       ).join('\n');
+  //       console.log('CSV Data:', csv);
+  //       alert(`Exported ${users.length} user${users.length > 1 ? 's' : ''} to CSV (check console)`);
+  //     },
+  //     minSelection: 1,
+  //     maxSelection: 100,
+  //     tooltip: 'Export selected users to CSV',
+  //   },
+  // ];
+
+  // Define row actions for testing Phase 8
+
 
   if (!isAuthenticated || !account) {
     return (
@@ -31,72 +87,16 @@ function Analytics() {
   }
 
   return (
-    <div className="px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Analytics Dashboard</h1>
-        
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Performance Metrics</h2>
-          <p className="text-gray-600 mb-6">
-            This is a protected route in the Reports Remote application. 
-            You can only access this page while authenticated.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="text-sm text-blue-600 font-semibold mb-1">Total Users</div>
-              <div className="text-3xl font-bold text-blue-900">1,234</div>
-              <div className="text-xs text-blue-600 mt-1">↑ 12% from last month</div>
-            </div>
-            
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="text-sm text-green-600 font-semibold mb-1">Active Sessions</div>
-              <div className="text-3xl font-bold text-green-900">567</div>
-              <div className="text-xs text-green-600 mt-1">↑ 8% from last week</div>
-            </div>
-            
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-              <div className="text-sm text-purple-600 font-semibold mb-1">Conversion Rate</div>
-              <div className="text-3xl font-bold text-purple-900">23.4%</div>
-              <div className="text-xs text-purple-600 mt-1">↓ 2% from last month</div>
-            </div>
-          </div>
-          
-          <div className="border rounded-lg p-4">
-            <h3 className="font-semibold mb-3">Recent Activity</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center py-2 border-b">
-                <span className="text-sm">Page Views</span>
-                <span className="text-sm font-semibold">45,678</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b">
-                <span className="text-sm">Unique Visitors</span>
-                <span className="text-sm font-semibold">12,345</span>
-              </div>
-              <div className="flex justify-between items-center py-2 border-b">
-                <span className="text-sm">Bounce Rate</span>
-                <span className="text-sm font-semibold">42.3%</span>
-              </div>
-              <div className="flex justify-between items-center py-2">
-                <span className="text-sm">Avg. Session Duration</span>
-                <span className="text-sm font-semibold">4m 32s</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">Protected Route Test</h3>
-          <p className="text-sm text-blue-800">
-            Authenticated as: <strong>{account.name}</strong> ({account.username})
-          </p>
-          <p className="text-sm text-blue-800 mt-2">
-            This route is protected by Reports' MSAL instance. Try accessing 
-            <code className="bg-blue-100 px-1 rounded ml-1">/reports/analytics</code> 
-            {' '}while signed out to test the redirect flow.
-          </p>
-        </div>
-      </div>
-    </div>
+    <>
+      <DataTable
+        tableId="sorted-table"
+        data={info.data || []}
+        columns={userColumns}
+        enableColumnFilters={true}
+        enableRowSelection={true}
+        selectionMode="multiple"
+        enableInlineEditing={true}
+      />
+    </>
   );
 }

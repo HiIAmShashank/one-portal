@@ -78,6 +78,22 @@ export { toast } from 'sonner';
 export { Input } from './components/ui/input';
 export { Label } from './components/ui/label';
 export { Switch } from './components/ui/switch';
+export { Checkbox } from './components/ui/checkbox';
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+} from './components/ui/select';
+
+// Shadcn UI Components - Overlays
+export { Popover, PopoverTrigger, PopoverContent } from './components/ui/popover';
 
 // Legacy components (deprecated - use shadcn equivalents)
 export { Spinner, type SpinnerProps } from './components/spinner';
@@ -88,6 +104,9 @@ export { AuthLoadingSpinner } from '../components/auth/AuthLoadingSpinner';
 
 // Utilities
 export { cn } from './lib/utils';
+
+// DataTable Component
+export * from './data-table';
 
 // Icons (re-export from lucide-react for convenience)
 export { 
