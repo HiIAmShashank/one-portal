@@ -10,6 +10,8 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getGroupedRowModel,
+  getExpandedRowModel,
 } from '@tanstack/react-table';
 import type { DataTableProps, Density, FilterMode } from './types';
 import { useTableState } from './hooks/use-table-state';
@@ -96,6 +98,18 @@ export function DataTable<TData>({
   onFilterModeChange,
   stickyHeader = false,
   stickyColumns,
+  // Phase 10: Row Grouping
+  enableGrouping = false,
+  initialGrouping,
+  onGroupingChange,
+  aggregationFns,
+  // Phase 10: Row Expanding
+  enableExpanding = false,
+  initialExpanded,
+  onExpandedChange,
+  getSubRows,
+  renderExpandedRow,
+  getRowCanExpand,
 }: DataTableProps<TData>) {
   // Manage table state with persistence
   const {
@@ -122,6 +136,12 @@ export function DataTable<TData>({
     setDensity,
     filterMode,
     setFilterMode,
+    // Phase 10: Row Grouping
+    grouping,
+    setGrouping: _setGrouping,
+    // Phase 10: Row Expanding
+    expanded,
+    setExpanded: _setExpanded,
     // resetState, // TODO: Will be used for reset button
     // resetColumnPreferences, // TODO: Will be used for column reset
   } = useTableState({
@@ -133,7 +153,11 @@ export function DataTable<TData>({
     initialColumnOrder,
     initialColumnSizing,
     initialColumnPinning,
+    initialGrouping,
+    initialExpanded,
     enablePersistence: true,
+    onGroupingChange,
+    onExpandedChange,
   });
 
   // Phase 10: Controlled/uncontrolled pattern for density and filterMode
@@ -366,6 +390,7 @@ export function DataTable<TData>({
     filterFns: {
       numberRange: numberRangeFilterFn,
     },
+    aggregationFns,
     state: {
       pagination,
       sorting,
@@ -376,6 +401,8 @@ export function DataTable<TData>({
       columnSizing,
       columnPinning,
       rowSelection,
+      grouping,
+      expanded,
     },
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
@@ -386,10 +413,16 @@ export function DataTable<TData>({
     onColumnSizingChange: setColumnSizing,
     onColumnPinningChange: setColumnPinning,
     onRowSelectionChange: setRowSelection,
+    onGroupingChange: _setGrouping,
+    onExpandedChange: _setExpanded,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: enableSorting && !serverSide ? getSortedRowModel() : undefined,
     getFilteredRowModel: enableFiltering && !serverSide ? getFilteredRowModel() : undefined,
     getPaginationRowModel: enablePagination && !serverSide ? getPaginationRowModel() : undefined,
+    getGroupedRowModel: enableGrouping ? getGroupedRowModel() : undefined,
+    getExpandedRowModel: enableGrouping || enableExpanding ? getExpandedRowModel() : undefined,
+    getSubRows,
+    getRowCanExpand,
     manualPagination: serverSide,
     manualSorting: serverSide,
     manualFiltering: serverSide,
@@ -398,6 +431,8 @@ export function DataTable<TData>({
     enableColumnResizing,
     enableRowSelection: enableRowSelection && selectionMode !== 'none',
     enableMultiRowSelection: selectionMode === 'multiple',
+    enableGrouping,
+    enableExpanding,
     columnResizeMode: 'onChange',
     pageCount: serverSide && totalCount ? Math.ceil(totalCount / pagination.pageSize) : undefined,
   });
@@ -464,6 +499,8 @@ export function DataTable<TData>({
           enableColumnFilters={enableColumnFilters}
           enableColumnVisibility={enableColumnVisibility}
           enableRowSelection={enableRowSelection}
+          enableGrouping={enableGrouping}
+          enableExpanding={enableExpanding}
           selectedRows={selectedRows}
           bulkActions={bulkActions}
           density={actualDensity}
@@ -492,6 +529,7 @@ export function DataTable<TData>({
                 enableResizing={enableColumnResizing}
                 enablePinning={enableColumnPinning}
                 enableReordering={enableColumnReordering}
+                enableGrouping={enableGrouping}
                 density={actualDensity}
                 filterMode={actualFilterMode}
                 enableColumnFilters={enableColumnFilters}
@@ -508,6 +546,9 @@ export function DataTable<TData>({
                 enableInlineEditing={enableInlineEditing}
                 getRowCanEdit={getRowCanEdit}
                 onEditCell={onEditCell}
+                enableGrouping={enableGrouping}
+                enableExpanding={enableExpanding}
+                renderExpandedRow={renderExpandedRow}
                 density={actualDensity}
               />
             </table>

@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 import { flexRender, type Cell, type Column, type Row } from '@tanstack/react-table';
-import { Pencil, Loader2, Check, AlertCircle } from 'lucide-react';
+import { Pencil, Loader2, Check, AlertCircle, ChevronRight, ChevronDown } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import type { EditInputType, Density } from '../types';
 
@@ -21,6 +21,8 @@ export interface TableCellProps<TData> {
     newValue: any;
     oldValue: any;
   }) => void | Promise<void>;
+  enableGrouping?: boolean;
+  enableExpanding?: boolean;
   density?: Density;
 }
 
@@ -31,6 +33,8 @@ export function TableCell<TData>({
   enableInlineEditing,
   getRowCanEdit,
   onEditCell,
+  enableGrouping = false,
+  enableExpanding = false,
   density = 'default',
 }: TableCellProps<TData>) {
   const [isEditing, setIsEditing] = React.useState(false);
@@ -319,6 +323,88 @@ export function TableCell<TData>({
     }
   };
 
+  // Phase 10: Row Grouping - Check if this is a grouped, aggregated, or placeholder cell
+  const isGroupedCell = enableGrouping && cell.getIsGrouped();
+  const isAggregatedCell = enableGrouping && cell.getIsAggregated();
+  const isPlaceholderCell = enableGrouping && cell.getIsPlaceholder();
+
+  // Render grouped cell (with expand/collapse button)
+  if (isGroupedCell) {
+    const isExpanded = row.getIsExpanded();
+    const subRowsCount = row.subRows?.length || 0;
+
+    return (
+      <td
+        className={cn(
+          'align-middle',
+          densityClasses[density],
+          'bg-muted/30 font-medium'
+        )}
+        colSpan={1}
+      >
+        <div 
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={row.getToggleExpandedHandler()}
+          style={{ paddingLeft: `${row.depth * 2}rem` }}
+        >
+          {row.getCanExpand() ? (
+            isExpanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )
+          ) : null}
+          <span>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </span>
+          <span className="text-muted-foreground text-xs">
+            ({subRowsCount})
+          </span>
+        </div>
+      </td>
+    );
+  }
+
+  // Render aggregated cell
+  if (isAggregatedCell) {
+    const aggregatedCell = cell.column.columnDef.aggregatedCell;
+    
+    return (
+      <td
+        className={cn(
+          'align-middle',
+          densityClasses[density],
+          'bg-orange-50 dark:bg-orange-950/30 font-semibold'
+        )}
+      >
+        {aggregatedCell 
+          ? flexRender(aggregatedCell, cell.getContext())
+          : flexRender(cell.column.columnDef.cell, cell.getContext())
+        }
+      </td>
+    );
+  }
+
+  // Render placeholder cell (repeated values in grouped columns)
+  if (isPlaceholderCell) {
+    return (
+      <td
+        className={cn(
+          'align-middle',
+          densityClasses[density],
+          'bg-red-50/50 dark:bg-red-950/20'
+        )}
+      >
+        {/* Empty - value is shown in the group header */}
+      </td>
+    );
+  }
+
+  // Phase 10: Row Expanding - Check if this is the first visible cell
+  const isFirstCell = enableExpanding && cell.column.id === row.getVisibleCells()[0]?.column.id;
+  const canExpand = enableExpanding && row.getCanExpand();
+  const isExpanded = row.getIsExpanded();
+
   return (
     <td
       className={cn(
@@ -349,6 +435,30 @@ export function TableCell<TData>({
         </div>
       ) : (
         <div className="flex items-center justify-between gap-2">
+          {/* Expand button (only for first cell when expanding is enabled) */}
+          {isFirstCell && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                row.toggleExpanded();
+              }}
+              className={cn(
+                'flex-shrink-0 p-0.5 rounded hover:bg-muted transition-colors',
+                !canExpand && 'invisible'
+              )}
+              aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
+            >
+              {canExpand && (
+                isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )
+              )}
+              {!canExpand && <div className="h-4 w-4" />}
+            </button>
+          )}
+          
           <span className="flex-1 min-w-0">
             {cell.column.columnDef.cell 
               ? flexRender(cell.column.columnDef.cell, cell.getContext())

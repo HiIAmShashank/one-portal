@@ -1,4 +1,9 @@
 import { ColumnDef } from "@one-portal/ui";
+type AdditionalInformation = {
+  name: string;
+  symbol: string;
+  atomicNumber:number;
+}
 export type User  = {
     id:        string;
     username:  string;
@@ -10,6 +15,10 @@ export type User  = {
     profileReachStatus: string;  // API returns string not number
     hasAccount: boolean;           // API returns "true"/"false" not boolean
     salary:    number;
+    additionalInformation: AdditionalInformation; // this is a stringified JSON containing the following fields
+    // symbol: string;
+    // name: string;
+    // atomicNumber:string;
 }
 
 export  const userColumns: ColumnDef<User>[] = [
@@ -124,5 +133,7 @@ export  const userColumns: ColumnDef<User>[] = [
         if (isNaN(num) || num < 0) return 'Salary must be a positive number';
         return true;
       },
+      aggregationFn: 'sum',  // ← Built-in sum
+    aggregatedCell: ({ getValue }) => `$${getValue().toLocaleString()}`,
     }
   ];

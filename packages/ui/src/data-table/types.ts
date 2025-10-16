@@ -12,6 +12,10 @@ import type {
   ColumnPinningState as TanStackColumnPinningState,
   RowSelectionState as TanStackRowSelectionState,
   PaginationState as TanStackPaginationState,
+  GroupingState as TanStackGroupingState,
+  ExpandedState as TanStackExpandedState,
+  AggregationFn as TanStackAggregationFn,
+  Row,
 } from '@tanstack/react-table';
 
 // ============================================================================
@@ -151,6 +155,7 @@ export interface DataTableProps<TData> {
   onEditCell?: (params: EditCellParams<TData>) => Promise<void> | void;
   onColumnOrderChange?: (columnIds: string[]) => void;
   onColumnPinningChange?: (pinning: ColumnPinningState) => void;
+  onGroupingChange?: (grouping: GroupingState) => void;
 
   // Inline Editing
   /** Enable inline editing globally (default: false) */
@@ -186,14 +191,20 @@ export interface DataTableProps<TData> {
   enableGrouping?: boolean;
   /** Initial grouping column IDs */
   initialGrouping?: string[];
-  /** Custom aggregation functions */
-  aggregationFns?: Record<string, AggregationFn>;
+  /** Custom aggregation functions (must match TanStack's AggregationFn signature) */
+  aggregationFns?: Record<string, TanStackAggregationFn<any>>;
   /** Enable row expanding (default: false) */
   enableExpanding?: boolean;
+  /** Initial expanded state */
+  initialExpanded?: ExpandedState;
+  /** Callback when expanded state changes */
+  onExpandedChange?: (expanded: ExpandedState) => void;
+  /** Function to get sub-rows from a row (for hierarchical data) */
+  getSubRows?: (row: TData) => TData[] | undefined;
   /** Render custom content in expanded row */
-  renderExpandedRow?: (row: any) => React.ReactNode;
+  renderExpandedRow?: (row: Row<TData>) => React.ReactNode;
   /** Determine if row can expand */
-  getRowCanExpand?: (row: any) => boolean;
+  getRowCanExpand?: (row: Row<TData>) => boolean;
 
   // Styling
   /** Additional CSS classes */
@@ -279,6 +290,14 @@ export interface ColumnDef<TData> {
   /** Start with descending sort */
   sortDescFirst?: boolean;
 
+  // Phase 10: Aggregation (for row grouping)
+  /** Aggregation function name ('sum', 'count', 'min', 'max', etc.) or custom function */
+  aggregationFn?: string | TanStackAggregationFn<any>;
+  /** Custom renderer for aggregated cell values */
+  aggregatedCell?: (props: CellContext<TData>) => React.ReactNode;
+  /** Enable grouping for this column (default: true) */
+  enableGrouping?: boolean;
+
   // Metadata
   /** Additional metadata */
   meta?: ColumnMeta;
@@ -297,6 +316,14 @@ export interface ColumnMeta {
   filterVariant?: FilterVariant;
   filterOptions?: FilterOption[];
   filterConfig?: FilterConfig;
+
+  // Phase 10: Aggregation configuration
+  /** Aggregation function name or custom function */
+  aggregationFn?: string | TanStackAggregationFn<any>;
+  /** Custom renderer for aggregated cell */
+  aggregatedCell?: (props: CellContext<any>) => React.ReactNode;
+  /** Enable grouping for this column (default: true) */
+  enableGrouping?: boolean;
 }
 
 // ============================================================================
@@ -386,6 +413,8 @@ export type ColumnVisibilityState = TanStackVisibilityState;
 export type ColumnSizingState = TanStackColumnSizingState;
 export type ColumnPinningState = TanStackColumnPinningState;
 export type RowSelectionState = TanStackRowSelectionState;
+export type GroupingState = TanStackGroupingState;
+export type ExpandedState = TanStackExpandedState;
 
 // ============================================================================
 // ACTIONS

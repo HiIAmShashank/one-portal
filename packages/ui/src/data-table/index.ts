@@ -33,6 +33,8 @@ export type {
   ColumnSizingState,
   ColumnPinningState,
   RowSelectionState,
+  GroupingState,
+  ExpandedState,
   FilterFn,
   SortingFn,
   FilterComponent,
@@ -69,6 +71,13 @@ export {
   updateFilter,
   debounce,
 } from './utils/filter-utils';
+
+// Phase 10: Aggregation utilities
+export {
+  aggregationFunctions,
+  formatAggregatedValue,
+  createAggregatedCellRenderer,
+} from './utils/aggregation-utils';
 
 // Hook exports
 export { useLocalStorage } from './hooks/use-local-storage';

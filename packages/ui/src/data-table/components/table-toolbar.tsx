@@ -8,7 +8,7 @@ import type { Table } from '@tanstack/react-table';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
-import { X, Search } from 'lucide-react';
+import { X, Search, Group, ChevronDown, ChevronRight } from 'lucide-react';
 import { ColumnFilters } from './filters/column-filters';
 import { TableBulkActions } from './table-bulk-actions';
 import { TableToolbarIcons } from './table-toolbar-icons';
@@ -23,6 +23,8 @@ interface TableToolbarProps<TData> {
   enableColumnFilters?: boolean;
   enableColumnVisibility?: boolean;
   enableRowSelection?: boolean;
+  enableGrouping?: boolean;
+  enableExpanding?: boolean;
   filterPlaceholder?: string;
   selectedRows?: TData[];
   bulkActions?: BulkAction<TData>[];
@@ -44,6 +46,8 @@ export function TableToolbar<TData>({
   enableColumnFilters = true,
   enableColumnVisibility = true,
   enableRowSelection = false,
+  enableGrouping = false,
+  enableExpanding = false,
   filterPlaceholder = 'Search...',
   selectedRows = [],
   bulkActions,
@@ -209,6 +213,79 @@ export function TableToolbar<TData>({
       {filtersVisible && filterMode === 'toolbar' && enableColumnFilters && enableFiltering && (
         <div className="flex items-start gap-4 flex-wrap px-4 pb-2 border-t">
           <ColumnFilters table={table} />
+        </div>
+      )}
+
+      {/* Row 3: Grouping controls (when grouping enabled) */}
+      {enableGrouping && (
+        <div className="flex items-center gap-2 flex-wrap px-4 pb-2 border-t">
+          <Group className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-muted-foreground">Group by:</span>
+          
+          {table.getState().grouping.length === 0 ? (
+            <span className="text-sm text-muted-foreground italic">None</span>
+          ) : (
+            <>
+              {table.getState().grouping.map((columnId, index) => {
+                const column = table.getColumn(columnId);
+                if (!column) return null;
+                
+                return (
+                  <Badge 
+                    key={columnId} 
+                    variant="secondary"
+                    className="gap-1"
+                  >
+                    {index + 1}. {column.columnDef.header as string}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 p-0 hover:bg-transparent"
+                      onClick={() => column.toggleGrouping()}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                );
+              })}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => table.resetGrouping()}
+                className="h-6 text-xs"
+              >
+                Clear all
+              </Button>
+            </>
+          )}
+        </div>
+      )}
+      
+      {/* Row 4: Expanding controls (when expanding enabled) */}
+      {enableExpanding && (
+        <div className="flex items-center gap-2 px-4 pb-2 border-t">
+          <div className="flex items-center gap-2">
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-muted-foreground">Expand:</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.toggleAllRowsExpanded(true)}
+            className="h-7 text-xs gap-1"
+          >
+            <ChevronDown className="h-3 w-3" />
+            Expand all
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.toggleAllRowsExpanded(false)}
+            className="h-7 text-xs gap-1"
+          >
+            <ChevronRight className="h-3 w-3" />
+            Collapse all
+          </Button>
         </div>
       )}
     </div>

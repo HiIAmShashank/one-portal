@@ -3,7 +3,8 @@
  * @module data-table/components/table-body
  */
 
-import type { Table } from '@tanstack/react-table';
+import * as React from 'react';
+import type { Table, Row } from '@tanstack/react-table';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -26,6 +27,9 @@ interface TableBodyProps<TData> {
     newValue: any;
     oldValue: any;
   }) => void | Promise<void>;
+  enableGrouping?: boolean;
+  enableExpanding?: boolean;
+  renderExpandedRow?: (row: Row<TData>) => React.ReactNode;
   density?: Density;
 }
 
@@ -42,6 +46,9 @@ export function TableBody<TData>({
   enableInlineEditing = false,
   getRowCanEdit,
   onEditCell,
+  enableGrouping = false,
+  enableExpanding = false,
+  renderExpandedRow,
   density = 'default',
 }: TableBodyProps<TData>) {
   const rows = table.getRowModel().rows;
@@ -138,28 +145,76 @@ export function TableBody<TData>({
   // Data Rows
   return (
     <tbody>
-      {rows.map((row) => (
-        <tr
-          key={row.id}
-          className={cn(
-            'border-b transition-colors hover:bg-muted/50 group/row',
-            row.getIsSelected() && 'bg-muted'
-          )}
-        >
-          {row.getVisibleCells().map((cell) => (
-            <TableCell
-              key={cell.id}
-              cell={cell}
-              column={cell.column}
-              row={row}
-              enableInlineEditing={enableInlineEditing}
-              getRowCanEdit={getRowCanEdit}
-              onEditCell={onEditCell}
-              density={density}
-            />
-          ))}
-        </tr>
-      ))}
+      {rows.map((row) => {
+        const isExpanded = row.getIsExpanded();
+        const canExpand = row.getCanExpand();
+        
+        return (
+          <React.Fragment key={row.id}>
+            {/* Main Row */}
+            <tr
+              className={cn(
+                'border-b transition-colors hover:bg-muted/50 group/row',
+                row.getIsSelected() && 'bg-muted'
+              )}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <TableCell
+                  key={cell.id}
+                  cell={cell}
+                  column={cell.column}
+                  row={row}
+                  enableInlineEditing={enableInlineEditing}
+                  getRowCanEdit={getRowCanEdit}
+                  onEditCell={onEditCell}
+                  enableGrouping={enableGrouping}
+                  enableExpanding={enableExpanding}
+                  density={density}
+                />
+              ))}
+            </tr>
+            
+            {/* Expanded Row Content */}
+            {enableExpanding && isExpanded && renderExpandedRow && (
+              <tr className="border-b bg-muted/20">
+                <td colSpan={row.getVisibleCells().length} className="p-0">
+                  <div className="px-4 py-3">
+                    {renderExpandedRow(row)}
+                  </div>
+                </td>
+              </tr>
+            )}
+            
+            {/* Sub-Rows (hierarchical data) */}
+            {enableExpanding && isExpanded && !renderExpandedRow && canExpand && row.subRows && row.subRows.length > 0 && (
+              row.subRows.map((subRow) => (
+                <tr
+                  key={subRow.id}
+                  className={cn(
+                    'border-b transition-colors hover:bg-muted/50',
+                    subRow.getIsSelected() && 'bg-muted'
+                  )}
+                >
+                  {subRow.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      cell={cell}
+                      column={cell.column}
+                      row={subRow}
+                      enableInlineEditing={enableInlineEditing}
+                      getRowCanEdit={getRowCanEdit}
+                      onEditCell={onEditCell}
+                      enableGrouping={enableGrouping}
+                      enableExpanding={enableExpanding}
+                      density={density}
+                    />
+                  ))}
+                </tr>
+              ))
+            )}
+          </React.Fragment>
+        );
+      })}
     </tbody>
   );
 }

@@ -12,6 +12,8 @@ import type {
   ColumnSizingState,
   ColumnPinningState,
   RowSelectionState,
+  GroupingState,
+  ExpandedState,
   ColumnDef,
   PersistedTableState,
   Density,
@@ -41,7 +43,11 @@ export interface UseTableStateProps<TData> {
   initialColumnOrder?: string[];
   initialColumnSizing?: ColumnSizingState;
   initialColumnPinning?: ColumnPinningState;
+  initialGrouping?: GroupingState;
+  initialExpanded?: ExpandedState;
   enablePersistence?: boolean;
+  onGroupingChange?: (grouping: GroupingState) => void;
+  onExpandedChange?: (expanded: ExpandedState) => void;
 }
 
 export interface UseTableStateReturn {
@@ -79,6 +85,14 @@ export interface UseTableStateReturn {
   filterMode: FilterMode;
   setFilterMode: (mode: FilterMode | ((prev: FilterMode) => FilterMode)) => void;
 
+  // Phase 10: Row Grouping
+  grouping: GroupingState;
+  setGrouping: (state: GroupingState | ((prev: GroupingState) => GroupingState)) => void;
+
+  // Phase 10: Row Expanding
+  expanded: ExpandedState;
+  setExpanded: (state: ExpandedState | ((prev: ExpandedState) => ExpandedState)) => void;
+
   // Utilities
   resetState: () => void;
   resetColumnPreferences: () => void;
@@ -96,7 +110,11 @@ export function useTableState<TData>({
   initialColumnOrder,
   initialColumnSizing,
   initialColumnPinning,
+  initialGrouping,
+  initialExpanded,
   enablePersistence = true,
+  onGroupingChange,
+  onExpandedChange,
 }: UseTableStateProps<TData>): UseTableStateReturn {
   // Load persisted state on mount
   const loadPersistedState = useCallback((): PersistedTableState | null => {
@@ -177,6 +195,58 @@ export function useTableState<TData>({
     return (saved as FilterMode) || 'toolbar';
   });
 
+  // Phase 10: Row Grouping state (persisted)
+  const [grouping, setGroupingInternal] = useState<GroupingState>(() => {
+    if (!enablePersistence) return initialGrouping || [];
+    const saved = localStorage.getItem(`table-${tableId}-grouping`);
+    if (saved) {
+      try {
+        return JSON.parse(saved) as GroupingState;
+      } catch {
+        return initialGrouping || [];
+      }
+    }
+    return initialGrouping || [];
+  });
+
+  // Wrapper for setGrouping that calls the callback
+  const setGrouping = useCallback((state: GroupingState | ((prev: GroupingState) => GroupingState)) => {
+    setGroupingInternal((prev) => {
+      const newState = typeof state === 'function' ? state(prev) : state;
+      if (onGroupingChange) {
+        onGroupingChange(newState);
+      }
+      return newState;
+    });
+  }, [onGroupingChange]);
+
+  // Phase 10: Row Expanding state (persisted)
+  const [expanded, setExpandedInternal] = useState<ExpandedState>(() => {
+    if (!enablePersistence) return initialExpanded || {};
+    const saved = localStorage.getItem(`table-${tableId}-expanded`);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Handle both true and object forms
+        return parsed === true ? true : (parsed as Record<string, boolean>);
+      } catch {
+        return initialExpanded || {};
+      }
+    }
+    return initialExpanded || {};
+  });
+
+  // Wrapper for setExpanded that calls the callback
+  const setExpanded = useCallback((state: ExpandedState | ((prev: ExpandedState) => ExpandedState)) => {
+    setExpandedInternal((prev) => {
+      const newState = typeof state === 'function' ? state(prev) : state;
+      if (onExpandedChange) {
+        onExpandedChange(newState);
+      }
+      return newState;
+    });
+  }, [onExpandedChange]);
+
   // Persist column preferences to localStorage
   useEffect(() => {
     if (!enablePersistence) return;
@@ -201,6 +271,18 @@ export function useTableState<TData>({
     localStorage.setItem(`table-${tableId}-filterMode`, filterMode);
   }, [tableId, filterMode, enablePersistence]);
 
+  // Persist grouping to localStorage
+  useEffect(() => {
+    if (!enablePersistence) return;
+    localStorage.setItem(`table-${tableId}-grouping`, JSON.stringify(grouping));
+  }, [tableId, grouping, enablePersistence]);
+
+  // Persist expanded to localStorage
+  useEffect(() => {
+    if (!enablePersistence) return;
+    localStorage.setItem(`table-${tableId}-expanded`, JSON.stringify(expanded));
+  }, [tableId, expanded, enablePersistence]);
+
   // Reset all state to defaults
   const resetState = useCallback(() => {
     setPagination({ pageIndex: 0, pageSize: initialPageSize });
@@ -214,13 +296,17 @@ export function useTableState<TData>({
     setColumnPinning({ left: [], right: [] });
     setDensity('default');
     setFilterMode('toolbar');
+    setGrouping([]);
+    setExpanded({});
 
     if (enablePersistence) {
       clearTableState(tableId);
       localStorage.removeItem(`table-${tableId}-density`);
       localStorage.removeItem(`table-${tableId}-filterMode`);
+      localStorage.removeItem(`table-${tableId}-grouping`);
+      localStorage.removeItem(`table-${tableId}-expanded`);
     }
-  }, [tableId, columns, initialPageSize, enablePersistence]);
+  }, [tableId, columns, initialPageSize, enablePersistence, setGrouping, setExpanded]);
 
   // Reset only column preferences (visibility, order, sizing, pinning)
   const resetColumnPreferences = useCallback(() => {
@@ -268,6 +354,14 @@ export function useTableState<TData>({
     setDensity,
     filterMode,
     setFilterMode,
+
+    // Phase 10: Row Grouping
+    grouping,
+    setGrouping,
+
+    // Phase 10: Row Expanding
+    expanded,
+    setExpanded,
 
     // Utilities
     resetState,

@@ -7,7 +7,7 @@ import * as React from 'react';
 import type { Header } from '@tanstack/react-table';
 import { flexRender } from '@tanstack/react-table';
 import { useSortable } from '@dnd-kit/sortable';
-import { ArrowUp, ArrowDown, ChevronsUpDown, GripVertical, Pin, PinOff } from 'lucide-react';
+import { ArrowUp, ArrowDown, ChevronsUpDown, GripVertical, Pin, PinOff, Group, Ungroup } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import {
   Popover,
@@ -23,6 +23,7 @@ interface ColumnHeaderProps<TData> {
   enableResizing?: boolean;
   enablePinning?: boolean;
   enableReordering?: boolean;
+  enableGrouping?: boolean;
   density?: Density;
 }
 
@@ -41,14 +42,18 @@ export function ColumnHeader<TData>({
   enableResizing = true,
   enablePinning = true,
   enableReordering = true,
+  enableGrouping = false,
   density = 'default',
 }: ColumnHeaderProps<TData>) {
   const { column } = header;
   const canSort = enableSorting && column.getCanSort();
   const canPin = enablePinning && column.getCanPin();
   const canResize = enableResizing && column.getCanResize();
+  const canGroup = enableGrouping && column.getCanGroup();
   const isSorted = column.getIsSorted();
   const isPinned = column.getIsPinned();
+  const isGrouped = column.getIsGrouped();
+  const groupedIndex = column.getGroupedIndex();
 
   // Density classes for header
   const densityClasses: Record<Density, string> = {
@@ -174,6 +179,23 @@ export function ColumnHeader<TData>({
               </div>
             </PopoverContent>
           </Popover>
+        )}
+
+        {/* Group control */}
+        {canGroup && (
+          <Button
+            variant={isGrouped ? 'default' : 'ghost'}
+            size="icon"
+            className="h-6 w-6"
+            onClick={column.getToggleGroupingHandler()}
+            title={isGrouped ? `Grouped (position ${groupedIndex})` : 'Click to group'}
+          >
+            {isGrouped ? (
+              <Group className="h-3 w-3" />
+            ) : (
+              <Ungroup className="h-3 w-3 opacity-50" />
+            )}
+          </Button>
         )}
       </div>
 

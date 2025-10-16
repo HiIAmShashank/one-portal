@@ -14,6 +14,7 @@ interface TableHeaderProps<TData> {
   enableResizing?: boolean;
   enablePinning?: boolean;
   enableReordering?: boolean;
+  enableGrouping?: boolean;
   density?: Density;
   filterMode?: FilterMode;
   enableColumnFilters?: boolean;
@@ -33,6 +34,7 @@ export function TableHeader<TData>({
   enableResizing = true,
   enablePinning = true,
   enableReordering = true,
+  enableGrouping = false,
   density = 'default',
   filterMode = 'toolbar',
   enableColumnFilters = true,
@@ -58,6 +60,7 @@ export function TableHeader<TData>({
               enableResizing={enableResizing}
               enablePinning={enablePinning}
               enableReordering={enableReordering}
+              enableGrouping={enableGrouping}
               density={density}
             />
           ))}

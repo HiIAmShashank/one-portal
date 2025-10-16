@@ -19,6 +19,7 @@ export const Route = createFileRoute('/analytics')({
 
 const fetchData = async (): Promise<User[]> => {
   let response = await fetch('http://localhost:3000/users');
+
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -30,7 +31,6 @@ function Analytics() {
   const isAuthenticated = useIsAuthenticated();
   const { accounts } = useMsal();
   const account = accounts[0];
-
   const info = useQuery({ queryKey: ['users'], queryFn: fetchData })
   useEffect(() => {
     console.log('Data fetched:', info.data);
@@ -97,6 +97,43 @@ function Analytics() {
         selectionMode="multiple"
         enableInlineEditing={true}
         stickyHeader={true}
+        onGroupingChange={(grouping) => console.log('Grouping changed:', grouping)}
+        enableExpanding={true}
+        getRowCanExpand={(row) => {
+          // row.original gives you the User object
+          return !!row.original.additionalInformation;
+        }}
+        enableGrouping={true}
+        renderExpandedRow={(row) => {
+          // Parse and display the additional information
+          try {
+            return (
+              <div className="p-4 bg-muted/20 rounded border">
+                <h4 className="font-semibold mb-2">Additional Information</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <span className="text-sm text-muted-foreground">Symbol:</span>
+                    <p className="font-medium">{row.original.additionalInformation.symbol || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground">Name:</span>
+                    <p className="font-medium">{row.original.additionalInformation.name || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground">Atomic Number:</span>
+                    <p className="font-medium">{row.original.additionalInformation.atomicNumber || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          } catch (error) {
+            return (
+              <div className="p-4 text-sm text-muted-foreground">
+                Unable to parse additional information
+              </div>
+            );
+          }
+        }}
       />
     </>
   );
