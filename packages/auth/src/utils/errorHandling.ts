@@ -31,13 +31,13 @@ const TRANSIENT_ERROR_CODES = [
  */
 export function parseAuthError(error: unknown, context?: string): AuthErrorType {
   const timestamp = new Date();
-  
+
   // Handle MSAL errors
   if (isMsalError(error)) {
     const code = error.errorCode;
     const message = error.errorMessage;
     const subError = error.subError;
-    
+
     return {
       code,
       message: context ? `${context}: ${message}` : message,
@@ -47,7 +47,7 @@ export function parseAuthError(error: unknown, context?: string): AuthErrorType 
       timestamp,
     };
   }
-  
+
   // Handle generic errors
   if (error instanceof Error) {
     return {
@@ -57,7 +57,7 @@ export function parseAuthError(error: unknown, context?: string): AuthErrorType 
       timestamp,
     };
   }
-  
+
   // Handle unknown error types
   return {
     code: 'unknown_error',
@@ -70,8 +70,8 @@ export function parseAuthError(error: unknown, context?: string): AuthErrorType 
 /**
  * Type guard for MSAL errors
  */
-function isMsalError(error: unknown): error is { 
-  errorCode: string; 
+function isMsalError(error: unknown): error is {
+  errorCode: string;
   errorMessage: string;
   subError?: string;
 } {
@@ -102,17 +102,6 @@ function getRetryAction(code: string): AuthErrorType['retryAction'] {
 }
 
 /**
- * Check if error requires user interaction
- */
-export function isInteractionRequiredError(error: AuthErrorType | unknown): boolean {
-  if (typeof error === 'object' && error !== null && 'code' in error) {
-    const code = (error as AuthErrorType).code;
-    return INTERACTION_REQUIRED_CODES.includes(code);
-  }
-  return false;
-}
-
-/**
  * Check if error is transient (safe to retry)
  */
 export function isTransientError(error: AuthErrorType | unknown): boolean {
@@ -132,21 +121,21 @@ export function getUserFriendlyErrorMessage(error: AuthErrorType): string {
     case 'consent_required':
     case 'login_required':
       return 'Please sign in to continue.';
-    
+
     case 'network_error':
     case 'timeout':
       return 'Network error. Please check your connection and try again.';
-    
+
     case 'service_unavailable':
     case 'temporarily_unavailable':
       return 'Service temporarily unavailable. Please try again later.';
-    
+
     case 'invalid_grant':
       return 'Your session has expired. Please sign in again.';
-    
+
     case 'user_cancelled':
       return 'Sign-in was cancelled.';
-    
+
     default:
       return error.message || 'An error occurred during authentication.';
   }
