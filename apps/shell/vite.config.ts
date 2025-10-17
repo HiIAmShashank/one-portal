@@ -30,15 +30,15 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const remotes = isDev
   ? {
-      // Development: Each app on different port for Vite HMR
-      billing: 'http://localhost:5001/assets/remoteEntry.js',
-      reports: 'http://localhost:5002/assets/remoteEntry.js',
-    }
+    // Development: Each app on different port for Vite HMR
+    billing: 'http://localhost:5001/assets/remoteEntry.js',
+    reports: 'http://localhost:5002/assets/remoteEntry.js',
+  }
   : {
-      // Production: Same origin, different paths (Azure Static Web App)
-      billing: '/billing/assets/remoteEntry.js',
-      reports: '/reports/assets/remoteEntry.js',
-    };
+    // Production: Same origin, different paths (Azure Static Web App)
+    billing: '/billing/assets/remoteEntry.js',
+    reports: '/reports/assets/remoteEntry.js',
+  };
 
 export default defineConfig({
   plugins: [
@@ -46,6 +46,13 @@ export default defineConfig({
     tailwindcss(),
     tanstackRouter(),
     react(),
+    {
+      name: 'hmr-logger',
+      handleHotUpdate({ file, server }) {
+        console.log(`[Shell HMR] File changed: ${file}`);
+        return;
+      },
+    },
     federation({
       name: 'shell',
       remotes,

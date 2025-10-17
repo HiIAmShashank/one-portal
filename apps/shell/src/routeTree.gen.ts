@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ThemeTestRouteImport } from './routes/theme-test'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
@@ -16,6 +17,11 @@ import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as AppsAppIdRouteImport } from './routes/apps.$appId'
 import { Route as AppsAppIdSplatRouteImport } from './routes/apps.$appId.$'
 
+const ThemeTestRoute = ThemeTestRouteImport.update({
+  id: '/theme-test',
+  path: '/theme-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/sign-in': typeof SignInRoute
+  '/theme-test': typeof ThemeTestRoute
   '/apps/$appId': typeof AppsAppIdRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/apps/$appId/$': typeof AppsAppIdSplatRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/sign-in': typeof SignInRoute
+  '/theme-test': typeof ThemeTestRoute
   '/apps/$appId': typeof AppsAppIdRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/apps/$appId/$': typeof AppsAppIdSplatRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/sign-in': typeof SignInRoute
+  '/theme-test': typeof ThemeTestRoute
   '/apps/$appId': typeof AppsAppIdRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/apps/$appId/$': typeof AppsAppIdSplatRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/sign-in'
+    | '/theme-test'
     | '/apps/$appId'
     | '/auth/callback'
     | '/apps/$appId/$'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/sign-in'
+    | '/theme-test'
     | '/apps/$appId'
     | '/auth/callback'
     | '/apps/$appId/$'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/sign-in'
+    | '/theme-test'
     | '/apps/$appId'
     | '/auth/callback'
     | '/apps/$appId/$'
@@ -103,12 +115,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   SignInRoute: typeof SignInRoute
+  ThemeTestRoute: typeof ThemeTestRoute
   AppsAppIdRoute: typeof AppsAppIdRouteWithChildren
   AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/theme-test': {
+      id: '/theme-test'
+      path: '/theme-test'
+      fullPath: '/theme-test'
+      preLoaderRoute: typeof ThemeTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
@@ -170,6 +190,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   SignInRoute: SignInRoute,
+  ThemeTestRoute: ThemeTestRoute,
   AppsAppIdRoute: AppsAppIdRouteWithChildren,
   AuthCallbackRoute: AuthCallbackRoute,
 }

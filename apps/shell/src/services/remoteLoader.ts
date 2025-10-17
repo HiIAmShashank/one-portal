@@ -76,12 +76,12 @@ export async function loadRemote(
     try {
       const bootstrap = await module.get('./bootstrap');
       const bootstrapModule = bootstrap();
-      
+
       metadata.mountFn = bootstrapModule.mount;
       metadata.unmountFn = bootstrapModule.unmount;
     } catch (error) {
       console.error(`[RemoteLoader] Bootstrap load failed for ${scope}:`, error);
-      
+
       // Fallback: if no bootstrap, try to get the App directly
       const app = await module.get('./App');
       metadata.module = app;
@@ -89,7 +89,7 @@ export async function loadRemote(
 
     // Cache in registry
     remoteRegistry.set(scope, metadata);
-    
+
     return metadata;
 
   } catch (error) {
@@ -116,7 +116,7 @@ export async function mountRemote(
   containerId: string
 ): Promise<Root> {
   const metadata = remoteRegistry.get(scope);
-  
+
   if (!metadata) {
     throw new Error(`Remote "${scope}" not loaded. Call loadRemote() first.`);
   }
@@ -128,11 +128,11 @@ export async function mountRemote(
   try {
     // Call the remote's mount function (may be async)
     const instance = await metadata.mountFn(containerId);
-    
+
     // Update metadata with instance and container
     metadata.instance = instance;
     metadata.containerId = containerId;
-    
+
     return instance;
 
   } catch (error) {
@@ -151,7 +151,7 @@ export async function mountRemote(
  */
 export function unmountRemote(scope: string): void {
   const metadata = remoteRegistry.get(scope);
-  
+
   if (!metadata || !metadata.instance) {
     return;
   }
@@ -172,54 +172,6 @@ export function unmountRemote(scope: string): void {
     metadata.instance = undefined;
     metadata.containerId = undefined;
   }
-}
-
-/**
- * Check if a remote is currently mounted
- * 
- * @param scope - The scope to check
- * @returns boolean - True if remote is mounted
- */
-export function isRemoteMounted(scope: string): boolean {
-  const metadata = remoteRegistry.get(scope);
-  return !!metadata?.instance;
-}
-
-/**
- * Get metadata for a loaded remote
- * 
- * @param scope - The scope to get metadata for
- * @returns RemoteMetadata | undefined
- */
-export function getRemoteMetadata(scope: string): RemoteMetadata | undefined {
-  return remoteRegistry.get(scope);
-}
-
-/**
- * Clear all loaded remotes from registry
- * Unmounts any mounted remotes first
- * 
- * USE WITH CAUTION: This will unmount all remotes
- */
-export function clearRemoteRegistry(): void {
-  // Unmount all mounted remotes
-  remoteRegistry.forEach((metadata, scope) => {
-    if (metadata.instance) {
-      unmountRemote(scope);
-    }
-  });
-
-  // Clear the registry
-  remoteRegistry.clear();
-}
-
-/**
- * Get all loaded remote scopes
- * 
- * @returns string[] - Array of scope names
- */
-export function getLoadedRemotes(): string[] {
-  return Array.from(remoteRegistry.keys());
 }
 
 /**
@@ -246,7 +198,7 @@ export async function loadAndMountRemote(
 ): Promise<Root> {
   // Load if not already loaded
   await loadRemote(remoteEntryUrl, scope);
-  
+
   // Mount the remote
   return mountRemote(scope, containerId);
 }

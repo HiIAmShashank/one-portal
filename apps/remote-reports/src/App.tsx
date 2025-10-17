@@ -1,7 +1,6 @@
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { routeTree } from './routeTree.gen';
-
 /**
  * Reports Remote Application
  * This is the main component exposed via Module Federation

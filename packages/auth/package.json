@@ -6,7 +6,6 @@
   "exports": {
     "./events": "./src/events/index.ts",
     "./contexts": "./src/contexts/index.ts",
-    "./hooks": "./src/hooks/index.ts",
     "./utils": "./src/utils/index.ts",
     "./config": "./src/config/index.ts",
     "./utils/acquireToken": "./src/utils/acquireToken.ts",
@@ -18,15 +17,11 @@
   },
   "dependencies": {
     "@azure/msal-browser": "^3.0.0",
-    "@azure/msal-react": "^2.0.0",
     "@one-portal/ui": "workspace:*",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.0.0"
   },
   "devDependencies": {
-    "@one-portal/types": "workspace:*",
     "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
     "typescript": "^5.9.0"
   }
 }

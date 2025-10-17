@@ -14,13 +14,11 @@
     "@azure/msal-browser": "^3.30.0",
     "@azure/msal-react": "^2.2.0",
     "@one-portal/auth": "workspace:*",
-    "@one-portal/types": "workspace:*",
     "@one-portal/ui": "workspace:*",
     "@tanstack/react-query": "^5.67.0",
     "@tanstack/react-router": "^1.115.4",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "zod": "^4.1.12"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",

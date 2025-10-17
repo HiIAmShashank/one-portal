@@ -7,6 +7,13 @@ export default defineConfig({
   plugins: [
     TanStackRouterVite(),
     react(),
+    {
+      name: 'hmr-logger',
+      handleHotUpdate({ file, server }) {
+        console.log(`[TestGen1 HMR] File changed: ${file}`);
+        return;
+      },
+    },
     federation({
       name: 'testgenerator1',
       filename: 'remoteEntry.js',
