@@ -16,6 +16,13 @@ export default defineConfig({
     tailwindcss(),
     tanstackRouter(),
     react(),
+    {
+      name: 'hmr-logger',
+      handleHotUpdate({ file, server }) {
+        console.log(`[Reports HMR] File changed: ${file}`);
+        return;
+      },
+    },
     federation({
       name: 'reports',
       filename: 'remoteEntry.js',

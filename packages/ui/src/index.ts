@@ -96,7 +96,7 @@ export {
 export { Popover, PopoverTrigger, PopoverContent } from './components/ui/popover';
 
 // Legacy components (deprecated - use shadcn equivalents)
-export { Spinner, type SpinnerProps } from './components/spinner';
+export { Spinner, type SpinnerProps } from './components/ui/spinner';
 
 // Auth Components
 export { SignInPrompt } from '../components/auth/SignInPrompt';
@@ -109,10 +109,10 @@ export { cn } from './lib/utils';
 export * from './data-table';
 
 // Icons (re-export from lucide-react for convenience)
-export { 
-  AlertCircle, 
-  RefreshCw, 
-  Settings, 
+export {
+  AlertCircle,
+  RefreshCw,
+  Settings,
   User,
   Moon,
   Sun,

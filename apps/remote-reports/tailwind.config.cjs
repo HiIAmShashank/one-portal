@@ -1,12 +1,7 @@
-const baseConfig = require('@one-portal/tailwind-config/tailwind.config');
+import baseConfig from '@one-portal/tailwind-config';
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   ...baseConfig,
-  content: {
-    files: [
-      './src/**/*.{js,jsx,ts,tsx,html}',
-      '../../packages/ui/src/**/*.{js,jsx,ts,tsx}',
-    ],
-  },
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
 };

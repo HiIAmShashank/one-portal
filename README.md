@@ -243,29 +243,134 @@ document.documentElement.classList.toggle('dark');
 
 All shadcn components and Tailwind utilities automatically adapt to dark mode.
 
-## Tailwind CSS v4 Architecture
+## Architecture
+
+### Centralized Styling System
+
+OnePortal uses a **centralized CSS architecture** with Tailwind CSS v4 to ensure consistency and eliminate duplication:
+
+```
+packages/tailwind-config/     # Single source of truth for design tokens
+├── src/tokens.ts             # Colors, spacing, typography, shadows
+└── src/index.ts              # Base Tailwind configuration
+
+packages/ui/                  # Compiles CSS and exports components
+├── dist/styles.css           # Compiled Tailwind CSS (exported)
+├── tailwind.config.js        # Extends @one-portal/tailwind-config
+└── src/                      # React components + theme
+
+apps/shell/                   # Imports compiled CSS
+└── src/main.tsx              # import '@one-portal/ui/styles.css'
+
+apps/remote-*/                # Inherit styles from shell
+└── src/main.tsx              # Conditional CSS import for dev mode
+```
+
+**Key Benefits:**
+- ✅ Design tokens defined once, used everywhere
+- ✅ Apps don't need individual Tailwind configs
+- ✅ Style changes update all apps instantly
+- ✅ Faster builds (CSS compiled once)
+- ✅ Smaller bundle sizes (no CSS duplication)
 
 ### How It Works
 
-1. **UI Package Compilation**
+1. **Design Tokens** (`packages/tailwind-config`)
+   - Central repository for colors, spacing, typography, shadows
+   - Exported as TypeScript for type safety
+   - Consumed by all apps and packages
+
+2. **UI Package Compilation**
    ```bash
    # packages/ui/package.json
    "build": "tailwindcss -i ./src/index.css -o ./dist/styles.css"
    ```
 
-2. **Theme Configuration** (`packages/ui/src/theme.css`)
+3. **Theme Configuration** (`packages/ui/src/theme.css`)
    - Uses `@theme` directive (Tailwind v4 feature)
-   - Defines design tokens as CSS variables
-   - Supports light and dark modes
+   - Defines CSS variables for light/dark modes
+   - Integrates with centralized design tokens
 
-3. **Shell Imports Compiled CSS** (`apps/shell/src/main.tsx`)
+4. **Shell Imports Compiled CSS** (`apps/shell/src/main.tsx`)
    ```tsx
-   import '@one-portal/ui/styles.css';
+   import '@one-portal/ui/styles.css';  // Unconditional
    ```
 
-4. **Remote Apps Get Styles Automatically**
-   - No CSS imports needed
-   - Module Federation provides styles at runtime
+5. **Remote Apps Conditional Import** (`apps/remote-*/src/main.tsx`)
+   ```tsx
+   // CSS provided by shell in production
+   // Import conditionally for standalone dev/preview
+   if (import.meta.env.DEV || import.meta.env.MODE === 'preview') {
+     await import('@one-portal/ui/styles.css');
+   }
+   ```
+
+### Running Apps Standalone
+
+Each app can run independently for isolated development:
+
+```bash
+# Shell app
+pnpm --filter shell dev
+
+# Any remote app
+pnpm --filter remote-billing dev
+pnpm --filter remote-reports dev
+pnpm --filter remote-testgenerator1 dev
+```
+
+**How standalone mode works:**
+- Apps conditionally import `@one-portal/ui/styles.css` in dev mode
+- All Tailwind classes and components work correctly
+- No dependency on other apps being built first
+- Full HMR support for rapid development
+
+### Hot Module Replacement (HMR)
+
+Changes to shared components reflect instantly across all running apps:
+
+**Component Changes:**
+1. Edit any file in `packages/ui/src/` or `packages/ui/components/`
+2. HMR updates all consuming apps within ~2 seconds
+3. Component state preserved (form inputs, scroll position)
+
+**CSS/Token Changes:**
+1. Edit `packages/ui/src/theme.css` or `packages/tailwind-config/src/tokens.ts`
+2. Rebuild CSS: `pnpm --filter @one-portal/ui build`
+3. Refresh apps to see style changes
+
+**HMR Logging:**
+All apps include HMR event logging for debugging:
+```
+[Shell HMR] File changed: packages/ui/src/components/button.tsx
+[Billing HMR] File changed: packages/ui/src/components/button.tsx
+```
+
+### Code Quality - Dead Code Detection
+
+This repository uses [Knip](https://knip.dev) to automatically detect unused code:
+
+```bash
+# Run dead code analysis
+pnpm deadcode
+```
+
+**What Knip Checks:**
+- Unused files
+- Unused dependencies
+- Unused devDependencies
+- Unused exports
+- Unused types
+
+**CI Integration:**
+Dead code checks run automatically in CI pipeline after linting and type checking. The build fails if new unused code is introduced.
+
+**Analyzed Workspaces:**
+- `apps/*` - All applications (shell + remotes)
+- `packages/ui` - Shared component library
+- `packages/auth` - Authentication utilities
+- `packages/types` - Shared TypeScript types
+- `packages/tailwind-config` - Design system tokens
 
 ### Key Differences from Tailwind v3
 
@@ -275,6 +380,7 @@ All shadcn components and Tailwind utilities automatically adapt to dark mode.
 | `tailwind.config.js` has theme | `@theme` directive in CSS |
 | Each app compiles CSS | UI package compiles once |
 | JIT mode | Built-in optimization |
+| Inline theme values | Centralized design tokens |
 
 ## Build and Deployment
 

@@ -28,7 +28,7 @@ interface TableToolbarProps<TData> {
   filterPlaceholder?: string;
   selectedRows?: TData[];
   bulkActions?: BulkAction<TData>[];
-  
+
   // Phase 10: New props
   density?: Density;
   onDensityChange?: (density: Density) => void;
@@ -57,13 +57,13 @@ export function TableToolbar<TData>({
   onFilterModeChange,
 }: TableToolbarProps<TData>) {
   const [globalFilterValue, setGlobalFilterValue] = React.useState('');
-  
+
   // Phase 10: Toggle states
   const [searchVisible, setSearchVisible] = React.useState(enableGlobalFilter);
-  
+
   // Derive filtersVisible from filterMode
   const filtersVisible = filterMode !== 'hidden';
-  
+
   // Debounced global filter to avoid too many re-renders
   const debouncedSetGlobalFilter = React.useMemo(
     () => debounce((value: string) => table.setGlobalFilter(value), 300),
@@ -93,25 +93,25 @@ export function TableToolbar<TData>({
 
   const handleCycleDensity = () => {
     if (!onDensityChange) return;
-    
+
     const cycle: Record<Density, Density> = {
       compact: 'default',
       default: 'relaxed',
       relaxed: 'compact',
     };
-    
+
     onDensityChange(cycle[density]);
   };
 
   const handleCycleFilterMode = () => {
     if (!onFilterModeChange) return;
-    
+
     const cycle: Record<FilterMode, FilterMode> = {
       toolbar: 'inline',
       inline: 'hidden',
       hidden: 'toolbar',
     };
-    
+
     onFilterModeChange(cycle[filterMode]);
   };
 
@@ -122,7 +122,7 @@ export function TableToolbar<TData>({
   return (
     <div className="data-table-toolbar border-b">
       {/* Row 1: Icon controls + conditional search */}
-      <div className="flex items-center justify-between gap-2 p-2">
+      <div className="flex items-center justify-end gap-2 p-2">
         {/* Left: Conditional global search */}
         {searchVisible && enableGlobalFilter && (
           <div className="relative flex-1 max-w-sm">
@@ -147,7 +147,7 @@ export function TableToolbar<TData>({
         )}
 
         {/* Right: Icon buttons (desktop) + Menu (mobile) */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2">
           {/* Filter indicators */}
           {activeColumnFilters > 0 && (
             <Badge variant="secondary" className="hidden sm:inline-flex">
@@ -157,9 +157,9 @@ export function TableToolbar<TData>({
 
           {/* Clear filters */}
           {hasActiveFilters && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={clearAllFilters}
               className="hidden sm:inline-flex h-8"
             >
@@ -221,7 +221,7 @@ export function TableToolbar<TData>({
         <div className="flex items-center gap-2 flex-wrap px-4 pb-2 border-t">
           <Group className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium text-muted-foreground">Group by:</span>
-          
+
           {table.getState().grouping.length === 0 ? (
             <span className="text-sm text-muted-foreground italic">None</span>
           ) : (
@@ -229,10 +229,10 @@ export function TableToolbar<TData>({
               {table.getState().grouping.map((columnId, index) => {
                 const column = table.getColumn(columnId);
                 if (!column) return null;
-                
+
                 return (
-                  <Badge 
-                    key={columnId} 
+                  <Badge
+                    key={columnId}
                     variant="secondary"
                     className="gap-1"
                   >
@@ -260,7 +260,7 @@ export function TableToolbar<TData>({
           )}
         </div>
       )}
-      
+
       {/* Row 4: Expanding controls (when expanding enabled) */}
       {enableExpanding && (
         <div className="flex items-center gap-2 px-4 pb-2 border-t">

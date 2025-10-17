@@ -8,7 +8,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from '../../src/components/ui/empty';
-import { Spinner } from '../../src/components/spinner';
+import { Spinner } from '../../src/components/ui/spinner';
 
 interface AuthLoadingSpinnerProps {
   title?: string;
@@ -22,7 +22,7 @@ interface AuthLoadingSpinnerProps {
  * Uses shadcn/ui Empty component pattern with Spinner
  * Requirements: T117 (US7) - Proper ARIA attributes for screen readers
  */
-export function AuthLoadingSpinner({ 
+export function AuthLoadingSpinner({
   title = 'Initializing authentication...',
   description = 'Please wait while we set up your session.',
   className = ''

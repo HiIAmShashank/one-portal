@@ -1,7 +1,12 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-// CSS is provided by the shell - no need to import here
+
+// CSS is provided by the shell in production
+// Import conditionally for standalone dev/preview mode
+if (import.meta.env.DEV || import.meta.env.MODE === 'preview') {
+  await import('@one-portal/ui/styles.css');
+}
 
 /**
  * Standalone entry point for local development

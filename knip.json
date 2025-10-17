@@ -1,0 +1,80 @@
+{
+    "$schema": "https://unpkg.com/knip@5/schema.json",
+    "workspaces": {
+        "apps/*": {
+            "entry": [
+                "src/main.tsx",
+                "src/bootstrap.tsx"
+            ],
+            "project": [
+                "src/**/*.{ts,tsx}"
+            ]
+        },
+        "packages/auth": {
+            "entry": [
+                "src/index.ts"
+            ],
+            "project": [
+                "src/**/*.{ts,tsx}"
+            ]
+        },
+        "packages/types": {
+            "entry": [
+                "src/index.ts"
+            ],
+            "project": [
+                "src/**/*.{ts,tsx}"
+            ]
+        },
+        "packages/ui": {
+            "entry": [
+                "src/index.ts",
+                "components/**/*.{ts,tsx}"
+            ],
+            "project": [
+                "src/**/*.{ts,tsx}",
+                "components/**/*.{ts,tsx}"
+            ]
+        },
+        "packages/tailwind-config": {
+            "entry": [
+                "src/index.ts",
+                "src/tokens.ts"
+            ],
+            "project": [
+                "src/**/*.{ts,tsx}"
+            ]
+        }
+    },
+    "ignore": [
+        "**/*.d.ts",
+        "**/vite-env.d.ts",
+        "**/routeTree.gen.ts",
+        "**/*eslint.config.*",
+        "**/vite.config.ts",
+        "**/tailwind.config.*",
+        "**/postcss.config.*",
+        "**/tsconfig*.json",
+        "**/__tests__/**",
+        "**/*.test.{ts,tsx}",
+        "**/*.spec.{ts,tsx}",
+        "**/dist/**",
+        "**/build/**",
+        "**/node_modules/**",
+        "scripts/**"
+    ],
+    "ignoreDependencies": [
+        "@originjs/vite-plugin-federation",
+        "@tailwindcss/cli",
+        "@tailwindcss/vite",
+        "vite",
+        "typescript",
+        "eslint",
+        "@tanstack/router-plugin",
+        "@tanstack/router-cli",
+        "tailwindcss",
+        "postcss",
+        "autoprefixer"
+    ],
+    "ignoreExportsUsedInFile": true
+}
