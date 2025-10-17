@@ -97,22 +97,7 @@ export function booleanFilter(value: any, filterValue: boolean | null): boolean 
   return Boolean(value) === Boolean(filterValue);
 }
 
-/**
- * Apply all column filters to a data row
- */
-export function applyFilters<TData>(
-  row: TData,
-  filters: ColumnFiltersState,
-  getColumnValue: (row: TData, columnId: string) => any
-): boolean {
-  return filters.every((filter) => {
-    const value = getColumnValue(row, filter.id);
-    const filterValue = filter.value;
 
-    // Use default text filter if no specific logic provided
-    return defaultTextFilter(value, String(filterValue ?? ''));
-  });
-}
 
 /**
  * Check if any filters are active

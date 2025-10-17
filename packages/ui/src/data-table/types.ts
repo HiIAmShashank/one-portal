@@ -29,13 +29,13 @@ import type {
 /**
  * Supported input types for inline editing
  */
-export type EditInputType = 
-  | 'text' 
-  | 'number' 
-  | 'email' 
-  | 'date' 
-  | 'textarea' 
-  | 'select' 
+export type EditInputType =
+  | 'text'
+  | 'number'
+  | 'email'
+  | 'date'
+  | 'textarea'
+  | 'select'
   | 'checkbox';
 
 /**
@@ -311,7 +311,7 @@ export interface ColumnMeta {
   cellClassName?: string;
   filterPlaceholder?: string;
   tooltip?: string;
-  
+
   // Filter configuration
   filterVariant?: FilterVariant;
   filterOptions?: FilterOption[];
@@ -354,12 +354,12 @@ export interface FilterConfig {
   step?: number;
   prefix?: string;
   suffix?: string;
-  
+
   // Date config
   minDate?: Date;
   maxDate?: Date;
   format?: string;
-  
+
   // Multi-select config
   maxSelections?: number;
   searchable?: boolean;
@@ -568,40 +568,4 @@ export type FilterMode = 'toolbar' | 'inline' | 'hidden';
  */
 export type Density = 'compact' | 'default' | 'relaxed';
 
-/**
- * Extensions to column meta for Phase 10 features
- */
-export interface ColumnMetaPhase10 {
-  /** Truncate header text with ellipsis */
-  headerTruncate?: boolean;
-}
 
-/**
- * Extensions to column definition for Phase 10 features
- */
-export interface ColumnDefPhase10 {
-  /** Truncate cell text with ellipsis */
-  truncate?: boolean;
-  /** Maximum width for truncated column (in pixels) */
-  maxWidth?: number;
-}
-
-/**
- * Aggregation function for row grouping
- */
-export type AggregationFn = (
-  rows: any[],
-  columnId?: string
-) => any;
-
-/**
- * Built-in aggregation functions
- */
-export interface AggregationFunctions {
-  count: AggregationFn;
-  sum: AggregationFn;
-  average: AggregationFn;
-  min: AggregationFn;
-  max: AggregationFn;
-  [key: string]: AggregationFn;
-}
