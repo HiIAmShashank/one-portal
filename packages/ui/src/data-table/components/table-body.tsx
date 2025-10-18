@@ -57,20 +57,20 @@ export function TableBody<TData>({
   if (loading) {
     const skeletonRows = 5;
     const visibleColumns = table.getVisibleLeafColumns();
-    
+
     return (
       <tbody>
         {Array.from({ length: skeletonRows }).map((_, rowIdx) => (
-          <tr 
-            key={`skeleton-row-${rowIdx}`} 
+          <tr
+            key={`skeleton-row-${rowIdx}`}
             className="border-b transition-colors hover:bg-muted/50"
           >
             {visibleColumns.map((column, colIdx) => {
               const size = column.getSize();
               const isPinned = column.getIsPinned();
-              
+
               return (
-                <td 
+                <td
                   key={`skeleton-cell-${rowIdx}-${colIdx}`}
                   className={cn(
                     'px-4 py-3',
@@ -148,13 +148,13 @@ export function TableBody<TData>({
       {rows.map((row) => {
         const isExpanded = row.getIsExpanded();
         const canExpand = row.getCanExpand();
-        
+
         return (
           <React.Fragment key={row.id}>
             {/* Main Row */}
             <tr
               className={cn(
-                'border-b transition-colors hover:bg-muted/50 group/row',
+                'border-b-muted border-b-1 transition-colors hover:bg-muted/50 group/row',
                 row.getIsSelected() && 'bg-muted'
               )}
             >
@@ -173,7 +173,7 @@ export function TableBody<TData>({
                 />
               ))}
             </tr>
-            
+
             {/* Expanded Row Content */}
             {enableExpanding && isExpanded && renderExpandedRow && (
               <tr className="border-b bg-muted/20">
@@ -184,7 +184,7 @@ export function TableBody<TData>({
                 </td>
               </tr>
             )}
-            
+
             {/* Sub-Rows (hierarchical data) */}
             {enableExpanding && isExpanded && !renderExpandedRow && canExpand && row.subRows && row.subRows.length > 0 && (
               row.subRows.map((subRow) => (

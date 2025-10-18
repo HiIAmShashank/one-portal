@@ -37,7 +37,7 @@ export function FilterWrapper({
 
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 font-bold">
         <label className={cn(
           'text-sm font-medium',
           isActive && 'text-primary'

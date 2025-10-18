@@ -14,7 +14,7 @@ interface ColumnFiltersProps<TData> {
  */
 export function ColumnFilters<TData>({ table }: ColumnFiltersProps<TData>) {
   const columns = table.getAllColumns();
-  
+
   // Only show filters for columns that can be filtered
   const filterableColumns = columns.filter((column) => column.getCanFilter());
 
@@ -45,8 +45,8 @@ function ColumnFilter<TData>({ column, table }: ColumnFilterProps<TData>) {
   const variant = getFilterVariant(column, table);
 
   // Get filter label (use header or id)
-  const label = typeof columnDef.header === 'string' 
-    ? columnDef.header 
+  const label = typeof columnDef.header === 'string'
+    ? columnDef.header
     : column.id;
 
   // Handle custom filter component
@@ -75,6 +75,7 @@ function ColumnFilter<TData>({ column, table }: ColumnFilterProps<TData>) {
 
     case 'select':
       return (
+
         <SelectFilter
           label={label}
           value={filterValue as string | number | boolean | null | undefined}

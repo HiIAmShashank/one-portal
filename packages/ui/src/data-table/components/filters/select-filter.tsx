@@ -47,8 +47,8 @@ export function SelectFilter({
   // Filter options based on search query
   const filteredOptions = enableSearch
     ? options.filter((opt) =>
-        opt.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : options;
 
   // Convert value to string for Select component
@@ -62,13 +62,13 @@ export function SelectFilter({
       onChange(undefined);
       return;
     }
-    
+
     // Find the original option to get the correct type
     const option = options.find(opt => {
       const optValue = opt.value === null ? 'null' : String(opt.value);
       return optValue === newValue;
     });
-    
+
     if (option) {
       onChange(option.value);
     }
@@ -81,7 +81,7 @@ export function SelectFilter({
       onClear={handleClear}
     >
       <Select value={stringValue} onValueChange={handleValueChange}>
-        <SelectTrigger className="h-9">
+        <SelectTrigger className="h-9 shadow-sm">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>

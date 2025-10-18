@@ -44,12 +44,10 @@
         },
         "packages/ui": {
             "entry": [
-                "src/index.ts",
-                "components/**/*.{ts,tsx}"
+                "src/index.ts"
             ],
             "project": [
-                "src/**/*.{ts,tsx}",
-                "components/**/*.{ts,tsx}"
+                "src/**/*.{ts,tsx}"
             ]
         }
     },

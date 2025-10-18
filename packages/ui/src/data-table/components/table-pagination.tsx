@@ -36,14 +36,14 @@ export function TablePagination<TData>({
   const currentPage = table.getState().pagination.pageIndex + 1;
   const pageSize = table.getState().pagination.pageSize;
   const pageCount = table.getPageCount();
-  
+
   // Calculate displayed row range
   const totalRows = totalCount ?? table.getFilteredRowModel().rows.length;
   const startRow = totalRows === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endRow = Math.min(currentPage * pageSize, totalRows);
 
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-4 py-4 border-t">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-4 py-4 border-t-1 border-t-muted">
       {/* Row count info */}
       <div className="flex-1 text-sm text-muted-foreground">
         {totalRows > 0 ? (

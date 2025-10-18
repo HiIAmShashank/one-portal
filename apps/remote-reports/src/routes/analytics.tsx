@@ -3,7 +3,7 @@
 
 import { createFileRoute } from '@tanstack/react-router';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
-import { DataTable}from '@one-portal/ui';
+import { DataTable } from '@one-portal/ui';
 import { useQuery } from '@tanstack/react-query';
 import { User, userColumns } from '../columns/userColumns';
 import { useEffect } from 'react';
@@ -36,39 +36,7 @@ function Analytics() {
     console.log('Data fetched:', info.data);
   }, [info.data]);
 
-  // Define bulk actions for testing Phase 6
-  // const bulkUserActions: BulkAction<User>[] = [
-  //   {
-  //     id: 'delete-users',
-  //     label: 'Delete Selected',
-  //     icon: <Trash className="h-4 w-4" />,
-  //     variant: 'destructive',
-  //     onClick: async (users) => {
-  //       if (confirm(`Delete ${users.length} user${users.length > 1 ? 's' : ''}?`)) {
-  //         console.log('Deleting users:', users.map(u => u.id));
-  //         alert(`Deleted ${users.length} user${users.length > 1 ? 's' : ''} (simulated)`);
-  //       }
-  //     },
-  //     minSelection: 1,
-  //     tooltip: 'Delete all selected users',
-  //   },
-  //   {
-  //     id: 'export-users',
-  //     label: 'Export to CSV',
-  //     icon: <Download className="h-4 w-4" />,
-  //     onClick: (users) => {
-  //       // Simple CSV export simulation
-  //       const csv = 'ID,Username,Name,Role\n' + users.map(u => 
-  //         `${u.id},${u.username},"${u.firstName} ${u.lastName}",${u.role}`
-  //       ).join('\n');
-  //       console.log('CSV Data:', csv);
-  //       alert(`Exported ${users.length} user${users.length > 1 ? 's' : ''} to CSV (check console)`);
-  //     },
-  //     minSelection: 1,
-  //     maxSelection: 100,
-  //     tooltip: 'Export selected users to CSV',
-  //   },
-  // ];
+
 
   // Define row actions for testing Phase 8
 
@@ -95,45 +63,45 @@ function Analytics() {
         enableColumnFilters={true}
         enableRowSelection={true}
         selectionMode="multiple"
-        enableInlineEditing={true}
+        // enableInlineEditing={true}
         stickyHeader={true}
-        onGroupingChange={(grouping) => console.log('Grouping changed:', grouping)}
-        enableExpanding={true}
-        getRowCanExpand={(row) => {
-          // row.original gives you the User object
-          return !!row.original.additionalInformation;
-        }}
-        enableGrouping={true}
-        renderExpandedRow={(row) => {
-          // Parse and display the additional information
-          try {
-            return (
-              <div className="p-4 bg-muted/20 rounded border">
-                <h4 className="font-semibold mb-2">Additional Information</h4>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <span className="text-sm text-muted-foreground">Symbol:</span>
-                    <p className="font-medium">{row.original.additionalInformation.symbol || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Name:</span>
-                    <p className="font-medium">{row.original.additionalInformation.name || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-muted-foreground">Atomic Number:</span>
-                    <p className="font-medium">{row.original.additionalInformation.atomicNumber || 'N/A'}</p>
-                  </div>
-                </div>
-              </div>
-            );
-          } catch (error) {
-            return (
-              <div className="p-4 text-sm text-muted-foreground">
-                Unable to parse additional information
-              </div>
-            );
-          }
-        }}
+      // onGroupingChange={(grouping) => console.log('Grouping changed:', grouping)}
+      // enableExpanding={true}
+      // getRowCanExpand={(row) => {
+      //   // row.original gives you the User object
+      //   return !!row.original.additionalInformation;
+      // }}
+      // enableGrouping={true}
+      // renderExpandedRow={(row) => {
+      //   // Parse and display the additional information
+      //   try {
+      //     return (
+      //       <div className="p-4 bg-muted/20 rounded border">
+      //         <h4 className="font-semibold mb-2">Additional Information</h4>
+      //         <div className="grid grid-cols-3 gap-4">
+      //           <div>
+      //             <span className="text-sm text-muted-foreground">Symbol:</span>
+      //             <p className="font-medium">{row.original.additionalInformation.symbol || 'N/A'}</p>
+      //           </div>
+      //           <div>
+      //             <span className="text-sm text-muted-foreground">Name:</span>
+      //             <p className="font-medium">{row.original.additionalInformation.name || 'N/A'}</p>
+      //           </div>
+      //           <div>
+      //             <span className="text-sm text-muted-foreground">Atomic Number:</span>
+      //             <p className="font-medium">{row.original.additionalInformation.atomicNumber || 'N/A'}</p>
+      //           </div>
+      //         </div>
+      //       </div>
+      //     );
+      //   } catch (error) {
+      //     return (
+      //       <div className="p-4 text-sm text-muted-foreground">
+      //         Unable to parse additional information
+      //       </div>
+      //     );
+      //   }
+      // }}
       />
     </>
   );
