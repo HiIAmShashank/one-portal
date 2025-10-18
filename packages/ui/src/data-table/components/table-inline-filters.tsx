@@ -42,7 +42,7 @@ export function TableInlineFilters<TData>({
   };
 
   return (
-    <tr className="border-b bg-muted/30">
+    <tr className="">
       {headers.map((header) => {
         const column = header.column;
         const canFilter = column.getCanFilter();
@@ -110,11 +110,11 @@ function InlineFilterCell<TData>({
             value={(filterValue as string) || 'all'}
             onValueChange={(value) => column.setFilterValue(value === 'all' ? undefined : value)}
           >
-            <SelectTrigger className={cn('h-7 text-xs border-input/50', inputSize)}>
+            <SelectTrigger className={cn('h-9 font-light shadow-sm text-xs border-input/50', inputSize)}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="all" className='font-light'>All</SelectItem>
               {(meta?.filterOptions || [])
                 .filter((option: any) => {
                   // Filter out empty string values (Radix UI requirement)
@@ -151,6 +151,7 @@ function InlineFilterCell<TData>({
     case 'boolean':
       return (
         <Select
+
           value={filterValue === undefined ? 'all' : String(filterValue)}
           onValueChange={(value) => {
             if (value === 'all') {
@@ -160,11 +161,11 @@ function InlineFilterCell<TData>({
             }
           }}
         >
-          <SelectTrigger className={cn('h-7 text-xs border-input/50', inputSize)}>
-            <SelectValue placeholder="All" />
+          <SelectTrigger className={cn('h-9 font-light shadow-sm text-xs border-input/50', inputSize)}>
+            <SelectValue placeholder="All" className='shadow-sm font-light' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="all" className='font-light shadow-sm'>All</SelectItem>
             <SelectItem value="true">Yes</SelectItem>
             <SelectItem value="false">No</SelectItem>
           </SelectContent>
@@ -180,6 +181,7 @@ function InlineFilterCell<TData>({
           min={numberRange?.min}
           max={numberRange?.max}
           inline
+          className={cn('w-full', inputSize)}
         />
       );
 
@@ -192,7 +194,7 @@ function InlineFilterCell<TData>({
             value={(filterValue as string) || ''}
             onChange={(e) => column.setFilterValue(e.target.value || undefined)}
             placeholder={placeholder}
-            className={cn('h-7 border-input/50', inputSize)}
+            className={cn('border-input/50 placeholder:text-muted-foreground placeholder:font-light', inputSize)}
           />
           {!!filterValue && (
             <Button

@@ -1,8 +1,8 @@
-// packages/ui/components/auth/SignInPrompt.tsx
+// packages/ui/src/components/auth/SignInPrompt.tsx
 // Sign-in prompt component for unauthenticated users
 
 import React from 'react';
-import { Button } from '../../src/components/ui/button';
+import { Button } from '../ui/button';
 import { LogIn } from 'lucide-react';
 
 interface SignInPromptProps {
@@ -32,7 +32,7 @@ export const SignInPrompt = React.forwardRef<HTMLButtonElement, SignInPromptProp
               You need to sign in to access OnePortal features
             </p>
           </div>
-          
+
           <Button
             ref={ref}
             onClick={onSignIn}

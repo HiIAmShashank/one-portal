@@ -182,15 +182,15 @@ export function DataTable<TData>({
   // FIX: Wrap setPagination to prevent unnecessary state updates when values haven't changed
   const setPagination = React.useCallback((updaterOrValue: any) => {
     _setPagination(prev => {
-      const next = typeof updaterOrValue === 'function' 
-        ? updaterOrValue(prev) 
+      const next = typeof updaterOrValue === 'function'
+        ? updaterOrValue(prev)
         : updaterOrValue;
-      
+
       // Only update if values actually changed
       if (prev.pageIndex === next.pageIndex && prev.pageSize === next.pageSize) {
         return prev; // Same reference = no state change = no re-render
       }
-      
+
       return next;
     });
   }, [_setPagination]);
@@ -198,15 +198,15 @@ export function DataTable<TData>({
   // FIX: Wrap setSorting to prevent unnecessary state updates
   const setSorting = React.useCallback((updaterOrValue: any) => {
     _setSorting(prev => {
-      const next = typeof updaterOrValue === 'function' 
-        ? updaterOrValue(prev) 
+      const next = typeof updaterOrValue === 'function'
+        ? updaterOrValue(prev)
         : updaterOrValue;
-      
+
       // Deep equality check for array of sort objects
       if (JSON.stringify(prev) === JSON.stringify(next)) {
         return prev;
       }
-      
+
       return next;
     });
   }, [_setSorting]);
@@ -214,15 +214,15 @@ export function DataTable<TData>({
   // FIX: Wrap setColumnFilters to prevent unnecessary state updates when values haven't changed
   const setColumnFilters = React.useCallback((updaterOrValue: any) => {
     _setColumnFilters(prev => {
-      const next = typeof updaterOrValue === 'function' 
-        ? updaterOrValue(prev) 
+      const next = typeof updaterOrValue === 'function'
+        ? updaterOrValue(prev)
         : updaterOrValue;
-      
+
       // Only update if values actually changed (deep equality check)
       if (JSON.stringify(prev) === JSON.stringify(next)) {
         return prev; // Same reference = no state change = no re-render
       }
-      
+
       return next;
     });
   }, [_setColumnFilters]);
@@ -230,15 +230,15 @@ export function DataTable<TData>({
   // FIX: Wrap setColumnVisibility to prevent unnecessary state updates
   const setColumnVisibility = React.useCallback((updaterOrValue: any) => {
     _setColumnVisibility(prev => {
-      const next = typeof updaterOrValue === 'function' 
-        ? updaterOrValue(prev) 
+      const next = typeof updaterOrValue === 'function'
+        ? updaterOrValue(prev)
         : updaterOrValue;
-      
+
       // Deep equality check for visibility object
       if (JSON.stringify(prev) === JSON.stringify(next)) {
         return prev;
       }
-      
+
       return next;
     });
   }, [_setColumnVisibility]);
@@ -246,15 +246,15 @@ export function DataTable<TData>({
   // FIX: Wrap setColumnOrder to prevent unnecessary state updates
   const setColumnOrder = React.useCallback((updaterOrValue: any) => {
     _setColumnOrder(prev => {
-      const next = typeof updaterOrValue === 'function' 
-        ? updaterOrValue(prev) 
+      const next = typeof updaterOrValue === 'function'
+        ? updaterOrValue(prev)
         : updaterOrValue;
-      
+
       // Deep equality check for array
       if (JSON.stringify(prev) === JSON.stringify(next)) {
         return prev;
       }
-      
+
       return next;
     });
   }, [_setColumnOrder]);
@@ -262,15 +262,15 @@ export function DataTable<TData>({
   // FIX: Wrap setColumnSizing to prevent unnecessary state updates
   const setColumnSizing = React.useCallback((updaterOrValue: any) => {
     _setColumnSizing(prev => {
-      const next = typeof updaterOrValue === 'function' 
-        ? updaterOrValue(prev) 
+      const next = typeof updaterOrValue === 'function'
+        ? updaterOrValue(prev)
         : updaterOrValue;
-      
+
       // Deep equality check for sizing object
       if (JSON.stringify(prev) === JSON.stringify(next)) {
         return prev;
       }
-      
+
       return next;
     });
   }, [_setColumnSizing]);
@@ -278,15 +278,15 @@ export function DataTable<TData>({
   // FIX: Wrap setColumnPinning to prevent unnecessary state updates
   const setColumnPinning = React.useCallback((updaterOrValue: any) => {
     _setColumnPinning(prev => {
-      const next = typeof updaterOrValue === 'function' 
-        ? updaterOrValue(prev) 
+      const next = typeof updaterOrValue === 'function'
+        ? updaterOrValue(prev)
         : updaterOrValue;
-      
+
       // Deep equality check for pinning object
       if (JSON.stringify(prev) === JSON.stringify(next)) {
         return prev;
       }
-      
+
       return next;
     });
   }, [_setColumnPinning]);
@@ -294,15 +294,15 @@ export function DataTable<TData>({
   // FIX: Wrap setRowSelection to prevent unnecessary state updates
   const setRowSelection = React.useCallback((updaterOrValue: any) => {
     _setRowSelection(prev => {
-      const next = typeof updaterOrValue === 'function' 
-        ? updaterOrValue(prev) 
+      const next = typeof updaterOrValue === 'function'
+        ? updaterOrValue(prev)
         : updaterOrValue;
-      
+
       // Deep equality check for selection object
       if (JSON.stringify(prev) === JSON.stringify(next)) {
         return prev;
       }
-      
+
       return next;
     });
   }, [_setRowSelection]);
@@ -324,8 +324,8 @@ export function DataTable<TData>({
                 table.getIsAllPageRowsSelected()
                   ? true
                   : table.getIsSomePageRowsSelected()
-                  ? 'indeterminate'
-                  : false
+                    ? 'indeterminate'
+                    : false
               }
               onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
               aria-label="Select all rows"
@@ -448,7 +448,7 @@ export function DataTable<TData>({
   // Trigger callbacks when state changes (for server-side mode)
   React.useEffect(() => {
     onPaginationChange?.(pagination);
-  }, [pagination,onPaginationChange]);
+  }, [pagination, onPaginationChange]);
 
   React.useEffect(() => {
     onSortingChange?.(sorting);
@@ -489,7 +489,7 @@ export function DataTable<TData>({
   };
 
   return (
-    <div className={cn('data-table w-full', className)} data-variant={variant}>
+    <div className={cn('data-table w-full p-4', className)} data-variant={variant}>
       {/* Toolbar with filters and column visibility */}
       {enableFiltering && (
         <TableToolbar
@@ -516,9 +516,9 @@ export function DataTable<TData>({
           items={columnOrder}
           strategy={horizontalListSortingStrategy}
         >
-          <div 
+          <div
             className={cn(
-              "data-table-container overflow-x-auto rounded-md border",
+              "data-table-container overflow-x-auto",
               stickyHeader && "max-h-[600px] overflow-y-auto"
             )}
           >
@@ -553,7 +553,7 @@ export function DataTable<TData>({
               />
             </table>
           </div>
-          
+
           {/* Mobile: Horizontal scroll indicator */}
           <div className="sm:hidden px-4 py-2 text-xs text-muted-foreground text-center">
             ← Scroll horizontally to view all columns →

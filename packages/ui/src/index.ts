@@ -99,8 +99,8 @@ export { Popover, PopoverTrigger, PopoverContent } from './components/ui/popover
 export { Spinner, type SpinnerProps } from './components/ui/spinner';
 
 // Auth Components
-export { SignInPrompt } from '../components/auth/SignInPrompt';
-export { AuthLoadingSpinner } from '../components/auth/AuthLoadingSpinner';
+export { SignInPrompt } from './components/auth/SignInPrompt';
+export { AuthLoadingSpinner } from './components/auth/AuthLoadingSpinner';
 
 // Utilities
 export { cn } from './lib/utils';

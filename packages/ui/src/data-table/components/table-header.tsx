@@ -44,14 +44,14 @@ export function TableHeader<TData>({
   const showInlineFilters = enableColumnFilters && filterMode === 'inline';
 
   // Apply sticky header classes
-  const theadClassName = stickyHeader 
-    ? 'sticky top-0 z-20 bg-background border-b shadow-sm' 
-    : 'border-b';
+  const theadClassName = stickyHeader
+    ? 'sticky top-0 z-20 border-0 bg-background shadow-sm'
+    : 'border-b-muted border-b-1 border-t-muted border-t-1 shadow-sm';
 
   return (
     <thead className={theadClassName}>
       {table.getHeaderGroups().map((headerGroup) => (
-        <tr key={headerGroup.id}>
+        <tr key={headerGroup.id} className=''>
           {headerGroup.headers.map((header) => (
             <ColumnHeader
               key={header.id}

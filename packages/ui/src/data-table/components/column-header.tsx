@@ -95,7 +95,7 @@ export function ColumnHeader<TData>({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'text-left align-middle font-medium text-muted-foreground',
+        'text-left align-middle font-medium text-muted-foreground text-ellipsis',
         densityClasses[density],
         'relative',
         isResizing && 'cursor-col-resize'
@@ -104,7 +104,7 @@ export function ColumnHeader<TData>({
       <div className="flex items-center gap-2">
         {/* Drag handle for reordering */}
         {enableReordering && (
-          <div 
+          <div
             {...attributes}
             {...listeners}
             className="cursor-move opacity-50 hover:opacity-100"
@@ -116,14 +116,14 @@ export function ColumnHeader<TData>({
         {/* Header content with sorting */}
         <div
           className={cn(
-            'flex-1 flex items-center gap-2 min-w-0',
+            'flex items-center gap-2 min-w-0',
             canSort && 'cursor-pointer select-none'
           )}
           onClick={canSort ? column.getToggleSortingHandler() : undefined}
         >
-          <span className="font-medium min-w-0 flex-1">
-            {header.isPlaceholder 
-              ? null 
+          <span className="font-bold min-w-0 text-ellipsis text-sm overflow-hidden whitespace-nowrap">
+            {header.isPlaceholder
+              ? null
               : flexRender(column.columnDef.header, header.getContext())
             }
           </span>

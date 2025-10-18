@@ -51,7 +51,7 @@ export function BooleanFilter({
       onClear={handleClear}
     >
       <Select value={stringValue} onValueChange={handleValueChange}>
-        <SelectTrigger className="h-9">
+        <SelectTrigger className="h-9 shadow-sm">
           <SelectValue placeholder={allLabel} />
         </SelectTrigger>
         <SelectContent>

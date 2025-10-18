@@ -13,6 +13,7 @@ import {
 import { Switch } from '../../components/ui/switch';
 import { Label } from '../../components/ui/label';
 import { Settings2, Columns } from 'lucide-react';
+import { Separator } from '../../components/ui/separator';
 
 interface ColumnVisibilityProps<TData> {
   table: Table<TData>;
@@ -23,9 +24,9 @@ interface ColumnVisibilityProps<TData> {
 /**
  * ColumnVisibility - Dropdown to show/hide columns
  */
-export function ColumnVisibility<TData>({ 
-  table, 
-  variant = 'button' 
+export function ColumnVisibility<TData>({
+  table,
+  variant = 'button'
 }: ColumnVisibilityProps<TData>) {
   const columns = table.getAllColumns();
   const visibleCount = columns.filter((col) => col.getIsVisible()).length;
@@ -50,49 +51,55 @@ export function ColumnVisibility<TData>({
         )}
       </PopoverTrigger>
       <PopoverContent className="w-60" align="end">
-        <div className="space-y-4">
-          <div className="font-medium text-sm">Toggle Columns</div>
-          <div className="space-y-2 max-h-80 overflow-y-auto">
-            {columns
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                const columnDef = column.columnDef;
-                const label =
-                  typeof columnDef.header === 'string'
-                    ? columnDef.header
-                    : column.id;
-
-                return (
-                  <div
-                    key={column.id}
-                    className="flex items-center justify-between space-x-2"
-                  >
-                    <Label
-                      htmlFor={`column-${column.id}`}
-                      className="text-sm font-normal cursor-pointer flex-1"
-                    >
-                      {label}
-                    </Label>
-                    <Switch
-                      id={`column-${column.id}`}
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(value)}
-                    />
-                  </div>
-                );
-              })}
-          </div>
-          <div className="pt-2 border-t">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => table.resetColumnVisibility()}
-            >
-              Reset to Default
-            </Button>
-          </div>
+        <div className='flex flex-col gap-2'>
+          <h4 className="leading-none font-normal">Column visibility</h4>
+          <p className="text-muted-foreground text-sm">
+            Set the visibility for each column
+          </p>
+          <Separator />
         </div>
+
+        <div className="flex flex-col gap-2 mt-2 mb-2 overflow-auto">
+          {columns
+            .filter((column) => column.getCanHide())
+            .map((column) => {
+              const columnDef = column.columnDef;
+              const label =
+                typeof columnDef.header === 'string'
+                  ? columnDef.header
+                  : column.id;
+
+              return (
+                <div
+                  key={column.id}
+                  className="flex items-center justify-between space-x-2"
+                >
+                  <Label
+                    htmlFor={`column-${column.id}`}
+                    className="text-sm font-normal cursor-pointer flex-1"
+                  >
+                    {label}
+                  </Label>
+                  <Switch
+                    id={`column-${column.id}`}
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) => column.toggleVisibility(value)}
+                  />
+                </div>
+              );
+            })}
+        </div>
+        <div className="">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() => table.resetColumnVisibility()}
+          >
+            Reset to Default
+          </Button>
+        </div>
+
       </PopoverContent>
     </Popover>
   );

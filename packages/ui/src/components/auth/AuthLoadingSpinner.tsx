@@ -1,4 +1,4 @@
-// packages/ui/components/auth/AuthLoadingSpinner.tsx
+// packages/ui/src/components/auth/AuthLoadingSpinner.tsx
 // Loading spinner for auth operations
 
 import {
@@ -7,8 +7,8 @@ import {
   EmptyMedia,
   EmptyTitle,
   EmptyDescription,
-} from '../../src/components/ui/empty';
-import { Spinner } from '../../src/components/ui/spinner';
+} from '../ui/empty';
+import { Spinner } from '../ui/spinner';
 
 interface AuthLoadingSpinnerProps {
   title?: string;

@@ -5,9 +5,9 @@
 
 import type { Table } from '@tanstack/react-table';
 import { Button } from '../../components/ui/button';
-import { 
-  Search, 
-  SlidersHorizontal, 
+import {
+  Search,
+  SlidersHorizontal,
   Settings2,
 } from 'lucide-react';
 import type { Density, FilterMode } from '../types';
@@ -22,20 +22,20 @@ import { ColumnVisibility } from './column-visibility';
 interface TableToolbarIconsProps<TData = unknown> {
   // Table instance
   table: Table<TData>;
-  
+
   // Toggle states
   searchVisible: boolean;
   filtersVisible: boolean;
-  
+
   // Current states
   density: Density;
   filterMode: FilterMode;
-  
+
   // Callbacks
   onToggleSearch: () => void;
   onToggleFilters: () => void;
   onCycleDensity: () => void;
-  
+
   // Feature flags
   enableGlobalFilter?: boolean;
   enableColumnFilters?: boolean;
@@ -81,7 +81,7 @@ export function TableToolbarIcons<TData = unknown>({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant={searchVisible ? 'secondary' : 'ghost'}
+                variant={searchVisible ? 'default' : 'ghost'}
                 size="icon"
                 onClick={onToggleSearch}
                 className="h-8 w-8"
@@ -101,7 +101,7 @@ export function TableToolbarIcons<TData = unknown>({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant={filtersVisible ? 'secondary' : 'ghost'}
+                variant={filtersVisible ? 'default' : 'ghost'}
                 size="icon"
                 onClick={onToggleFilters}
                 className="h-8 w-8"

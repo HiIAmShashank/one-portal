@@ -28,6 +28,7 @@ interface TableToolbarProps<TData> {
   filterPlaceholder?: string;
   selectedRows?: TData[];
   bulkActions?: BulkAction<TData>[];
+  tableName: string
 
   // Phase 10: New props
   density?: Density;
@@ -120,7 +121,7 @@ export function TableToolbar<TData>({
   }
 
   return (
-    <div className="data-table-toolbar border-b">
+    <div className="data-table-toolbar">
       {/* Row 1: Icon controls + conditional search */}
       <div className="flex items-center justify-end gap-2 p-2">
         {/* Left: Conditional global search */}
@@ -211,7 +212,7 @@ export function TableToolbar<TData>({
 
       {/* Row 2: Column filters (toolbar mode only) */}
       {filtersVisible && filterMode === 'toolbar' && enableColumnFilters && enableFiltering && (
-        <div className="flex items-start gap-4 flex-wrap px-4 pb-2 border-t">
+        <div className="flex items-start gap-4 p-4 border-t-muted border-t-1">
           <ColumnFilters table={table} />
         </div>
       )}

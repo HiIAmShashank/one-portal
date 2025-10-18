@@ -45,10 +45,10 @@ export function NumberRangeFilter({
 
   const handleMinChange = (newMin: string) => {
     setMinValue(newMin);
-    
+
     const minNum = newMin === '' ? undefined : parseFloat(newMin);
     const maxNum = maxValue === '' ? undefined : parseFloat(maxValue);
-    
+
     // Only update if valid number or empty
     if (newMin === '' || !isNaN(minNum!)) {
       onChange(
@@ -61,10 +61,10 @@ export function NumberRangeFilter({
 
   const handleMaxChange = (newMax: string) => {
     setMaxValue(newMax);
-    
+
     const minNum = minValue === '' ? undefined : parseFloat(minValue);
     const maxNum = newMax === '' ? undefined : parseFloat(newMax);
-    
+
     // Only update if valid number or empty
     if (newMax === '' || !isNaN(maxNum!)) {
       onChange(
@@ -83,7 +83,7 @@ export function NumberRangeFilter({
   };
 
   const hasValue = minValue !== '' || maxValue !== '';
-  const inputHeight = inline ? 'h-7' : 'h-9';
+  const inputHeight = inline ? '' : 'h-9';
   const inputSize = inline ? 'text-xs' : 'text-sm';
 
   return (
@@ -94,8 +94,8 @@ export function NumberRangeFilter({
           inputMode="decimal"
           value={minValue}
           onChange={(e) => handleMinChange(e.target.value)}
-          placeholder="Enter a number"
-          className={cn(inputHeight, inputSize, inline && 'border-input/50')}
+          placeholder="Min"
+          className={cn(inputHeight, inputSize, inline && 'border-input/50 placeholder:text-muted-foreground placeholder:font-light')}
         />
         <span className="text-muted-foreground text-xs">-</span>
         <Input
@@ -103,8 +103,8 @@ export function NumberRangeFilter({
           inputMode="decimal"
           value={maxValue}
           onChange={(e) => handleMaxChange(e.target.value)}
-          placeholder="Enter a number"
-          className={cn(inputHeight, inputSize, inline && 'border-input/50')}
+          placeholder="Max"
+          className={cn(inputHeight, inputSize, inline && 'border-input/50 placeholder:text-muted-foreground placeholder:font-light')}
         />
       </div>
       {hasValue && (
@@ -132,7 +132,7 @@ export function numberRangeFilterFn(
   filterValue: NumberRangeValue
 ): boolean {
   const value = row.getValue(columnId);
-  
+
   if (typeof value !== 'number') {
     return false;
   }
