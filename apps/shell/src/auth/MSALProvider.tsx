@@ -44,7 +44,7 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
     if (detectedRouteType === 'protected') {
       // Check if MSAL cache exists in localStorage
       const hasMsalCache = Object.keys(localStorage).some(key => key.startsWith('msal.'));
-      
+
       if (!hasMsalCache) {
         // No MSAL cache = definitely not authenticated
         // Set quick check complete to trigger immediate redirect via route guard
@@ -53,45 +53,44 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
         return;
       }
     }
-    
+
     // For public routes or when cache exists, proceed with normal init
     setHasQuickCheck(true);
   }, [detectedRouteType]);
 
   useEffect(() => {
     if (!hasQuickCheck) return; // Wait for quick check to complete
-    
+
     let isMounted = true;
 
     async function handleAuthRedirect() {
       try {
         // Initialize MSAL instance first
         await msalInstance.initialize();
-        
+
         // Handle redirect promise (critical for interactive login flow)
         const response = await msalInstance.handleRedirectPromise();
-        
+
         if (!isMounted) return;
 
         if (response) {
           // User just completed interactive login
           console.log('[Shell] Login successful:', response.account.username);
-          
           // Publish signed-in event for Remotes to pick up
           const loginHint = getLoginHint(response.account);
           const accountId = response.account.homeAccountId;
-          
+
           publishAuthEvent('auth:signed-in', {
             loginHint,
             accountId,
             appName: 'shell',
             clientId: getAuthConfig().clientId,
           });
-          
+
           // Check for returnUrl query parameter and redirect
           const urlParams = new URLSearchParams(window.location.search);
           const returnUrl = urlParams.get('returnUrl');
-          
+
           if (returnUrl) {
             console.log('[Shell] Redirecting to:', returnUrl);
             window.location.href = decodeURIComponent(returnUrl);
@@ -100,7 +99,7 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
         } else {
           // No redirect response - check if user has existing session
           const accounts = msalInstance.getAllAccounts();
-          
+
           if (accounts.length === 0) {
             // No accounts and no active session
             // Don't attempt ssoSilent() - it will fail and cause iframe errors
@@ -110,7 +109,7 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
             // User has existing account - publish event
             const account = accounts[0];
             msalInstance.setActiveAccount(account);
-            
+
             publishAuthEvent('auth:signed-in', {
               loginHint: getLoginHint(account),
               accountId: account.homeAccountId,
@@ -166,13 +165,13 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
   // Public routes (like sign-in) initialize silently
   if (!isInitialized && detectedRouteType !== 'public') {
     return (
-        <>
+      <>
         Testing
-      <AuthLoadingSpinner 
-        title="Initializing authentication..." 
-        description="Please wait while we set up your session."
-      />
-    </>
+        <AuthLoadingSpinner
+          title="Initializing authentication..."
+          description="Please wait while we set up your session."
+        />
+      </>
     );
   }
 

@@ -12,7 +12,6 @@ import {
     CardTitle,
     CardContent,
 } from '@one-portal/ui';
-import { AuthLoadingSpinner } from '@one-portal/ui';
 /**
  * Sign-in route with returnUrl preservation
  * Path: /sign-in?returnUrl=...
@@ -33,7 +32,7 @@ function SignInComponent() {
     const search = useSearch({ from: '/sign-in' });
     const signInButtonRef = useRef<HTMLButtonElement>(null);
     const isAuthenticated = accounts.length > 0;
-    
+
     // Screen reader announcement state (T095: US5, T114: US7)
     const [srAnnouncement, setSrAnnouncement] = useState('');
 
@@ -58,13 +57,13 @@ function SignInComponent() {
         // Check if user was just signed out (from returnUrl parameter or direct param)
         const returnUrl = search.returnUrl;
         const signedOut = returnUrl?.includes('signed-out=true') || search['signed-out'] === 'true';
-        
+
         if (signedOut) {
             toast.success('You have been signed out of all apps', {
                 duration: 4000,
                 description: 'Please sign in again to continue.',
             });
-            
+
             // Screen reader announcement (T095: US5, T114: US7)
             announceToScreenReader('Signed out successfully. You have been signed out of all apps.');
         }
@@ -100,34 +99,37 @@ function SignInComponent() {
     };
 
     return (
-        <div className='flex min-h-[calc(100vh-63px)] items-center justify-center bg-background text-foreground dark:bg-background-dark dark:text-foreground-dark p-4'>
-        {/* Screen reader announcements (T095: US5) */}
-        <div
-            role="status"
-            aria-live="polite"
-            aria-atomic="true"
-            className="sr-only"
-        >
-            {srAnnouncement}
-        </div>
-        
-        <Card className="shadow-xl w-full max-w-md border-none ">
-            <CardHeader>
-                <CardTitle>Sign In</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <SignInPrompt
-                    onSignIn={handleSignIn}
-                    ref={signInButtonRef}
-                />
-            </CardContent>
-        </Card>
-        <div className='hidden'>
-        <AuthLoadingSpinner 
-          title="Test message" 
-          description="This is a test description."
-        />
-        </div>
+        <div className='min-h-[calc(100vh-64px)] bg-[linear-gradient(156deg,var(--color-primary),var(--color-secondary))] flex items-center justify-center p-6'>
+            <div
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                className="sr-only"
+            >
+                {srAnnouncement}
+            </div>
+
+            <Card className="bg-background text-foreground dark:bg-background dark:text-foreground w-full max-w-md border-none shadow-2xl backdrop-blur-sm">
+                <CardHeader className="space-y-2 pb-6 text-center">
+                    <div className="space-y-4 mb-4">
+                        <h1 className="text-3xl font-bold tracking-tight">
+                            Welcome to One Portal
+                        </h1>
+                        <p className="text-sm text-muted-foreground">
+                            Your centralized platform to access Mott MacDonald applications
+                        </p>
+                    </div>
+                    <CardTitle className="text-xl font-semibold tracking-tight">
+                        Sign in to your account
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <SignInPrompt
+                        onSignIn={handleSignIn}
+                        ref={signInButtonRef}
+                    />
+                </CardContent>
+            </Card>
         </div>
     );
 }
