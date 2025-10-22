@@ -36,7 +36,15 @@ export const Route = createRootRoute({
         moduleName: 'billing',
         scope: 'billing',
         displayOrder: 1,
-      },
+      },  {
+    id: 'domino',
+    name: 'Domino',
+    remoteEntryUrl: '/domino/assets/remoteEntry.js',
+    moduleName: 'domino',
+    scope: 'domino',
+    displayOrder: 2,
+  },
+
     ];
 
     return (

@@ -1,0 +1,86 @@
+import { StrictMode } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
+import { DominoMSALProvider } from './auth/MSALProvider';
+import App from './App';
+// CSS is provided by the shell - no need to import here
+
+/**
+ * Bootstrap file for Domino
+ * 
+ * Module Federation entry point that exports mount and unmount functions
+ * for the shell to dynamically load and manage this remote application.
+ * 
+ * Requirements: FR-003 (Remote App Integration), FR-005 (Authentication)
+ */
+
+/**
+ * Mount the domino app into a specified container
+ * 
+ * @param containerId - The ID of the DOM element to mount into
+ * @returns Root instance for cleanup
+ * 
+ * @example
+ * const root = mount('domino-container');
+ */
+export async function mount(containerId: string): Promise<Root> {
+  const container = document.getElementById(containerId);
+  
+  if (!container) {
+    throw new Error(`[Domino] Container element with ID "${containerId}" not found`);
+  }
+  
+  console.log(`[Domino] Mounting into container: ${containerId}`);
+  
+  const root = createRoot(container);
+  
+  root.render(
+    <StrictMode>
+      <DominoMSALProvider>
+        <App />
+      </DominoMSALProvider>
+    </StrictMode>
+  );
+
+  return root;
+}
+
+/**
+ * Unmount the domino app and cleanup resources
+ * 
+ * @param root - The Root instance returned from mount()
+ * 
+ * @example
+ * unmount(root);
+ */
+export function unmount(root: Root): void {
+  console.log('[Domino] Unmounting application');
+  root.unmount();
+}
+
+/**
+ * Development-only: Auto-mount if running standalone
+ * This allows the app to work independently during development
+ */
+if (process.env.NODE_ENV === 'development' && !window.__DOMINO_REMOTE_LOADED__) {
+  // Mark as loaded to prevent double-mounting
+  window.__DOMINO_REMOTE_LOADED__ = true;
+  
+  // Create a root container if it doesn't exist
+  let container = document.getElementById('root');
+  
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'root';
+    document.body.appendChild(container);
+  }
+
+  mount('root');
+}
+
+// Type augmentation for global flag
+declare global {
+  interface Window {
+    __DOMINO_REMOTE_LOADED__?: boolean;
+  }
+}
+

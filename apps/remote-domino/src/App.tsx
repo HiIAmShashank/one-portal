@@ -1,0 +1,84 @@
+import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { isAuthError } from '@one-portal/auth/utils';
+import { routeTree } from './routeTree.gen';
+
+/**
+ * Domino Remote Application
+ * 
+ * Main component exposed via Module Federation with:
+ * - TanStack Router for client-side routing
+ * - TanStack Query with auth-aware configuration
+ * - Protected routes (all routes require authentication)
+ * 
+ * Requirements: FR-003 (Remote App Loading), US2 (Protected Routes), US7 (Error Handling)
+ */
+
+/**
+ * Auth-aware QueryClient configuration
+ * 
+ * Smart error handling:
+ * 1. Network errors → Retry up to 2 times
+ * 2. Auth errors (401/403) → NO retry, redirect to sign-in
+ * 3. Failed queries marked stale → Refresh after re-authentication
+ * 4. 5-minute cache → Reduce unnecessary API calls
+ */
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Cache successful queries for 5 minutes
+      staleTime: 1000 * 60 * 5,
+      
+      // Smart retry: Skip auth errors, retry network errors
+      retry: (failureCount, error) => {
+        // Don't retry authentication errors - user needs to sign in
+        if (isAuthError(error)) {
+          return false; // Stop immediately → redirect to /sign-in
+        }
+        
+        // Retry network/transient errors up to 2 times
+        return failureCount < 2;
+      },
+      
+      // Refetch when user returns (useful after signing in)
+      refetchOnWindowFocus: true,
+      
+      // Refetch when network reconnects
+      refetchOnReconnect: true,
+    },
+    mutations: {
+      // Don't retry mutations on auth errors
+      retry: (failureCount, error) => {
+        if (isAuthError(error)) {
+          return false;
+        }
+        return failureCount < 1; // Only retry once
+      },
+    },
+  },
+});
+
+// Create the router instance
+const router = createRouter({
+  routeTree,
+  context: undefined!,
+  // basepath must match where Shell mounts this remote app
+  basepath: '/apps/domino',
+});
+
+// Register router for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
+}
+
+export default App;

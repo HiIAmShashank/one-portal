@@ -28,6 +28,13 @@ const APPS = [
     destination: BUILD_DIR, // Shell goes to root
     description: 'Shell (Host Application)'
   }
+,
+  {
+    name: 'domino',
+    source: path.join(ROOT_DIR, 'apps/remote-domino/dist'),
+    destination: path.join(BUILD_DIR, 'domino'),
+    description: 'Domino Remote App'
+  }
 
 ];
 

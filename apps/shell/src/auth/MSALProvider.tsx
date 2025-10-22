@@ -15,17 +15,6 @@ interface ShellMSALProviderProps {
   routeType?: 'public' | 'protected' | 'callback';
 }
 
-/**
- * Shell MSAL Provider
- * - Handles redirect promise on app mount
- * - Attempts silent SSO if no account
- * - Publishes auth:signed-in event when user authenticates
- * - Listens for auth:signed-out events from Remotes
- * - Supports different loading strategies based on route type:
- *   - 'public': Silent init, no loading spinner
- *   - 'protected': Quick check + conditional spinner
- *   - 'callback': Always show spinner (expected behavior)
- */
 export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [hasQuickCheck, setHasQuickCheck] = useState(false);
