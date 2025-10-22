@@ -493,6 +493,7 @@ export function DataTable<TData>({
       {/* Toolbar with filters and column visibility */}
       {enableFiltering && (
         <TableToolbar
+
           table={table}
           enableFiltering={enableFiltering}
           enableGlobalFilter={enableGlobalFilter}

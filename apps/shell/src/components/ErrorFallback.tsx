@@ -13,12 +13,6 @@ import {
   CardTitle,
 } from '@one-portal/ui';
 
-/**
- * ErrorFallback Component
- * Displays user-friendly error message when remote app fails to load
- * Requirements: FR-008, UX-002
- */
-
 interface ErrorFallbackProps {
   error?: Error | string;
   appName?: string;

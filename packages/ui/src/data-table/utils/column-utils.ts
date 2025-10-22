@@ -1,8 +1,3 @@
-/**
- * Column manipulation utility functions
- * @module data-table/utils/column-utils
- */
-
 import type {
   ColumnDef,
   ColumnVisibilityState,
@@ -11,7 +6,6 @@ import type {
 } from '../types';
 
 /**
- * Get default column visibility state
  * All columns visible by default unless explicitly hidden
  */
 export function getDefaultVisibility<TData>(
@@ -26,16 +20,10 @@ export function getDefaultVisibility<TData>(
   );
 }
 
-/**
- * Get default column order (by ID)
- */
 export function getDefaultColumnOrder<TData>(columns: ColumnDef<TData>[]): string[] {
   return columns.map((col) => col.id);
 }
 
-/**
- * Get default column sizing
- */
 export function getDefaultColumnSizing<TData>(
   columns: ColumnDef<TData>[]
 ): ColumnSizingState {
@@ -51,7 +39,6 @@ export function getDefaultColumnSizing<TData>(
 }
 
 /**
- * Validate column visibility state against current columns
  * Removes entries for non-existent columns
  */
 export function validateVisibility<TData>(
@@ -71,7 +58,6 @@ export function validateVisibility<TData>(
 }
 
 /**
- * Validate column order against current columns
  * Removes non-existent columns, adds missing ones
  */
 export function validateColumnOrder<TData>(
@@ -80,18 +66,16 @@ export function validateColumnOrder<TData>(
 ): string[] {
   const validIds = new Set(columns.map((col) => col.id));
   const filtered = order.filter((id) => validIds.has(id));
-  
-  // Add any missing columns at the end
+
   const existingIds = new Set(filtered);
   const missing = columns
     .filter((col) => !existingIds.has(col.id))
     .map((col) => col.id);
-  
+
   return [...filtered, ...missing];
 }
 
 /**
- * Validate column sizing against current columns
  * Ensures values are within min/max bounds
  */
 export function validateColumnSizing<TData>(
@@ -114,7 +98,6 @@ export function validateColumnSizing<TData>(
 }
 
 /**
- * Validate column pinning against current columns
  * Removes non-existent columns from pinning
  */
 export function validateColumnPinning<TData>(
@@ -122,23 +105,17 @@ export function validateColumnPinning<TData>(
   columns: ColumnDef<TData>[]
 ): ColumnPinningState {
   const validIds = new Set(columns.map((col) => col.id));
-  
+
   return {
     left: pinning.left?.filter((id) => validIds.has(id)),
     right: pinning.right?.filter((id) => validIds.has(id)),
   };
 }
 
-/**
- * Get visible columns count
- */
 export function getVisibleColumnsCount(visibility: ColumnVisibilityState): number {
   return Object.values(visibility).filter((v) => v).length;
 }
 
-/**
- * Check if a column is pinned
- */
 export function isColumnPinned(
   columnId: string,
   pinning: ColumnPinningState
@@ -148,9 +125,6 @@ export function isColumnPinned(
   return false;
 }
 
-/**
- * Calculate total width of visible columns
- */
 export function calculateTotalWidth<TData>(
   columns: ColumnDef<TData>[],
   sizing: ColumnSizingState,

@@ -9,11 +9,10 @@ import { Sonner } from '@one-portal/ui';
 import './style.css';
 import '@one-portal/ui/styles.css';
 
-// Create Query Client for data fetching
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       retry: 3,
       refetchOnWindowFocus: false,
     },
@@ -34,7 +33,6 @@ initializeMsal().then(() => {
   );
 }).catch(error => {
   console.error('[Shell] MSAL initialization failed:', error);
-  // Render error state
   createRoot(document.getElementById('app')!).render(
     <div className="flex items-center justify-center ">
       <div className="text-center">

@@ -40,10 +40,8 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
 
   const handleSignIn = async () => {
     try {
-      // Store current path for post-login redirect
       sessionStorage.setItem('auth_return_url', currentPath);
 
-      // Trigger MSAL login redirect
       await instance.loginRedirect({
         scopes: getAuthConfig().scopes,
         prompt: 'select_account',
@@ -55,19 +53,14 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
 
   const handleSignOut = async () => {
     try {
-      // Publish sign-out event to all remote apps before logout
       publishAuthEvent('auth:signed-out');
 
       if (import.meta.env.DEV) {
         console.log('[Shell] Published auth:signed-out event, initiating logout redirect');
       }
 
-      // Small delay to ensure event is received by remote apps
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Perform MSAL logout (clears cache and redirects to Entra ID logout)
-      // Add signed-out parameter to show confirmation message (T094: US5)
-      // Always redirect to root with signed-out parameter (don't preserve current location)
       const postLogoutUrl = new URL(window.location.origin);
       postLogoutUrl.pathname = '/';
       postLogoutUrl.searchParams.set('signed-out', 'true');
@@ -81,7 +74,6 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
     }
   };
 
-  // Get user initials for avatar
   const getInitials = (name: string | undefined): string => {
     if (!name) return 'U';
     return name
@@ -94,12 +86,9 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
 
   return (
     <>
-
       <header className={`flex h-16 border-b-1 shadow-2xl border-b-muted bg-background flex-col justify-center ${className}`}>
         <div className="flex items-center justify-between px-4">
-          {/* Branding and Navigation */}
           <div className="flex items-center gap-6">
-            {/* Logo and Brand */}
             <div className="flex items-center gap-2">
               <ShellIcon className="h-8 w-8" title="OnePortal Logo" />
               <div>
@@ -107,11 +96,9 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
               </div>
             </div>
 
-            {/* Navigation Menu - Only show when authenticated */}
             {isAuthenticated && (
               <NavigationMenu>
                 <NavigationMenuList>
-                  {/* Home link */}
                   <NavigationMenuItem>
                     <Link to="/">
                       <NavigationMenuLink
@@ -126,7 +113,6 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
                     </Link>
                   </NavigationMenuItem>
 
-                  {/* Remote app links */}
                   {apps.map((app) => {
                     const appPath = `/apps/${app.id}`;
                     const isActive = currentPath === appPath;
@@ -152,19 +138,15 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
             )}
           </div>
 
-          {/* User actions */}
           <div className="flex items-center gap-2">
-            {/* Theme toggle - Always visible */}
             <ThemeToggle />
 
-            {/* Show Sign In button when not authenticated */}
             {!isAuthenticated && (
               <Button onClick={handleSignIn} variant="default">
                 Sign In
               </Button>
             )}
 
-            {/* User menu - Only show when authenticated */}
             {isAuthenticated && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

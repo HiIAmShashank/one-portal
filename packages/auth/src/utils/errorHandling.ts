@@ -1,6 +1,3 @@
-// packages/auth/src/utils/errorHandling.ts
-// Auth error parsing and categorization
-
 import type { AuthError as AuthErrorType } from '../types/auth';
 
 /**
@@ -23,12 +20,6 @@ const TRANSIENT_ERROR_CODES = [
   'temporarily_unavailable',
 ];
 
-/**
- * Parse MSAL error into structured AuthError
- * @param error - Raw error from MSAL operation
- * @param context - Additional context about the operation
- * @returns Structured auth error
- */
 export function parseAuthError(error: unknown, context?: string): AuthErrorType {
   const timestamp = new Date();
 

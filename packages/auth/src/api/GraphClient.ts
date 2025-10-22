@@ -1,13 +1,3 @@
-/**
- * Microsoft Graph API Client
- * 
- * Provides typed methods for calling Microsoft Graph API endpoints.
- * Uses acquired access tokens for authentication.
- * 
- * Requirements: US3 (FR-008)
- * Related: specs/002-add-single-sign/research.md R4 (Graph API patterns)
- */
-
 import type { TokenResult } from '../utils/acquireToken';
 
 const GRAPH_API_BASE = 'https://graph.microsoft.com/v1.0';
@@ -57,9 +47,6 @@ export interface GraphError {
   };
 }
 
-/**
- * Microsoft Graph API Client
- */
 export class GraphClient {
   private baseUrl: string;
 
@@ -68,15 +55,11 @@ export class GraphClient {
   }
 
   /**
-   * Get current user's profile
    * Requires scope: User.Read
-   * 
-   * @param tokenResult - Token result from acquireToken
-   * @returns User profile data
    */
   async getUserProfile(tokenResult: TokenResult): Promise<GraphUser> {
     const endpoint = `${this.baseUrl}/me`;
-    
+
     if (import.meta.env.DEV) {
       console.log('[GraphClient] Fetching user profile', {
         endpoint,
@@ -86,7 +69,7 @@ export class GraphClient {
     }
 
     const response = await this.fetchGraphAPI<GraphUser>(endpoint, tokenResult.accessToken);
-    
+
     if (import.meta.env.DEV) {
       console.log('[GraphClient] ✅ User profile fetched', {
         userId: response.id,
@@ -98,15 +81,11 @@ export class GraphClient {
   }
 
   /**
-   * Get current user's manager
    * Requires scope: User.Read.All or User.ReadBasic.All
-   * 
-   * @param tokenResult - Token result from acquireToken
-   * @returns Manager profile data or null if no manager
    */
   async getManager(tokenResult: TokenResult): Promise<GraphManager | null> {
     const endpoint = `${this.baseUrl}/me/manager`;
-    
+
     if (import.meta.env.DEV) {
       console.log('[GraphClient] Fetching user manager', {
         endpoint,
@@ -116,7 +95,7 @@ export class GraphClient {
 
     try {
       const response = await this.fetchGraphAPI<GraphManager>(endpoint, tokenResult.accessToken);
-      
+
       if (import.meta.env.DEV) {
         console.log('[GraphClient] ✅ Manager fetched', {
           managerId: response.id,
@@ -126,7 +105,6 @@ export class GraphClient {
 
       return response;
     } catch (error) {
-      // Manager may not exist - return null instead of throwing
       if (this.isNotFoundError(error)) {
         if (import.meta.env.DEV) {
           console.log('[GraphClient] ℹ️ No manager found');
@@ -138,15 +116,11 @@ export class GraphClient {
   }
 
   /**
-   * Get current user's direct reports
    * Requires scope: User.Read.All
-   * 
-   * @param tokenResult - Token result from acquireToken
-   * @returns Array of direct report profiles
    */
   async getDirectReports(tokenResult: TokenResult): Promise<GraphDirectReport[]> {
     const endpoint = `${this.baseUrl}/me/directReports`;
-    
+
     if (import.meta.env.DEV) {
       console.log('[GraphClient] Fetching direct reports', {
         endpoint,
@@ -158,7 +132,7 @@ export class GraphClient {
       endpoint,
       tokenResult.accessToken
     );
-    
+
     if (import.meta.env.DEV) {
       console.log('[GraphClient] ✅ Direct reports fetched', {
         count: response.value.length,
@@ -168,9 +142,6 @@ export class GraphClient {
     return response.value;
   }
 
-  /**
-   * Generic Graph API fetch with error handling
-   */
   private async fetchGraphAPI<T>(endpoint: string, accessToken: string): Promise<T> {
     const response = await fetch(endpoint, {
       method: 'GET',
@@ -207,17 +178,11 @@ export class GraphClient {
     return response.json();
   }
 
-  /**
-   * Check if error is a 404 Not Found
-   */
   private isNotFoundError(error: unknown): boolean {
     return error instanceof GraphAPIError && error.statusCode === 404;
   }
 }
 
-/**
- * Custom error class for Graph API errors
- */
 export class GraphAPIError extends Error {
   constructor(
     message: string,
@@ -230,7 +195,4 @@ export class GraphAPIError extends Error {
   }
 }
 
-/**
- * Default Graph Client instance
- */
 export const graphClient = new GraphClient();

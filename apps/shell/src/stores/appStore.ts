@@ -2,33 +2,11 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import type { RemoteApp } from '@one-portal/types';
 
-/**
- * Application State Interface
- */
 interface AppState {
-  /**
-   * Currently active remote application
-   */
   activeApp: RemoteApp | null;
-
-  /**
-   * Loading state for remote apps
-   */
   isLoading: boolean;
-
-  /**
-   * Error state for remote app loading
-   */
   error: Error | null;
-
-  /**
-   * List of available apps from configuration
-   */
   availableApps: RemoteApp[];
-
-  /**
-   * Actions
-   */
   setActiveApp: (app: RemoteApp | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: Error | null) => void;
@@ -36,10 +14,6 @@ interface AppState {
   clearError: () => void;
 }
 
-/**
- * Global application store using Zustand
- * Manages shell state, active remote app, and loading states
- */
 export const useAppStore = create<AppState>()(
   devtools(
     (set) => ({

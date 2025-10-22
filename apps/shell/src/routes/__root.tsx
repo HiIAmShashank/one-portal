@@ -16,7 +16,6 @@ export const Route = createRootRoute({
       msalInstance,
       scopes: ['openid', 'profile', 'email'],
       onUnauthenticated: (returnUrl) => {
-        // Redirect to sign-in with returnUrl
         window.location.href = `/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`;
       },
       onAuthError: (error) => {
@@ -36,14 +35,14 @@ export const Route = createRootRoute({
         moduleName: 'billing',
         scope: 'billing',
         displayOrder: 1,
-      },  {
-    id: 'domino',
-    name: 'Domino',
-    remoteEntryUrl: '/domino/assets/remoteEntry.js',
-    moduleName: 'domino',
-    scope: 'domino',
-    displayOrder: 2,
-  },
+      }, {
+        id: 'domino',
+        name: 'Domino',
+        remoteEntryUrl: '/domino/assets/remoteEntry.js',
+        moduleName: 'domino',
+        scope: 'domino',
+        displayOrder: 2,
+      },
 
     ];
 

@@ -1,6 +1,3 @@
-// apps/shell/src/auth/MSALProvider.tsx
-// Shell Auth Provider - handles interactive login and event publishing
-
 import { useEffect, useState, type ReactNode } from 'react';
 import { MsalProvider } from '@azure/msal-react';
 import type { EventMessage } from '@azure/msal-browser';
@@ -19,7 +16,6 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
   const [isInitialized, setIsInitialized] = useState(false);
   const [hasQuickCheck, setHasQuickCheck] = useState(false);
 
-  // Auto-detect route type if not provided
   const detectedRouteType = routeType ?? (() => {
     const path = window.location.pathname;
     if (path === '/sign-in') return 'public';
@@ -27,45 +23,35 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
     return 'protected';
   })();
 
-  // Quick check for protected routes: peek at localStorage without full MSAL init
   useEffect(() => {
     console.log('[Shell] Detected route type:', detectedRouteType);
     if (detectedRouteType === 'protected') {
-      // Check if MSAL cache exists in localStorage
       const hasMsalCache = Object.keys(localStorage).some(key => key.startsWith('msal.'));
 
       if (!hasMsalCache) {
-        // No MSAL cache = definitely not authenticated
-        // Set quick check complete to trigger immediate redirect via route guard
         setHasQuickCheck(true);
         setIsInitialized(true);
         return;
       }
     }
 
-    // For public routes or when cache exists, proceed with normal init
     setHasQuickCheck(true);
   }, [detectedRouteType]);
 
   useEffect(() => {
-    if (!hasQuickCheck) return; // Wait for quick check to complete
+    if (!hasQuickCheck) return;
 
     let isMounted = true;
 
     async function handleAuthRedirect() {
       try {
-        // Initialize MSAL instance first
         await msalInstance.initialize();
-
-        // Handle redirect promise (critical for interactive login flow)
         const response = await msalInstance.handleRedirectPromise();
 
         if (!isMounted) return;
 
         if (response) {
-          // User just completed interactive login
           console.log('[Shell] Login successful:', response.account.username);
-          // Publish signed-in event for Remotes to pick up
           const loginHint = getLoginHint(response.account);
           const accountId = response.account.homeAccountId;
 
@@ -76,7 +62,6 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
             clientId: getAuthConfig().clientId,
           });
 
-          // Check for returnUrl query parameter and redirect
           const urlParams = new URLSearchParams(window.location.search);
           const returnUrl = urlParams.get('returnUrl');
 
@@ -86,16 +71,11 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
             return;
           }
         } else {
-          // No redirect response - check if user has existing session
           const accounts = msalInstance.getAllAccounts();
 
           if (accounts.length === 0) {
-            // No accounts and no active session
-            // Don't attempt ssoSilent() - it will fail and cause iframe errors
-            // Let the route guard handle redirect to sign-in page
             console.log('[Shell] No accounts found, user needs to sign in');
           } else {
-            // User has existing account - publish event
             const account = accounts[0];
             msalInstance.setActiveAccount(account);
 
@@ -123,7 +103,6 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
         }
       }
     }
-    // Run auth initialization
     handleAuthRedirect();
 
     return () => {
@@ -131,7 +110,6 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
     };
   }, [hasQuickCheck]);
 
-  // Listen for MSAL events
   useEffect(() => {
     const callbackId = msalInstance.addEventCallback((event: EventMessage) => {
       if (event.eventType === MsalEventType.LOGOUT_SUCCESS) {
@@ -150,8 +128,6 @@ export function ShellMSALProvider({ children, routeType }: ShellMSALProviderProp
     };
   }, []);
 
-  // Show loading spinner only for protected routes and callback routes
-  // Public routes (like sign-in) initialize silently
   if (!isInitialized && detectedRouteType !== 'public') {
     return (
       <>

@@ -6,36 +6,14 @@ import tailwindcss from '@tailwindcss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
-/**
- * Module Federation Configuration for OnePortal Shell
- * 
- * DEPLOYMENT MODEL: Single Azure Static Web App
- * 
- * All apps (shell, billing, reports) are deployed to the same Azure Static Web App:
- *   - Shell:   https://oneportal.azurestaticapps.net/
- *   - Billing: https://oneportal.azurestaticapps.net/billing/
- *   - Reports: https://oneportal.azurestaticapps.net/reports/
- * 
- * Local Development:
- *   - Shell:   http://localhost:5000/
- *   - Billing: http://localhost:5001/
- *   - Reports: http://localhost:5002/
- * 
- * The base URL is determined by environment:
- *   - Development: Different ports for hot reload
- *   - Production: Same origin, different paths
- */
-
 const isDev = process.env.NODE_ENV === 'development';
 
 const remotes = isDev
   ? {
-    // Development: Each app on different port for Vite HMR
     billing: 'http://localhost:5001/assets/remoteEntry.js',
     reports: 'http://localhost:5002/assets/remoteEntry.js',
   }
   : {
-    // Production: Same origin, different paths (Azure Static Web App)
     billing: '/billing/assets/remoteEntry.js',
     reports: '/reports/assets/remoteEntry.js',
   };
@@ -56,8 +34,6 @@ export default defineConfig({
     federation({
       name: 'shell',
       remotes,
-      // CRITICAL: React/React-DOM are shared as singletons across all apps
-      // MSAL packages are NOT shared - each app has its own instance with unique client ID
       shared: ['react', 'react-dom'],
     }),
   ],

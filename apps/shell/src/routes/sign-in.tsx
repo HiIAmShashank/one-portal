@@ -1,6 +1,3 @@
-// apps/shell/src/routes/sign-in.tsx
-// Dedicated sign-in route with returnUrl support
-
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
 import { useMsal } from '@azure/msal-react';
 import { useEffect, useRef, useState } from 'react';
@@ -12,10 +9,7 @@ import {
     CardTitle,
     CardContent,
 } from '@one-portal/ui';
-/**
- * Sign-in route with returnUrl preservation
- * Path: /sign-in?returnUrl=...
- */
+
 export const Route = createFileRoute('/sign-in')({
     component: SignInComponent,
     validateSearch: (search: Record<string, unknown>): { returnUrl?: string; 'signed-out'?: string } => {
@@ -33,10 +27,7 @@ function SignInComponent() {
     const signInButtonRef = useRef<HTMLButtonElement>(null);
     const isAuthenticated = accounts.length > 0;
 
-    // Screen reader announcement state (T095: US5, T114: US7)
-    const [srAnnouncement, setSrAnnouncement] = useState('');
-
-    /**
+    const [srAnnouncement, setSrAnnouncement] = useState('');    /**
      * Announce auth state changes to screen readers (T114: US7)
      * Sets temporary announcement that auto-clears after 3 seconds
      */
@@ -52,9 +43,7 @@ function SignInComponent() {
         }
     }, []);
 
-    // Show sign-out confirmation toast (T094: US5)
     useEffect(() => {
-        // Check if user was just signed out (from returnUrl parameter or direct param)
         const returnUrl = search.returnUrl;
         const signedOut = returnUrl?.includes('signed-out=true') || search['signed-out'] === 'true';
 
@@ -64,12 +53,9 @@ function SignInComponent() {
                 description: 'Please sign in again to continue.',
             });
 
-            // Screen reader announcement (T095: US5, T114: US7)
             announceToScreenReader('Signed out successfully. You have been signed out of all apps.');
         }
-    }, [search]);
-
-    // If already authenticated, redirect to returnUrl or home
+    }, [search]);    // If already authenticated, redirect to returnUrl or home
     useEffect(() => {
         if (isAuthenticated) {
             const destination = search.returnUrl || '/';
@@ -84,12 +70,9 @@ function SignInComponent() {
      */
     const handleSignIn = async () => {
         try {
-            // Store returnUrl in sessionStorage for post-login redirect
             if (search.returnUrl) {
                 sessionStorage.setItem('auth_return_url', search.returnUrl);
-            }
-
-            await instance.loginRedirect({
+            } await instance.loginRedirect({
                 scopes: getAuthConfig().scopes,
                 prompt: 'select_account',
             });

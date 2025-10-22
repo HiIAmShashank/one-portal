@@ -1,8 +1,3 @@
-/**
- * Type definitions for the DataTable component
- * @module data-table/types
- */
-
 import type * as React from 'react';
 import type {
   SortingState as TanStackSortingState,
@@ -18,17 +13,6 @@ import type {
   Row,
 } from '@tanstack/react-table';
 
-// ============================================================================
-// MAIN COMPONENT PROPS
-// ============================================================================
-
-// ============================================================================
-// INLINE EDITING
-// ============================================================================
-
-/**
- * Supported input types for inline editing
- */
 export type EditInputType =
   | 'text'
   | 'number'
@@ -38,65 +22,30 @@ export type EditInputType =
   | 'select'
   | 'checkbox';
 
-/**
- * Props passed to custom edit components
- * @template TData - Type of data objects in the table
- */
 export interface EditComponentProps<TData> {
-  /** Current cell value */
   value: any;
-  /** Update the edit value */
   onChange: (newValue: any) => void;
-  /** Save and exit edit mode */
   onSave: () => void;
-  /** Cancel and exit edit mode */
   onCancel: () => void;
-  /** The row data */
   row: TData;
-  /** The column ID */
   columnId: string;
 }
 
-/**
- * Parameters passed to onEditCell callback
- * @template TData - Type of data objects in the table
- */
 export interface EditCellParams<TData> {
-  /** The row data */
   row: TData;
-  /** Column identifier */
   columnId: string;
-  /** New value after edit */
   newValue: any;
-  /** Original value before edit */
   oldValue: any;
 }
 
-/**
- * Props for the DataTable component
- * @template TData - Type of data objects in the table
- */
 export interface DataTableProps<TData> {
-  // Required
-  /** Unique identifier for localStorage persistence */
   tableId: string;
-  /** Array of data objects to display */
   data: TData[];
-  /** Column configuration */
   columns: ColumnDef<TData>[];
-
-  // Pagination
-  /** Total records (for server-side pagination) */
   totalCount?: number;
-  /** Initial rows per page (default: 10) */
   initialPageSize?: number;
-  /** Available page sizes (default: [10, 25, 50, 100]) */
   pageSizeOptions?: number[];
-
-  // Initial State
-  /** Initial sorting state */
   initialSortingState?: SortingState;
-  /** Initial column visibility */
   initialColumnVisibility?: ColumnVisibilityState;
   /** Initial column order */
   initialColumnOrder?: string[];
@@ -156,58 +105,28 @@ export interface DataTableProps<TData> {
   onColumnOrderChange?: (columnIds: string[]) => void;
   onColumnPinningChange?: (pinning: ColumnPinningState) => void;
   onGroupingChange?: (grouping: GroupingState) => void;
-
-  // Inline Editing
-  /** Enable inline editing globally (default: false) */
   enableInlineEditing?: boolean;
-  /** Dynamic row-level editability */
   getRowCanEdit?: (row: TData) => boolean;
-
-  // Actions
-  /** Per-row action buttons */
   rowActions?: RowAction<TData>[];
-  /** Bulk action buttons (for selected rows) */
   bulkActions?: BulkAction<TData>[];
-
-  // Phase 10: UI Enhancements
-  /** Filter display mode (default: 'toolbar') */
   filterMode?: FilterMode;
-  /** Callback when filter mode changes */
   onFilterModeChange?: (mode: FilterMode) => void;
-  /** Table density/spacing (default: 'default') */
   density?: Density;
-  /** Callback when density changes */
   onDensityChange?: (density: Density) => void;
-  /** Enable sticky header on vertical scroll (default: false) */
   stickyHeader?: boolean;
-  /** Sticky columns configuration */
   stickyColumns?: {
-    /** Number of left columns to stick */
     left?: number;
-    /** Number of right columns to stick */
     right?: number;
   };
-  /** Enable row grouping (default: false) */
   enableGrouping?: boolean;
-  /** Initial grouping column IDs */
   initialGrouping?: string[];
-  /** Custom aggregation functions (must match TanStack's AggregationFn signature) */
   aggregationFns?: Record<string, TanStackAggregationFn<any>>;
-  /** Enable row expanding (default: false) */
   enableExpanding?: boolean;
-  /** Initial expanded state */
   initialExpanded?: ExpandedState;
-  /** Callback when expanded state changes */
   onExpandedChange?: (expanded: ExpandedState) => void;
-  /** Function to get sub-rows from a row (for hierarchical data) */
   getSubRows?: (row: TData) => TData[] | undefined;
-  /** Render custom content in expanded row */
   renderExpandedRow?: (row: Row<TData>) => React.ReactNode;
-  /** Determine if row can expand */
   getRowCanExpand?: (row: Row<TData>) => boolean;
-
-  // Styling
-  /** Additional CSS classes */
   className?: string;
   /** Table variant */
   variant?: 'default' | 'bordered' | 'striped';

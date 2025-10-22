@@ -1,4 +1,3 @@
-// apps/remote-domino/src/auth/MSALProvider.tsx
 import { useEffect, useState, type ReactNode } from 'react';
 import { MsalProvider } from '@azure/msal-react';
 import { EventType as MsalEventType } from '@azure/msal-browser';
@@ -10,7 +9,6 @@ interface DominoMSALProviderProps {
   children: ReactNode;
 }
 
-
 export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -19,7 +17,6 @@ export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
 
     async function initializeAuth() {
       try {
-        // Initialize MSAL instance first
         await msalInstance.initialize();
         await msalInstance.handleRedirectPromise();
         if (!isMounted) return;
@@ -36,7 +33,6 @@ export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
             });
             setIsInitialized(true);
           } catch (error: any) {
-            // Try SSO with login hint
             try {
               const ssoResult = await msalInstance.ssoSilent({
                 scopes: getAuthConfig().scopes,
@@ -45,20 +41,16 @@ export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
               msalInstance.setActiveAccount(ssoResult.account);
               setIsInitialized(true);
             } catch (ssoError) {
-              // Check if running standalone
-              const isStandalone = window.location.port === '5173' && import.meta.env.DEV;
+              const isEmbeddedInShell = window.location.pathname.startsWith('/apps/');
 
-              if (isStandalone) {
-                // In standalone mode, don't redirect - just log and initialize
+              if (!isEmbeddedInShell && import.meta.env.DEV) {
                 console.log('[Domino] SSO failed in standalone mode, skipping redirect');
                 setIsInitialized(true);
               } else if (document.visibilityState === 'visible') {
-                // SSO failed - only redirect if actually visible and in Shell context
                 console.error('[Domino] SSO failed, redirecting to Shell:', ssoError);
                 const returnUrl = encodeURIComponent(window.location.href);
                 window.location.href = `/?returnUrl=${returnUrl}`;
               } else {
-                // App is being preloaded, just mark as initialized
                 if (import.meta.env.DEV) {
                   console.log('[Domino] SSO failed (preload), skipping redirect');
                 }
@@ -67,7 +59,6 @@ export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
             }
           }
         } else {
-          // No account - try silent SSO
           try {
             const ssoResult = await msalInstance.ssoSilent({
               scopes: getAuthConfig().scopes,
@@ -75,20 +66,16 @@ export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
             msalInstance.setActiveAccount(ssoResult.account);
             setIsInitialized(true);
           } catch (error) {
-            // Check if running standalone
-            const isStandalone = window.location.port === '5173' && import.meta.env.DEV;
+            const isEmbeddedInShell = window.location.pathname.startsWith('/apps/');
 
-            if (isStandalone) {
-              // In standalone mode, don't redirect - just log and initialize
+            if (!isEmbeddedInShell && import.meta.env.DEV) {
               console.log('[Domino] No session in standalone mode, skipping redirect');
               setIsInitialized(true);
             } else if (document.visibilityState === 'visible') {
-              // No session available - only redirect if actually visible and in Shell context
               console.error('[Domino] No session, redirecting to Shell:', error);
               const returnUrl = encodeURIComponent(window.location.href);
               window.location.href = `/?returnUrl=${returnUrl}`;
             } else {
-              // App is being preloaded, just mark as initialized
               if (import.meta.env.DEV) {
                 console.log('[Domino] No session (preload), skipping redirect');
               }
@@ -106,7 +93,6 @@ export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
     return () => { isMounted = false; };
   }, []);
 
-  // Listen for auth events from Shell
   useEffect(() => {
     const unsubscribe = subscribeToAuthEvents(async (event) => {
       if (event.type === 'auth:signed-in' && event.payload?.loginHint) {
@@ -118,14 +104,14 @@ export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
           msalInstance.setActiveAccount(ssoResult.account);
         } catch (error: any) {
           if (error.errorCode === 'interaction_required') {
-            // Check if running standalone
-            const isStandalone = window.location.port === '5173' && import.meta.env.DEV;
+            // Check if running in standalone dev mode
+            const isEmbeddedInShell = window.location.pathname.startsWith('/apps/');
 
-            if (!isStandalone) {
-              // Only redirect in Shell context
+            if (isEmbeddedInShell) {
+              // Only redirect when in Shell context
               const returnUrl = encodeURIComponent(window.location.href);
               window.location.href = `/?returnUrl=${returnUrl}`;
-            } else {
+            } else if (import.meta.env.DEV) {
               console.log('[Domino] Interaction required in standalone mode, skipping redirect');
             }
           }
@@ -150,7 +136,6 @@ export function DominoMSALProvider({ children }: DominoMSALProviderProps) {
     return unsubscribe;
   }, []);
 
-  // Listen for MSAL events
   useEffect(() => {
     const callbackId = msalInstance.addEventCallback((event: any) => {
       if (event.eventType === MsalEventType.LOGOUT_SUCCESS) {

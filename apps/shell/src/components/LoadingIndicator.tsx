@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Spinner } from '@one-portal/ui';
 
-/**
- * LoadingIndicator Component
- * Displays loading state with 200ms delay to prevent flashing
- * Requirements: UX-003
- */
-
 interface LoadingIndicatorProps {
-  delay?: number; // Delay in milliseconds before showing the indicator
+  delay?: number;
   className?: string;
   message?: string;
 }
@@ -21,7 +15,6 @@ export function LoadingIndicator({
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    // Only show loading indicator if loading takes longer than delay
     const timer = setTimeout(() => {
       setShow(true);
     }, delay);

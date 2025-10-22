@@ -1,6 +1,3 @@
-// packages/ui/src/components/auth/SignInPrompt.tsx
-// Sign-in prompt component for unauthenticated users
-
 import React from 'react';
 import { Button } from '../ui/button';
 import { LogIn } from 'lucide-react';
@@ -10,12 +7,6 @@ interface SignInPromptProps {
   isLoading?: boolean;
 }
 
-/**
- * Sign-in prompt component
- * Displays when user is not authenticated
- * Uses shadcn Button component for consistency
- * Supports ref forwarding for accessibility (focus management)
- */
 export const SignInPrompt = React.forwardRef<HTMLButtonElement, SignInPromptProps>(
   ({ onSignIn, isLoading = false }, ref) => {
     return (

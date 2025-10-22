@@ -28,7 +28,7 @@ interface TableToolbarProps<TData> {
   filterPlaceholder?: string;
   selectedRows?: TData[];
   bulkActions?: BulkAction<TData>[];
-  tableName: string
+  tableName?: string
 
   // Phase 10: New props
   density?: Density;

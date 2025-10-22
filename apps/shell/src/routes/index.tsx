@@ -10,10 +10,6 @@ import {
   Separator,
 } from '@one-portal/ui';
 
-/**
- * Index route - Shell home/dashboard
- * Path: /
- */
 export const Route = createFileRoute('/')({
   component: IndexComponent,
 });
@@ -22,8 +18,6 @@ function IndexComponent() {
   const { accounts } = useMsal();
   const isAuthenticated = accounts.length > 0;
 
-  // Route guard handles redirect, but we still need to prevent rendering
-  // during the brief moment before redirect completes
   if (!isAuthenticated) {
     return <></>;
   }
@@ -31,20 +25,18 @@ function IndexComponent() {
   return (
     <div className="py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Hero Section */}
         <div className="text-center space-y-4">
           <h1 className="text-5xl font-bold tracking-tight">
             Welcome to <span className="text-primary">OnePortal</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Your unified hub for all enterprise applications. 
+            Your unified hub for all enterprise applications.
             Access billing, reports, and more—all in one place.
           </p>
         </div>
 
         <Separator className="my-8" />
 
-        {/* Feature Cards */}
         <div className="grid md:grid-cols-2 gap-6">
           <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
@@ -87,7 +79,6 @@ function IndexComponent() {
           </Card>
         </div>
 
-        {/* Quick Start */}
         <Card className="border-primary/20 bg-primary/5">
           <CardHeader>
             <CardTitle className="text-lg">Getting Started</CardTitle>
@@ -105,7 +96,6 @@ function IndexComponent() {
           </CardContent>
         </Card>
 
-        {/* Status */}
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />

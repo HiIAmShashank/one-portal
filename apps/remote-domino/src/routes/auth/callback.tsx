@@ -3,13 +3,6 @@ import { useEffect } from 'react';
 import { AuthLoadingSpinner } from '@one-portal/ui';
 import { getAndClearReturnUrl } from '@one-portal/auth/utils';
 
-/**
- * Auth callback route for Reports
- * Path: /auth/callback
- * 
- * Handles redirect return after authentication
- * MSALProvider processes the redirect via handleRedirectPromise()
- */
 export const Route = createFileRoute('/auth/callback')({
     component: AuthCallbackComponent,
 });
@@ -18,6 +11,14 @@ function AuthCallbackComponent() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const isEmbeddedInShell = window.location.pathname.startsWith('/apps/');
+
+        if (!isEmbeddedInShell && import.meta.env.DEV) {
+            console.warn('[Domino] Auth callback reached in standalone mode, redirecting to home');
+            navigate({ to: '/' });
+            return;
+        }
+
         const returnUrl = getAndClearReturnUrl();
 
         const timer = setTimeout(() => {

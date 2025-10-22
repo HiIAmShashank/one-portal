@@ -1,23 +1,12 @@
-/**
- * localStorage utilities for DataTable state persistence
- * @module data-table/utils/storage
- */
-
 import type { PersistedTableState } from '../types';
 
 const STORAGE_VERSION = '1.0.0';
 const KEY_PREFIX = 'oneportal-datatable';
 
-/**
- * Generate localStorage key for a table
- */
-export function getStorageKey(tableId: string): string {
+function getStorageKey(tableId: string): string {
   return `${KEY_PREFIX}-${tableId}-state`;
 }
 
-/**
- * Save table state to localStorage
- */
 export function saveTableState(
   tableId: string,
   state: Omit<PersistedTableState, 'version' | 'timestamp'>
@@ -36,24 +25,21 @@ export function saveTableState(
 }
 
 /**
- * Load table state from localStorage
  * Returns null if not found or invalid
  */
 export function loadTableState(tableId: string): PersistedTableState | null {
   try {
     const key = getStorageKey(tableId);
     const stored = localStorage.getItem(key);
-    
+
     if (!stored) {
       return null;
     }
 
     const parsed = JSON.parse(stored) as PersistedTableState;
-    
-    // Validate version (for future migration support)
+
     if (parsed.version !== STORAGE_VERSION) {
       console.warn(`Table state version mismatch for ${tableId}. Expected ${STORAGE_VERSION}, got ${parsed.version}`);
-      // For now, clear old version data
       clearTableState(tableId);
       return null;
     }
@@ -65,9 +51,6 @@ export function loadTableState(tableId: string): PersistedTableState | null {
   }
 }
 
-/**
- * Clear table state from localStorage
- */
 export function clearTableState(tableId: string): void {
   try {
     const key = getStorageKey(tableId);
@@ -77,9 +60,6 @@ export function clearTableState(tableId: string): void {
   }
 }
 
-/**
- * Check if localStorage is available
- */
 export function isStorageAvailable(): boolean {
   try {
     const test = '__storage_test__';

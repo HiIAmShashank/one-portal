@@ -8,10 +8,6 @@ import {
 } from '@one-portal/ui';
 import { useTheme } from './ThemeProvider';
 
-/**
- * ThemeToggle component provides a dropdown for switching between light, dark, and system themes
- * Requirements: FR-008 (Theme Management)
- */
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 

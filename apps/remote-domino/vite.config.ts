@@ -19,6 +19,14 @@ export default defineConfig({
     }),
   ],
   base: process.env.NODE_ENV === 'production' ? '/domino/' : '/',
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+  preview: {
+    port: 4173,
+    strictPort: true,
+  },
   build: {
     modulePreload: false,
     target: 'esnext',

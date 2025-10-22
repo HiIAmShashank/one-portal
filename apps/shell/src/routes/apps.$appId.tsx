@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { RemoteMount } from '../components/RemoteMount';
+
 export const Route = createFileRoute('/apps/$appId')({
   component: AppComponent,
 });
@@ -7,8 +8,6 @@ export const Route = createFileRoute('/apps/$appId')({
 function AppComponent() {
   const { appId } = Route.useParams();
 
-  // TODO: Get app config from useShellConfig hook and find by appId
-  // For now, using mock data
   const mockApps = [
     {
       id: 'billing',
@@ -17,7 +16,7 @@ function AppComponent() {
       moduleName: 'billing',
       scope: 'billing',
       displayOrder: 1,
-    },    {
+    }, {
       id: 'domino',
       name: 'Domino',
       remoteEntryUrl: '/domino/assets/remoteEntry.js',

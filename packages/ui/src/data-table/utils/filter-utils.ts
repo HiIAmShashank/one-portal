@@ -1,12 +1,6 @@
-/**
- * Client-side filter logic utilities
- * @module data-table/utils/filter-utils
- */
-
 import type { ColumnFiltersState } from '../types';
 
 /**
- * Default filter function for text-based filtering
  * Case-insensitive substring matching
  */
 export function defaultTextFilter(value: any, filterValue: string): boolean {
@@ -20,9 +14,6 @@ export function defaultTextFilter(value: any, filterValue: string): boolean {
   return stringValue.includes(filterString);
 }
 
-/**
- * Filter function for exact matching
- */
 export function exactMatchFilter(value: any, filterValue: any): boolean {
   if (filterValue === '' || filterValue === null || filterValue === undefined) {
     return true;
@@ -31,9 +22,6 @@ export function exactMatchFilter(value: any, filterValue: any): boolean {
   return value === filterValue;
 }
 
-/**
- * Filter function for numeric ranges
- */
 export function numberRangeFilter(
   value: any,
   filterValue: { min?: number; max?: number }
@@ -51,9 +39,6 @@ export function numberRangeFilter(
   return true;
 }
 
-/**
- * Filter function for date ranges
- */
 export function dateRangeFilter(
   value: any,
   filterValue: { start?: Date; end?: Date }
@@ -71,9 +56,6 @@ export function dateRangeFilter(
   return true;
 }
 
-/**
- * Filter function for array/multi-select matching
- */
 export function arrayIncludesFilter(value: any, filterValue: any[]): boolean {
   if (!filterValue || filterValue.length === 0) {
     return true;
@@ -86,9 +68,6 @@ export function arrayIncludesFilter(value: any, filterValue: any[]): boolean {
   return filterValue.includes(value);
 }
 
-/**
- * Filter function for boolean values
- */
 export function booleanFilter(value: any, filterValue: boolean | null): boolean {
   if (filterValue === null || filterValue === undefined) {
     return true;
@@ -99,34 +78,22 @@ export function booleanFilter(value: any, filterValue: boolean | null): boolean 
 
 
 
-/**
- * Check if any filters are active
- */
 export function hasActiveFilters(filters: ColumnFiltersState): boolean {
   return filters.some(
     (f) => f.value !== '' && f.value !== null && f.value !== undefined
   );
 }
 
-/**
- * Get count of active filters
- */
 export function getActiveFiltersCount(filters: ColumnFiltersState): number {
   return filters.filter(
     (f) => f.value !== '' && f.value !== null && f.value !== undefined
   ).length;
 }
 
-/**
- * Clear all filters
- */
 export function clearAllFilters(): ColumnFiltersState {
   return [];
 }
 
-/**
- * Remove a specific filter by column ID
- */
 export function removeFilter(
   filters: ColumnFiltersState,
   columnId: string
@@ -134,9 +101,6 @@ export function removeFilter(
   return filters.filter((f) => f.id !== columnId);
 }
 
-/**
- * Update or add a filter
- */
 export function updateFilter(
   filters: ColumnFiltersState,
   columnId: string,
@@ -145,22 +109,16 @@ export function updateFilter(
   const existing = filters.find((f) => f.id === columnId);
 
   if (value === '' || value === null || value === undefined) {
-    // Remove filter if value is empty
     return removeFilter(filters, columnId);
   }
 
   if (existing) {
-    // Update existing filter
     return filters.map((f) => (f.id === columnId ? { ...f, value } : f));
   }
 
-  // Add new filter
   return [...filters, { id: columnId, value }];
 }
 
-/**
- * Debounce utility for filter inputs
- */
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   delay: number
