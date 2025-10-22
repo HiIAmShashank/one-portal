@@ -27,24 +27,6 @@ const APPS = [
     source: path.join(ROOT_DIR, 'apps/shell/dist'),
     destination: BUILD_DIR, // Shell goes to root
     description: 'Shell (Host Application)'
-  },
-  {
-    name: 'billing',
-    source: path.join(ROOT_DIR, 'apps/remote-billing/dist'),
-    destination: path.join(BUILD_DIR, 'billing'),
-    description: 'Billing Remote App'
-  },
-  {
-    name: 'reports',
-    source: path.join(ROOT_DIR, 'apps/remote-reports/dist'),
-    destination: path.join(BUILD_DIR, 'reports'),
-    description: 'Reports Remote App'
-  },
-  {
-    name: 'testgenerator1',
-    source: path.join(ROOT_DIR, 'apps/remote-testgenerator1/dist'),
-    destination: path.join(BUILD_DIR, 'testgenerator1'),
-    description: 'Test Gen 1 Remote App'
   }
 
 ];
@@ -101,7 +83,7 @@ async function combineBuilds() {
   console.log('📋 Copying Azure SWA configuration...');
   const configSource = path.join(ROOT_DIR, 'staticwebapp.config.json');
   const configDest = path.join(BUILD_DIR, 'staticwebapp.config.json');
-  
+
   if (fs.existsSync(configSource)) {
     fs.copyFileSync(configSource, configDest);
     console.log('   ✓ staticwebapp.config.json copied');

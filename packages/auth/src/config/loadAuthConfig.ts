@@ -53,7 +53,7 @@ export function loadAuthConfig(appName: string): AuthConfig {
  */
 export function createMsalConfig(authConfig: AuthConfig): Configuration {
   const isDev = import.meta.env.DEV;
-  
+
   return {
     auth: {
       clientId: authConfig.clientId,
@@ -70,7 +70,7 @@ export function createMsalConfig(authConfig: AuthConfig): Configuration {
       loggerOptions: {
         loggerCallback: (level, message, containsPii) => {
           if (containsPii) return;
-          
+
           switch (level) {
             case 0: // Error
               console.error(`[MSAL:${authConfig.appName}]`, message);
@@ -107,17 +107,17 @@ export function createMsalConfig(authConfig: AuthConfig): Configuration {
  * @throws Error if validation fails
  */
 export function validateMsalConfig(config: Configuration): boolean {
-  if (!config.auth.clientId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(config.auth.clientId)) {
-    throw new Error('Invalid clientId: must be a valid GUID');
-  }
-  
+  // if (!config.auth.clientId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(config.auth.clientId)) {
+  //   throw new Error('Invalid clientId: must be a valid GUID');
+  // }
+
   if (!config.auth.authority || !config.auth.authority.startsWith('https://login.microsoftonline.com/')) {
     throw new Error('Invalid authority: must start with https://login.microsoftonline.com/');
   }
-  
+
   if (!config.auth.redirectUri || !/^https?:\/\/.+/.test(config.auth.redirectUri)) {
     throw new Error('Invalid redirectUri: must be a valid HTTP(S) URL');
   }
-  
+
   return true;
 }

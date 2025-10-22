@@ -103,15 +103,7 @@ export function ColumnHeader<TData>({
     >
       <div className="flex items-center gap-2">
         {/* Drag handle for reordering */}
-        {enableReordering && (
-          <div
-            {...attributes}
-            {...listeners}
-            className="cursor-move opacity-50 hover:opacity-100"
-          >
-            <GripVertical className="h-4 w-4" />
-          </div>
-        )}
+
 
         {/* Header content with sorting */}
         <div
@@ -196,6 +188,16 @@ export function ColumnHeader<TData>({
               <Ungroup className="h-3 w-3 opacity-50" />
             )}
           </Button>
+        )}
+
+        {enableReordering && (
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-move opacity-50 hover:opacity-100"
+          >
+            <GripVertical className="h-4 w-4" />
+          </div>
         )}
       </div>
 

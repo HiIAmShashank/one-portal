@@ -1,26 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { RemoteMount } from '../components/RemoteMount';
 
-/**
- * Dynamic splat route for remote applications
- * Path: /apps/$appId/$ (matches /apps/$appId and all sub-paths)
- * 
- * This route loads and renders remote applications dynamically
- * using Module Federation based on the appId parameter.
- * The splat pattern captures all sub-paths (e.g., /apps/billing/invoices)
- * so the remote app's router can handle them internally.
- * 
- * Requirements: FR-006, FR-003, US2
- */
 export const Route = createFileRoute('/apps/$appId/$')({
   component: AppComponent,
 });
 
 function AppComponent() {
   const { appId } = Route.useParams();
-
-  // TODO: Get app config from useShellConfig hook and find by appId
-  // For now, using mock data
   const mockApps = [
     {
       id: 'billing',
@@ -29,14 +15,6 @@ function AppComponent() {
       moduleName: 'billing',
       scope: 'billing',
       displayOrder: 1,
-    },
-    {
-      id: 'reports',
-      name: 'Reports',
-      remoteEntryUrl: '/reports/assets/remoteEntry.js',
-      moduleName: 'reports',
-      scope: 'reports',
-      displayOrder: 2,
     },
   ];
 

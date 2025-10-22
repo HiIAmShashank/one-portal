@@ -28,14 +28,11 @@ export function AuthLoadingSpinner({
   className = ''
 }: AuthLoadingSpinnerProps) {
   return (
-    <Empty className={className} role="status" aria-live="polite" aria-busy="true">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <Spinner size="lg" aria-label="Loading" />
-        </EmptyMedia>
-        <EmptyTitle>{title}</EmptyTitle>
-        <EmptyDescription>{description}</EmptyDescription>
-      </EmptyHeader>
-    </Empty>
+    <div className='flex flex-col gap-2 items-center'>
+      {/* a title and a description with a spinner underneath */}
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p className="text-sm text-muted-foreground">{description}</p>
+      <Spinner size="md" aria-label={title} aria-describedby={description} className={className} />
+    </div>
   );
 }
