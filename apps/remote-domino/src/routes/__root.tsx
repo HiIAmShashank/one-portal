@@ -3,14 +3,12 @@ import { createProtectedRouteGuard } from "@one-portal/auth/guards";
 import { safeRedirect } from "@one-portal/auth/utils";
 import { msalInstance } from "../auth/msalInstance";
 import { AppLayout } from "../components/AppLayout";
+import { PUBLIC_ROUTES } from "../config/routes";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location, preload }) => {
     // Skip authentication for public routes
-    if (
-      location.pathname === "/sign-in" ||
-      location.pathname === "/auth/callback"
-    ) {
+    if (PUBLIC_ROUTES.includes(location.pathname as any)) {
       return;
     }
 
@@ -43,8 +41,7 @@ export const Route = createRootRoute({
 
   component: () => {
     const { pathname } = window.location;
-    const isPublicRoute =
-      pathname === "/sign-in" || pathname === "/auth/callback";
+    const isPublicRoute = PUBLIC_ROUTES.includes(pathname as any);
 
     // Don't render AppLayout on public routes
     if (isPublicRoute) {

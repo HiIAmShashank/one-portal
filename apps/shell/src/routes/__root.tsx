@@ -6,8 +6,7 @@ import {
   isPublicRoute,
 } from "@one-portal/auth/guards";
 import { msalInstance } from "../auth/msalInstance";
-
-const PUBLIC_ROUTES = ["/sign-in", "/auth/callback"];
+import { PUBLIC_ROUTES } from "../config/routes";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {

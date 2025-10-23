@@ -39,6 +39,15 @@ export interface InitConfig {
 
   /** Custom route type detector (defaults to pathname-based detection) */
   detectRouteType?: () => RouteType;
+
+  /**
+   * Array of public route paths that don't require authentication
+   * @default ['/sign-in', '/auth/callback']
+   * @example
+   * import { PUBLIC_ROUTES } from '@/config/routes';
+   * { publicRoutes: PUBLIC_ROUTES }
+   */
+  publicRoutes?: readonly string[];
 }
 
 /**

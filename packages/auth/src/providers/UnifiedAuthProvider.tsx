@@ -60,6 +60,7 @@ export function UnifiedAuthProvider({
   detectRouteType,
   getAuthConfig,
   debug = false,
+  publicRoutes,
 }: UnifiedAuthProviderProps): ReactNode {
   const [isInitialized, setIsInitialized] = useState(false);
   const initializerRef = useRef<MsalInitializer | null>(null);
@@ -81,6 +82,7 @@ export function UnifiedAuthProvider({
         getAuthConfig,
         debug,
         detectRouteType,
+        publicRoutes,
       });
 
       // Subscribe to initialization state changes

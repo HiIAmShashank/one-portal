@@ -1,14 +1,15 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { RouterProvider } from '@tanstack/react-router';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { UnifiedAuthProvider, isAuthError } from '@one-portal/auth';
-import { msalInstance, getAuthConfig } from './auth/msalInstance';
-import { router } from './router';
-import { Sonner } from '@one-portal/ui';
-import './style.css';
-import '@one-portal/ui/styles.css';
-import { validateShellEnv, createQueryClient } from '@one-portal/config';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { RouterProvider } from "@tanstack/react-router";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { UnifiedAuthProvider, isAuthError } from "@one-portal/auth";
+import { msalInstance, getAuthConfig } from "./auth/msalInstance";
+import { router } from "./router";
+import { Sonner } from "@one-portal/ui";
+import "./style.css";
+import "@one-portal/ui/styles.css";
+import { validateShellEnv, createQueryClient } from "@one-portal/config";
+import { PUBLIC_ROUTES } from "./config/routes";
 
 try {
   validateShellEnv();
@@ -25,7 +26,7 @@ try {
 
 const queryClient = createQueryClient({ shouldSkipRetry: isAuthError });
 
-createRoot(document.getElementById('app')!).render(
+createRoot(document.getElementById("app")!).render(
   <StrictMode>
     <UnifiedAuthProvider
       msalInstance={msalInstance}
@@ -33,11 +34,12 @@ createRoot(document.getElementById('app')!).render(
       appName="shell"
       getAuthConfig={getAuthConfig}
       debug={import.meta.env.DEV}
+      publicRoutes={PUBLIC_ROUTES}
     >
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>
     </UnifiedAuthProvider>
     <Sonner />
-  </StrictMode>
+  </StrictMode>,
 );

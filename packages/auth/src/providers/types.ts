@@ -74,4 +74,14 @@ export interface UnifiedAuthProviderProps {
    * @default false
    */
   debug?: boolean;
+
+  /**
+   * Array of public route paths that don't require authentication
+   *
+   * @default ['/sign-in', '/auth/callback']
+   * @example
+   * import { PUBLIC_ROUTES } from '@/config/routes';
+   * <UnifiedAuthProvider publicRoutes={PUBLIC_ROUTES} />
+   */
+  publicRoutes?: readonly string[];
 }

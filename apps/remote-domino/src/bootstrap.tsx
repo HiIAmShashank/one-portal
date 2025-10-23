@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { UnifiedAuthProvider } from "@one-portal/auth";
 import { msalInstance, getAuthConfig } from "./auth/msalInstance";
+import { PUBLIC_ROUTES } from "./config/routes";
 import App from "./App";
 
 // Load debug utilities in development
@@ -30,6 +31,7 @@ export async function mount(containerId: string): Promise<Root> {
         appName="domino"
         getAuthConfig={getAuthConfig}
         debug={import.meta.env.DEV}
+        publicRoutes={PUBLIC_ROUTES}
       >
         <App />
       </UnifiedAuthProvider>

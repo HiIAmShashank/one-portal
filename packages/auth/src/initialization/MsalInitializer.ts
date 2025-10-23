@@ -11,7 +11,12 @@ import {
 } from "@azure/msal-browser";
 import { AuthErrorHandler } from "../errors";
 import { publishAuthEvent } from "../events";
-import { getLoginHint, safeRedirect, getAndClearReturnUrl } from "../utils";
+import {
+  getLoginHint,
+  safeRedirect,
+  getAndClearReturnUrl,
+  setReturnUrl,
+} from "../utils";
 import { isEmbeddedMode } from "../utils/environment";
 import type {
   InitConfig,
@@ -23,13 +28,23 @@ import type {
 } from "./types";
 
 /**
- * Default route type detector based on pathname
+ * Create a route type detector based on public routes configuration
  */
-function defaultDetectRouteType(): RouteType {
-  const path = window.location.pathname;
-  if (path === "/sign-in") return "public";
-  if (path === "/auth/callback") return "callback";
-  return "protected";
+function createDetectRouteType(
+  publicRoutes: readonly string[],
+): () => RouteType {
+  return (): RouteType => {
+    const path = window.location.pathname;
+
+    // Check if path is in public routes
+    if (publicRoutes.includes(path)) {
+      // Determine if it's a callback route or general public route
+      if (path.includes("/callback")) return "callback";
+      return "public";
+    }
+
+    return "protected";
+  };
 }
 
 /**
@@ -79,9 +94,11 @@ export class MsalInitializer {
   private callbacks: Set<InitializationCallback>;
   private interactionStatus: InteractionStatus;
   private eventCallbackId: string | null;
+  private publicRoutes: readonly string[];
 
   constructor(config: InitConfig) {
     this.config = config;
+    this.publicRoutes = config.publicRoutes ?? ["/sign-in", "/auth/callback"];
     this.state = {
       isInitializing: false,
       isInitialized: false,
@@ -272,7 +289,7 @@ export class MsalInitializer {
     routeType?: RouteType,
   ): InitializationResult | null {
     const detectRouteType =
-      this.config.detectRouteType || defaultDetectRouteType;
+      this.config.detectRouteType || createDetectRouteType(this.publicRoutes);
     const detectedRouteType = routeType || detectRouteType();
 
     if (detectedRouteType === "protected") {
@@ -649,6 +666,22 @@ export class MsalInitializer {
           `[${appName}] Interaction already in progress (status: ${this.interactionStatus}), skipping loginRedirect()`,
         );
         return;
+      }
+
+      // Save current URL as returnUrl if it's not a public route
+      // This handles direct navigation to protected routes (e.g., /dashboard/events?filter=active)
+      const currentPath = window.location.pathname;
+      const isPublicRoute = this.publicRoutes.includes(currentPath);
+
+      if (!isPublicRoute) {
+        // Preserve full URL including query params and hash
+        const fullUrl =
+          currentPath + window.location.search + window.location.hash;
+        setReturnUrl(fullUrl);
+        console.info(
+          `[${appName}] Saved returnUrl for post-auth redirect:`,
+          fullUrl,
+        );
       }
 
       console.info(
