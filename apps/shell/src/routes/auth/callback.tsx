@@ -1,33 +1,28 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import { AuthLoadingSpinner } from '@one-portal/ui';
-import { getAndClearReturnUrl, safeRedirect } from '@one-portal/auth/utils';
+import { createFileRoute } from "@tanstack/react-router";
+import { AuthLoadingSpinner } from "@one-portal/ui";
 
-export const Route = createFileRoute('/auth/callback')({
+/**
+ * OAuth callback route for Azure AD authentication
+ *
+ * This route receives the OAuth redirect from Azure AD after user signs in.
+ * The actual authentication processing and redirect is handled by:
+ * - UnifiedAuthProvider initializes MsalInitializer
+ * - MsalInitializer.initializeHost() calls handleRedirectPromise()
+ * - After auth succeeds, MsalInitializer reads returnUrl and redirects user
+ *
+ * This component just needs to exist and show a loading state while that happens.
+ */
+export const Route = createFileRoute("/auth/callback")({
   component: AuthCallbackComponent,
 });
 
 function AuthCallbackComponent() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const returnUrl = getAndClearReturnUrl();
-
-    const timer = setTimeout(() => {
-      if (returnUrl) {
-        safeRedirect(returnUrl, '/');
-      } else {
-        navigate({ to: '/' });
-      }
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
-
   return (
-    <AuthLoadingSpinner
-      title="Completing sign-in..."
-      description="Redirecting you to your destination."
-    />
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <AuthLoadingSpinner
+        title="Completing sign-in..."
+        description="Please wait while we complete your authentication."
+      />
+    </div>
   );
 }
