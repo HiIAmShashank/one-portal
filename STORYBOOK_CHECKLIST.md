@@ -85,16 +85,16 @@ Update checkboxes as tasks are completed: `- [ ]` → `- [x]`
 
 **File:** `src/stories/DataTable/03-ColumnFeatures.stories.tsx`
 
-- [ ] Create story file structure
-- [ ] Story: ColumnResizing - Draggable borders
-- [ ] Story: ColumnReordering - Drag & drop columns
-- [ ] Story: ColumnPinning - Pin left/right
-- [ ] Story: ColumnVisibility - Show/hide toggle
-- [ ] Story: StickyColumns - Fixed first/last columns
-- [ ] Story: StickyHeader - Fixed header on scroll
-- [ ] Story: CustomCellRenderers - Icons, badges
+- [x] Create story file structure
+- [x] Story: ColumnResizing - Draggable borders
+- [x] Story: ColumnReordering - Drag & drop columns
+- [x] Story: ColumnPinning - Pin left/right
+- [x] Story: ColumnVisibility - Show/hide toggle
+- [x] Story: StickyColumns - Fixed first/last columns
+- [x] Story: StickyHeader - Fixed header on scroll
+- [x] Story: CustomCellRenderers - Icons, badges
 
-**Status:** Not started
+**Status:** ✅ Completed
 
 ---
 
@@ -198,9 +198,9 @@ Update checkboxes as tasks are completed: `- [ ]` → `- [x]`
 ## Summary
 
 **Total Tasks:** 90
-**Completed:** 39 (43%)
+**Completed:** 47 (52%)
 **In Progress:** None
-**Next Up:** Phase 5 - Column Features Stories
+**Next Up:** Phase 6 - Selection & Actions Stories
 
 ---
 
