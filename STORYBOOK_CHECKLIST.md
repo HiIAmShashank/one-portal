@@ -69,15 +69,15 @@ Update checkboxes as tasks are completed: `- [ ]` → `- [x]`
 
 **File:** `src/stories/DataTable/02-AdvancedFeatures.stories.tsx`
 
-- [ ] Create story file structure
-- [ ] Story: InlineEditing - Editable cells
-- [ ] Story: RowGrouping - Grouped rows with aggregation
-- [ ] Story: RowExpanding - Expandable rows
-- [ ] Story: ServerSideMode - Server pagination/sorting
-- [ ] Story: MultiSelectFilters - Various filter types
-- [ ] Story: CustomAggregations - Sum, count, average
+- [x] Create story file structure
+- [x] Story: InlineEditing - Editable cells
+- [x] Story: RowGrouping - Grouped rows with aggregation
+- [x] Story: RowExpanding - Expandable rows
+- [x] Story: ServerSideMode - Server pagination/sorting
+- [x] Story: MultiSelectFilters - Various filter types
+- [x] Story: CustomAggregations - Sum, count, average
 
-**Status:** Not started
+**Status:** ✅ Completed
 
 ---
 
@@ -198,9 +198,9 @@ Update checkboxes as tasks are completed: `- [ ]` → `- [x]`
 ## Summary
 
 **Total Tasks:** 90
-**Completed:** 32 (36%)
+**Completed:** 39 (43%)
 **In Progress:** None
-**Next Up:** Phase 4 - Advanced Features Stories
+**Next Up:** Phase 5 - Column Features Stories
 
 ---
 
