@@ -102,15 +102,15 @@ Update checkboxes as tasks are completed: `- [ ]` → `- [x]`
 
 **File:** `src/stories/DataTable/04-SelectionActions.stories.tsx`
 
-- [ ] Create story file structure
-- [ ] Story: SingleRowSelection - Radio buttons
-- [ ] Story: MultipleRowSelection - Checkboxes
-- [ ] Story: RowActions - Per-row action menu
-- [ ] Story: BulkActions - Bulk operations
-- [ ] Story: ConditionalActions - State-based actions
-- [ ] Story: DisabledSelection - Non-selectable rows
+- [x] Create story file structure
+- [x] Story: SingleRowSelection - Radio buttons
+- [x] Story: MultipleRowSelection - Checkboxes
+- [x] Story: RowActions - Per-row action menu
+- [x] Story: BulkActions - Bulk operations
+- [x] Story: ConditionalActions - State-based actions
+- [x] Story: DisabledSelection - Non-selectable rows
 
-**Status:** Not started
+**Status:** ✅ Completed
 
 ---
 
@@ -198,9 +198,9 @@ Update checkboxes as tasks are completed: `- [ ]` → `- [x]`
 ## Summary
 
 **Total Tasks:** 90
-**Completed:** 47 (52%)
+**Completed:** 54 (60%)
 **In Progress:** None
-**Next Up:** Phase 6 - Selection & Actions Stories
+**Next Up:** Phase 7 - UI Variations Stories
 
 ---
 
