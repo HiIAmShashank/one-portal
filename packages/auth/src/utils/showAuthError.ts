@@ -1,6 +1,19 @@
 import { toast } from '@one-portal/ui';
 import { formatAuthError, FormattedAuthError } from './formatAuthError';
 
+/**
+ * @deprecated Use `AuthErrorHandler.show()` instead.
+ * This function will be removed in a future version.
+ * 
+ * Migration example:
+ * ```typescript
+ * // Old:
+ * showAuthError(error, onRetry, { announceToScreenReader });
+ * 
+ * // New:
+ * AuthErrorHandler.show(error, { onRetry, announceToScreenReader });
+ * ```
+ */
 export function showAuthError(
   error: unknown,
   onRetry?: () => void,
@@ -12,6 +25,10 @@ export function showAuthError(
   displayFormattedError(formatted, onRetry, options);
 }
 
+/**
+ * @deprecated Use `AuthErrorHandler.show()` with pre-processed error instead.
+ * This function will be removed in a future version.
+ */
 export function displayFormattedError(
   formatted: FormattedAuthError,
   onRetry?: () => void,
@@ -62,6 +79,19 @@ export function displayFormattedError(
   }
 }
 
+/**
+ * @deprecated Use `AuthErrorHandler.showPromise()` instead.
+ * This function will be removed in a future version.
+ * 
+ * Migration example:
+ * ```typescript
+ * // Old:
+ * showAuthPromise(promise, { loading, success, error });
+ * 
+ * // New:
+ * AuthErrorHandler.showPromise(promise, { loading, success, error });
+ * ```
+ */
 export function showAuthPromise<T>(
   promise: Promise<T>,
   messages?: {

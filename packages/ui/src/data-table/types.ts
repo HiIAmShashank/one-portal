@@ -109,9 +109,83 @@ export interface DataTableProps<TData> {
   getRowCanEdit?: (row: TData) => boolean;
   rowActions?: RowAction<TData>[];
   bulkActions?: BulkAction<TData>[];
+
+  // ========================================================================
+  // UI State - Controlled/Uncontrolled Pattern
+  // ========================================================================
+
+  /**
+   * Filter mode - controls how column filters are displayed.
+   * 
+   * When provided, DataTable operates in **controlled mode** for filter mode.
+   * When omitted, DataTable manages filter mode internally (uncontrolled).
+   * 
+   * Both modes persist to localStorage when tableId is provided.
+   * 
+   * @default 'inline' (internal state)
+   * 
+   * @example
+   * ```tsx
+   * // Uncontrolled (recommended) - DataTable manages state
+   * <DataTable tableId="users" data={users} columns={columns} />
+   * 
+   * // Controlled - You manage state
+   * const [filterMode, setFilterMode] = useState<FilterMode>('popover');
+   * <DataTable
+   *   tableId="users"
+   *   data={users}
+   *   columns={columns}
+   *   filterMode={filterMode}
+   *   onFilterModeChange={setFilterMode}
+   * />
+   * ```
+   */
   filterMode?: FilterMode;
+
+  /**
+   * Callback when filter mode changes (for controlled mode).
+   * 
+   * Only needed if you're controlling filterMode externally.
+   * 
+   * @param mode - The new filter mode value
+   */
   onFilterModeChange?: (mode: FilterMode) => void;
+
+  /**
+   * Table density - controls row spacing and text size.
+   * 
+   * When provided, DataTable operates in **controlled mode** for density.
+   * When omitted, DataTable manages density internally (uncontrolled).
+   * 
+   * Both modes persist to localStorage when tableId is provided.
+   * 
+   * @default 'default' (internal state)
+   * 
+   * @example
+   * ```tsx
+   * // Uncontrolled (recommended) - DataTable manages state
+   * <DataTable tableId="products" data={products} columns={columns} />
+   * 
+   * // Controlled - You manage state
+   * const [density, setDensity] = useState<Density>('compact');
+   * <DataTable
+   *   tableId="products"
+   *   data={products}
+   *   columns={columns}
+   *   density={density}
+   *   onDensityChange={setDensity}
+   * />
+   * ```
+   */
   density?: Density;
+
+  /**
+   * Callback when density changes (for controlled mode).
+   * 
+   * Only needed if you're controlling density externally.
+   * 
+   * @param density - The new density value
+   */
   onDensityChange?: (density: Density) => void;
   stickyHeader?: boolean;
   stickyColumns?: {

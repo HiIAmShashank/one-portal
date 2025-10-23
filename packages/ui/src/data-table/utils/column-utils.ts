@@ -5,8 +5,15 @@ import type {
   ColumnSizingState,
 } from '../types';
 
+// ============================================================================
+// INTERNAL COLUMN UTILITIES - Used by useTableState hook
+// Not exported from package - these are implementation details
+// ============================================================================
+
 /**
- * All columns visible by default unless explicitly hidden
+ * @internal
+ * Get default column visibility based on column definitions.
+ * Used internally by useTableState for initialization.
  */
 export function getDefaultVisibility<TData>(
   columns: ColumnDef<TData>[]
@@ -20,10 +27,20 @@ export function getDefaultVisibility<TData>(
   );
 }
 
+/**
+ * @internal
+ * Get default column order from column definitions.
+ * Used internally by useTableState for initialization.
+ */
 export function getDefaultColumnOrder<TData>(columns: ColumnDef<TData>[]): string[] {
   return columns.map((col) => col.id);
 }
 
+/**
+ * @internal
+ * Get default column sizing from column definitions.
+ * Used internally by useTableState for initialization.
+ */
 export function getDefaultColumnSizing<TData>(
   columns: ColumnDef<TData>[]
 ): ColumnSizingState {
@@ -39,7 +56,10 @@ export function getDefaultColumnSizing<TData>(
 }
 
 /**
- * Removes entries for non-existent columns
+ * @internal
+ * Validate persisted column visibility against current column definitions.
+ * Removes entries for columns that no longer exist.
+ * Used internally by useTableState when loading from localStorage.
  */
 export function validateVisibility<TData>(
   visibility: ColumnVisibilityState,
@@ -58,7 +78,10 @@ export function validateVisibility<TData>(
 }
 
 /**
- * Removes non-existent columns, adds missing ones
+ * @internal
+ * Validate persisted column order against current column definitions.
+ * Removes columns that no longer exist and adds new columns to the end.
+ * Used internally by useTableState when loading from localStorage.
  */
 export function validateColumnOrder<TData>(
   order: string[],
@@ -76,7 +99,10 @@ export function validateColumnOrder<TData>(
 }
 
 /**
- * Ensures values are within min/max bounds
+ * @internal
+ * Validate persisted column sizing against current column definitions.
+ * Ensures values are within min/max bounds defined in columns.
+ * Used internally by useTableState when loading from localStorage.
  */
 export function validateColumnSizing<TData>(
   sizing: ColumnSizingState,
@@ -112,10 +138,18 @@ export function validateColumnPinning<TData>(
   };
 }
 
+/**
+ * @internal
+ * Count visible columns (not currently used).
+ */
 export function getVisibleColumnsCount(visibility: ColumnVisibilityState): number {
   return Object.values(visibility).filter((v) => v).length;
 }
 
+/**
+ * @internal
+ * Check if a column is pinned and return which side (not currently used).
+ */
 export function isColumnPinned(
   columnId: string,
   pinning: ColumnPinningState
@@ -125,6 +159,10 @@ export function isColumnPinned(
   return false;
 }
 
+/**
+ * @internal
+ * Calculate total width of all columns (not currently used).
+ */
 export function calculateTotalWidth<TData>(
   columns: ColumnDef<TData>[],
   sizing: ColumnSizingState,

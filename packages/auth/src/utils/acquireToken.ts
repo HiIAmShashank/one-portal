@@ -60,7 +60,7 @@ export async function acquireToken(options: AcquireTokenOptions): Promise<TokenR
       scopes: response.scopes,
       account: response.account as AccountInfo,
       tokenType: response.tokenType,
-    });
+    };
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {
       if (import.meta.env.DEV) {

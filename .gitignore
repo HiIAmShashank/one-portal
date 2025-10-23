@@ -11,7 +11,7 @@ speckit.*
 !README.md
 !readme.md
 !Readme.md
-
+.env.*
 .vscode
 .DS_Store
 .env

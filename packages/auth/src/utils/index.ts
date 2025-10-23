@@ -45,5 +45,13 @@ export {
   attemptSilentAuth,
   createRouteGuard,
   isInteractionRequired,
-  type RouteGuardConfig,
+  type MsalRouteGuardConfig,
 } from './routeGuard';
+
+export {
+  isEmbeddedMode,
+  getAppMode,
+  getEmbeddedModeConfig,
+  type AppMode,
+  type EmbeddedModeConfig,
+} from './environment';

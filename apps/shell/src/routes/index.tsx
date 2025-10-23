@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useMsal } from '@azure/msal-react';
+import { useAuth } from '@one-portal/auth/hooks';
 import {
   Card,
   CardContent,
@@ -15,8 +15,8 @@ export const Route = createFileRoute('/')({
 });
 
 function IndexComponent() {
-  const { accounts } = useMsal();
-  const isAuthenticated = accounts.length > 0;
+  const { state } = useAuth();
+  const { isAuthenticated } = state;
 
   if (!isAuthenticated) {
     return <></>;

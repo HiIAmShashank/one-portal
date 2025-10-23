@@ -11,6 +11,58 @@ export {
   NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from './components/ui/navigation-menu';
+export {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarInput,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuAction,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
+} from './components/ui/sidebar';
+export {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  BreadcrumbEllipsis,
+} from './components/ui/breadcrumb';
+export {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from './components/ui/collapsible';
+export {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetOverlay,
+  SheetPortal,
+  SheetTitle,
+  SheetTrigger,
+} from './components/ui/sheet';
 
 // Shadcn UI Components - Display
 export { Avatar, AvatarImage, AvatarFallback } from './components/ui/avatar';
@@ -104,6 +156,7 @@ export { AuthLoadingSpinner } from './components/auth/AuthLoadingSpinner';
 
 // Utilities
 export { cn } from './lib/utils';
+export { useIsMobile } from './hooks/use-mobile';
 
 // DataTable Component
 export * from './data-table';

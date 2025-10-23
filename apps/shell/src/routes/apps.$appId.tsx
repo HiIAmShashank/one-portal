@@ -8,22 +8,14 @@ export const Route = createFileRoute('/apps/$appId')({
 function AppComponent() {
   const { appId } = Route.useParams();
 
-  const mockApps = [
-    {
-      id: 'billing',
-      name: 'Billing',
-      remoteEntryUrl: '/billing/assets/remoteEntry.js',
-      moduleName: 'billing',
-      scope: 'billing',
-      displayOrder: 1,
-    }, {
-      id: 'domino',
-      name: 'Domino',
-      remoteEntryUrl: '/domino/assets/remoteEntry.js',
-      moduleName: 'domino',
-      scope: 'domino',
-      displayOrder: 2,
-    },
+  const mockApps = [{
+    id: 'domino',
+    name: 'Domino',
+    remoteEntryUrl: '/domino/assets/remoteEntry.js',
+    moduleName: 'domino',
+    scope: 'domino',
+    displayOrder: 1,
+  },
 
   ];
 

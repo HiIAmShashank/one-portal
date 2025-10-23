@@ -14,6 +14,19 @@ export interface FormattedAuthError {
   duration?: number;
 }
 
+/**
+ * @deprecated Use `AuthErrorHandler.process()` instead.
+ * This function will be removed in a future version.
+ * 
+ * Migration example:
+ * ```typescript
+ * // Old:
+ * const formatted = formatAuthError(error);
+ * 
+ * // New:
+ * const processed = AuthErrorHandler.process(error);
+ * ```
+ */
 export function formatAuthError(error: unknown): FormattedAuthError {
   if (error instanceof InteractionRequiredAuthError) {
     return {

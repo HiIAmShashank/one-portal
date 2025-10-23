@@ -1,8 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
-import { useMsal } from '@azure/msal-react';
+import { useAuth } from '@one-portal/auth/hooks';
 import { useEffect, useRef, useState } from 'react';
 import { SignInPrompt, toast } from '@one-portal/ui';
-import { getAuthConfig } from '../auth/msalInstance';
 import {
     Card,
     CardHeader,
@@ -21,11 +20,11 @@ export const Route = createFileRoute('/sign-in')({
 });
 
 function SignInComponent() {
-    const { instance, accounts } = useMsal();
+    const { state, login } = useAuth();
+    const { isAuthenticated } = state;
     const navigate = useNavigate();
     const search = useSearch({ from: '/sign-in' });
     const signInButtonRef = useRef<HTMLButtonElement>(null);
-    const isAuthenticated = accounts.length > 0;
 
     const [srAnnouncement, setSrAnnouncement] = useState('');    /**
      * Announce auth state changes to screen readers (T114: US7)
@@ -72,10 +71,7 @@ function SignInComponent() {
         try {
             if (search.returnUrl) {
                 sessionStorage.setItem('auth_return_url', search.returnUrl);
-            } await instance.loginRedirect({
-                scopes: getAuthConfig().scopes,
-                prompt: 'select_account',
-            });
+            } await login();
         } catch (error) {
             console.error('[Shell] Login error:', error);
         }

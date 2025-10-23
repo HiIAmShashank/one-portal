@@ -1,4 +1,5 @@
 import type { AccountInfo } from '@azure/msal-browser';
+import type { AppMode } from '../utils/environment';
 
 export interface AuthConfig {
   clientId: string;
@@ -7,6 +8,16 @@ export interface AuthConfig {
   postLogoutRedirectUri?: string;
   scopes: string[];
   appName: string;
+  /**
+   * Application mode for embedded vs standalone detection
+   * 
+   * - `embedded`: Force embedded mode (app runs within Shell)
+   * - `standalone`: Force standalone mode (app runs independently)
+   * - `auto`: Auto-detect based on URL path (default)
+   * 
+   * @default 'auto'
+   */
+  mode?: AppMode;
 }
 
 /**
@@ -51,7 +62,7 @@ export interface AuthError {
 export interface UseAuthReturn {
   state: AuthState;
   login: () => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (postLogoutRedirectUri?: string) => Promise<void>;
   acquireToken: (scopes: string[]) => Promise<string | null>;
   hasRole: (roles: string | string[]) => boolean;
   clearError: () => void;

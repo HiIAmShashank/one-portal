@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { DominoMSALProvider } from './auth/MSALProvider';
+import { UnifiedAuthProvider } from '@one-portal/auth';
+import { msalInstance, getAuthConfig } from './auth/msalInstance';
 import App from './App';
 
 export async function mount(containerId: string): Promise<Root> {
@@ -16,9 +17,15 @@ export async function mount(containerId: string): Promise<Root> {
 
   root.render(
     <StrictMode>
-      <DominoMSALProvider>
+      <UnifiedAuthProvider
+        msalInstance={msalInstance}
+        mode="remote"
+        appName="domino"
+        getAuthConfig={getAuthConfig}
+        debug={import.meta.env.DEV}
+      >
         <App />
-      </DominoMSALProvider>
+      </UnifiedAuthProvider>
     </StrictMode>
   );
 

@@ -71,7 +71,7 @@ export function RemoteMount({ app, className = '' }: RemoteMountProps) {
   }, [app.id, app.name, app.remoteEntryUrl, app.scope, containerId, setLoading, setStoreError]);
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)]">
+    <div className="relative min-h-[calc(100vh-70px)]">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white/90 z-10">
           <LoadingIndicator />
@@ -94,7 +94,7 @@ export function RemoteMount({ app, className = '' }: RemoteMountProps) {
       <div
         id={containerId}
         ref={containerRef}
-        className={`min-h-[calc(100vh-8rem)] ${className}`}
+        className={`min-h-[calc(100vh-70px)] ${className}`}
         aria-label={`${app.name} application`}
       />
     </div>
