@@ -174,6 +174,13 @@ export class MsalInitializer {
   /**
    * Initialize MSAL based on application mode
    *
+   * This method is idempotent - it can be safely called multiple times.
+   * Subsequent calls while initialization is in progress or after completion
+   * will return immediately without starting a new initialization.
+   *
+   * This handles React Strict Mode's double-mounting behavior without
+   * requiring workarounds like resetting the mounted flag.
+   *
    * @param mode - 'host' for Shell, 'remote' for Domino
    * @param routeType - Optional route type (defaults to detected value)
    * @returns Initialization result
@@ -182,11 +189,40 @@ export class MsalInitializer {
     mode: InitializationMode,
     routeType?: RouteType,
   ): Promise<InitializationResult> {
-    // Reset mounted flag for React Strict Mode remounts
-    this.isMounted = true;
-
+    // Idempotent check: If already initialized or currently initializing, return early
     if (this.state.isInitialized) {
-      return { success: true };
+      const { debug, appName } = this.config;
+      if (debug) {
+        console.info(
+          `[${appName}] Already initialized, skipping duplicate initialization`,
+        );
+      }
+      return {
+        success: !this.state.initError,
+        error: this.state.initError ?? undefined,
+      };
+    }
+
+    if (this.state.isInitializing) {
+      const { debug, appName } = this.config;
+      if (debug) {
+        console.info(
+          `[${appName}] Initialization already in progress, skipping duplicate call`,
+        );
+      }
+      // Return a promise that will wait for the current initialization to complete
+      // by checking state in a loop (this handles React Strict Mode double-mounting)
+      return new Promise((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (!this.state.isInitializing) {
+            clearInterval(checkInterval);
+            resolve({
+              success: !this.state.initError,
+              error: this.state.initError ?? undefined,
+            });
+          }
+        }, 50); // Check every 50ms
+      });
     }
 
     // Perform quick cache check for host mode
