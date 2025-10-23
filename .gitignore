@@ -53,3 +53,5 @@ coverage
 .specify/templates/spec-template.md
 .specify/templates/tasks-template.md
 packages/auth/tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
+apps/shell/tsconfig.tsbuildinfo
