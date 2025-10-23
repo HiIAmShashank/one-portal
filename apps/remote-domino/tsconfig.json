@@ -12,7 +12,9 @@
       "@one-portal/ui/*": ["../../packages/ui/src/*"],
       "@one-portal/types": ["../../packages/types/src"],
       "@one-portal/auth": ["../../packages/auth/src"],
-      "@one-portal/config": ["../../packages/config/src"]
+      "@one-portal/auth/*": ["../../packages/auth/src/*"],
+      "@one-portal/config": ["../../packages/config/src"],
+      "@one-portal/config/*": ["../../packages/config/src/*"]
     }
   },
   "include": ["src"],
