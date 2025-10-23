@@ -19,6 +19,7 @@ import {
 } from "@tanstack/react-table";
 import type { Table, Row } from "@tanstack/react-table";
 import type { DataTableProps } from "../types";
+import { customFilterFns } from "../filters/customFilters";
 
 type UseDataTableProps<TData> = Pick<
   DataTableProps<TData>,
@@ -139,6 +140,9 @@ export function useDataTable<TData>(
 
       // Core
       getCoreRowModel: getCoreRowModel(),
+
+      // Custom filter functions
+      filterFns: customFilterFns,
 
       // Sorting
       enableSorting: sortingConfig.enabled,

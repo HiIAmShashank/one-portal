@@ -270,6 +270,12 @@ export interface UIConfig {
     right?: number;
   };
 
+  // Toolbar
+  showToolbar?: boolean; // Default: true if filtering enabled
+  showGlobalSearch?: boolean; // Default: true
+  showColumnFilters?: boolean; // Default: true
+  globalSearchPlaceholder?: string;
+
   // States
   emptyState?: React.ReactNode;
   loadingState?: "skeleton" | "spinner" | React.ReactNode;

@@ -8,6 +8,7 @@ import * as React from "react";
 import { flexRender } from "@tanstack/react-table";
 import { useDataTable } from "./hooks/useDataTable";
 import { TablePagination } from "./components/TablePagination";
+import { DataTableToolbar } from "./components/DataTableToolbar";
 import type { DataTableProps } from "./types";
 import { cn } from "../lib/utils";
 
@@ -69,6 +70,12 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   // Check if pagination is enabled
   const paginationEnabled = features?.pagination !== false;
 
+  // Check if filtering/toolbar is enabled
+  const filteringEnabled = features?.filtering !== false;
+  const showToolbar = ui?.showToolbar !== false && filteringEnabled;
+  const showGlobalSearch = ui?.showGlobalSearch !== false;
+  const showColumnFilters = ui?.showColumnFilters !== false;
+
   // ============================================================================
   // RENDER
   // ============================================================================
@@ -79,6 +86,16 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
       data-density={density}
       data-variant={variant}
     >
+      {/* Toolbar with filters */}
+      {showToolbar && !isLoading && !hasError && (
+        <DataTableToolbar
+          table={table}
+          globalSearch={showGlobalSearch}
+          columnFilters={showColumnFilters}
+          globalSearchPlaceholder={ui?.globalSearchPlaceholder}
+        />
+      )}
+
       {/* Table Container */}
       <div
         className={cn(
