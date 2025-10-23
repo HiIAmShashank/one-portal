@@ -1,4 +1,4 @@
-const STORAGE_PREFIX = 'oneportal.auth.';
+const STORAGE_PREFIX = 'oneportal:auth:';
 
 export function getStorageItem(key: string): string | null {
   try {
