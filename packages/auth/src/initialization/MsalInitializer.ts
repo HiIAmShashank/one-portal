@@ -407,19 +407,41 @@ export class MsalInitializer {
   /**
    * Initialize authentication for remote app in embedded mode
    *
-   * **Embedded Mode Strategy**: PASSIVE initialization
-   * - Initialize MSAL instance only
-   * - Do NOT attempt any authentication
-   * - Wait for Shell to publish auth:signed-in event via BroadcastChannel
-   * - UnifiedAuthProvider's event handler will perform SSO when event is received
+   * **Embedded Mode Strategy: HYBRID (Proactive + Reactive)**
    *
-   * This approach avoids iframe sandboxing issues and ensures proper auth flow.
+   * Since Shell guards `/apps/*` routes, remotes are ALWAYS loaded after Shell
+   * authentication completes. Therefore, this initialization uses a hybrid approach:
+   *
+   * **1. Proactive Token Acquisition (Primary Path)**
+   * - Check if account exists in MSAL cache (it always will in embedded mode)
+   * - Immediately attempt silent token acquisition for remote's scopes
+   * - This handles the common case: Shell authenticated → user navigates to remote
+   * - No waiting, no events needed for initial authentication
+   *
+   * **2. Reactive Event System (Secondary Path)**
+   * - Listen for `auth:signed-in` events via BroadcastChannel
+   * - Handles cross-app state synchronization (e.g., sign-out in one tab)
+   * - Fallback if proactive token acquisition fails
+   * - UnifiedAuthProvider's event handler performs SSO with loginHint from Shell
+   *
+   * **Why Both Are Needed:**
+   * - Proactive: Optimizes the 99% case (remote loads after auth completes)
+   * - Reactive: Ensures state consistency across multiple browser tabs/windows
+   * - Reactive: Handles sign-out synchronization across Shell and remotes
+   *
+   * **What This DOES NOT Do:**
+   * - Does NOT trigger interactive OAuth redirects (Shell handles that)
+   * - Does NOT use iframes (avoids sandboxing issues)
+   * - Does NOT wait for events before attempting authentication
+   *
+   * This hybrid approach provides optimal performance while maintaining robust
+   * cross-app state synchronization.
    */
   private async initializeRemoteEmbedded(): Promise<void> {
     const { msalInstance, appName, debug } = this.config;
 
     try {
-      // Only initialize MSAL, don't authenticate
+      // Initialize MSAL and handle any pending redirects
       await msalInstance.initialize();
       await msalInstance.handleRedirectPromise();
 
@@ -427,11 +449,12 @@ export class MsalInitializer {
 
       if (debug) {
         console.info(
-          `[${appName}] Embedded mode initialized. Waiting for Shell authentication event...`,
+          `[${appName}] Embedded mode initialized. Checking for existing account...`,
         );
       }
 
-      // Check if we already have an account from a previous session
+      // PROACTIVE PATH: Check if we already have an account from Shell's authentication
+      // In embedded mode, this will ALWAYS be true since Shell guards /apps/* routes
       const accounts = msalInstance.getAllAccounts();
       if (accounts.length > 0) {
         const account = accounts[0];
@@ -444,8 +467,8 @@ export class MsalInitializer {
             );
           }
 
-          // Proactively acquire tokens for this remote app's scopes
-          // This handles the case where Shell already authenticated before remote loaded
+          // Proactively acquire tokens for this remote app's specific scopes
+          // This is the PRIMARY authentication path for embedded remotes
           try {
             const { getAuthConfig } = this.config;
             await msalInstance.acquireTokenSilent({
@@ -455,15 +478,15 @@ export class MsalInitializer {
 
             if (debug) {
               console.info(
-                `[${appName}] Successfully acquired tokens for existing account`,
+                `[${appName}] ✅ Proactively acquired tokens for remote scopes`,
               );
             }
           } catch (error) {
-            // If token acquisition fails, we'll rely on the event handler
-            // when Shell re-publishes or when user interacts
+            // If token acquisition fails, the reactive path will handle it
+            // when Shell re-publishes events or user interacts
             if (debug) {
               console.warn(
-                `[${appName}] Failed to acquire tokens during init, will retry on auth event:`,
+                `[${appName}] Proactive token acquisition failed, will rely on event system:`,
                 error,
               );
             }
@@ -471,10 +494,11 @@ export class MsalInitializer {
         }
       }
 
+      // REACTIVE PATH: Event system for cross-app state synchronization
       // Authentication will also be triggered by:
-      // 1. Shell publishing auth:signed-in event (for initial sign-in)
-      // 2. UnifiedAuthProvider's event subscription handler
-      // 3. That handler will call ssoSilent with loginHint from Shell
+      // 1. Shell publishing auth:signed-in event (for initial sign-in in other tabs)
+      // 2. Shell publishing auth:signed-out event (for sign-out synchronization)
+      // 3. UnifiedAuthProvider's event subscription handler (calls ssoSilent with loginHint)
     } catch (error) {
       console.error(`[${appName}] Embedded initialization failed:`, error);
       // Don't throw - allow initialization to complete
