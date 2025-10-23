@@ -51,17 +51,17 @@ Update checkboxes as tasks are completed: `- [ ]` → `- [x]`
 
 **File:** `src/stories/DataTable/01-BasicFeatures.stories.tsx`
 
-- [ ] Create story file with default export (meta)
-- [ ] Story: Default - Simple table with data
-- [ ] Story: WithSorting - Sortable columns
-- [ ] Story: WithPagination - Pagination controls
-- [ ] Story: WithGlobalFilter - Search box
-- [ ] Story: WithColumnFilters - Per-column filters
-- [ ] Story: EmptyState - No data message
-- [ ] Story: LoadingState - Loading spinner
-- [ ] Story: ErrorState - Error display
+- [x] Create story file with default export (meta)
+- [x] Story: Default - Simple table with data
+- [x] Story: WithSorting - Sortable columns
+- [x] Story: WithPagination - Pagination controls
+- [x] Story: WithGlobalFilter - Search box
+- [x] Story: WithColumnFilters - Per-column filters
+- [x] Story: EmptyState - No data message
+- [x] Story: LoadingState - Loading spinner
+- [x] Story: ErrorState - Error display
 
-**Status:** Not started
+**Status:** ✅ Completed
 
 ---
 
@@ -198,9 +198,9 @@ Update checkboxes as tasks are completed: `- [ ]` → `- [x]`
 ## Summary
 
 **Total Tasks:** 90
-**Completed:** 23 (26%)
+**Completed:** 32 (36%)
 **In Progress:** None
-**Next Up:** Phase 3 - Basic Features Stories
+**Next Up:** Phase 4 - Advanced Features Stories
 
 ---
 
