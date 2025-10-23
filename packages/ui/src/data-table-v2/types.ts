@@ -101,6 +101,7 @@ export interface ColumnMeta {
     | "date"
     | "date-range";
   filterOptions?: Array<{ label: string; value: unknown }>;
+  filterPlaceholder?: string; // Custom placeholder for filter input
 
   // Display
   headerClassName?: string;

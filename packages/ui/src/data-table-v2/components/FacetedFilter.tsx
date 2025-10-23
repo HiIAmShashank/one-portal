@@ -4,6 +4,7 @@
  * Renders appropriate filter UI based on detected or configured filter variant
  */
 
+import * as React from "react";
 import type { Column } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
@@ -45,6 +46,9 @@ export function FacetedFilter<TData>({
 }: FacetedFilterProps<TData>) {
   const metadata = useFaceting(column);
   const filterValue = column.getFilterValue();
+  const placeholder =
+    (column.columnDef.meta as any)?.filterPlaceholder ||
+    `Filter ${title || column.id}...`;
 
   // Text filter
   if (metadata.variant === "text") {
@@ -58,7 +62,7 @@ export function FacetedFilter<TData>({
           type="text"
           value={(filterValue as string) ?? ""}
           onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-          placeholder={`Filter ${title || column.id}...`}
+          placeholder={placeholder}
           className="h-8"
         />
       </div>
@@ -250,67 +254,114 @@ export function FacetedFilter<TData>({
       undefined,
       undefined,
     ];
+    const [startOpen, setStartOpen] = React.useState(false);
+    const [endOpen, setEndOpen] = React.useState(false);
+    const [startValue, setStartValue] = React.useState(
+      startDate ? format(startDate, "PPP") : "",
+    );
+    const [endValue, setEndValue] = React.useState(
+      endDate ? format(endDate, "PPP") : "",
+    );
 
     return (
       <div className="space-y-2">
         <Label className="text-sm font-medium">{title || column.id}</Label>
         <div className="flex gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "h-8 w-full justify-start text-left font-normal",
-                  !startDate && "text-muted-foreground",
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {startDate ? format(startDate, "PPP") : "Start date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={(date) => {
+          {/* Start Date */}
+          <div className="relative flex-1">
+            <Input
+              value={startValue}
+              placeholder="Start date"
+              className="h-8 pr-8"
+              onChange={(e) => {
+                const val = e.target.value;
+                setStartValue(val);
+                const date = new Date(val);
+                if (!isNaN(date.getTime())) {
                   column.setFilterValue((old: [Date, Date]) => [
                     date,
                     old?.[1],
                   ]);
-                }}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "h-8 w-full justify-start text-left font-normal",
-                  !endDate && "text-muted-foreground",
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {endDate ? format(endDate, "PPP") : "End date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={(date) => {
+                }
+              }}
+            />
+            <Popover open={startOpen} onOpenChange={setStartOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-8 w-8 p-0"
+                >
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={startDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      setStartValue(format(date, "PPP"));
+                      column.setFilterValue((old: [Date, Date]) => [
+                        date,
+                        old?.[1],
+                      ]);
+                      setStartOpen(false);
+                    }
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* End Date */}
+          <div className="relative flex-1">
+            <Input
+              value={endValue}
+              placeholder="End date"
+              className="h-8 pr-8"
+              onChange={(e) => {
+                const val = e.target.value;
+                setEndValue(val);
+                const date = new Date(val);
+                if (!isNaN(date.getTime())) {
                   column.setFilterValue((old: [Date, Date]) => [
                     old?.[0],
                     date,
                   ]);
-                }}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+                }
+              }}
+            />
+            <Popover open={endOpen} onOpenChange={setEndOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-8 w-8 p-0"
+                >
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={endDate}
+                  onSelect={(date) => {
+                    if (date) {
+                      setEndValue(format(date, "PPP"));
+                      column.setFilterValue((old: [Date, Date]) => [
+                        old?.[0],
+                        date,
+                      ]);
+                      setEndOpen(false);
+                    }
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
     );
@@ -359,7 +410,7 @@ export function FacetedFilter<TData>({
         type="text"
         value={(filterValue as string) ?? ""}
         onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-        placeholder={`Filter ${title || column.id}...`}
+        placeholder={placeholder}
         className="h-8"
       />
     </div>

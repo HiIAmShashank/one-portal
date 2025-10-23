@@ -299,6 +299,45 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
               </tr>
             )}
 
+            {/* No Results from Filters */}
+            {!isEmpty &&
+              !isLoading &&
+              !hasError &&
+              table.getRowModel().rows.length === 0 && (
+                <tr>
+                  <td colSpan={columns.length} className="h-32 text-center">
+                    <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground dark:text-muted-foreground">
+                      <svg
+                        className="h-12 w-12 opacity-20"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 10l4 4m0-4l-4 4"
+                        />
+                      </svg>
+                      <div className="space-y-1">
+                        <p className="font-medium">No results found</p>
+                        <p className="text-sm">
+                          Try adjusting your filters or search terms
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+
             {/* Data Rows */}
             {!isLoading &&
               !hasError &&
