@@ -7,6 +7,7 @@ import { publishAuthEvent, subscribeToAuthEvents, type AuthEvent } from '../even
 import { AuthErrorHandler } from '../errors';
 import { MsalInitializer } from '../initialization';
 import { isEmbeddedMode } from '../utils/environment';
+import { safeRedirect, clearAuthStorage } from '../utils';
 import type { UnifiedAuthProviderProps, RouteType } from './types';
 
 /**
@@ -113,14 +114,14 @@ export function UnifiedAuthProvider({
                     msalInstance.setActiveAccount(ssoResult.account);
 
                     if (debug) console.log(`[${effectiveAppName}] SSO successful`);
-                } catch (error: any) {
+                } catch (error: unknown) {
                     if (AuthErrorHandler.isInteractionRequired(error)) {
                         const embedded = isEmbeddedMode({ mode: getAuthConfig().mode });
 
                         if (embedded) {
                             if (debug) console.log(`[${effectiveAppName}] Interaction required, redirecting to Shell`);
                             const returnUrl = encodeURIComponent(window.location.href);
-                            window.location.href = `/?returnUrl=${returnUrl}`;
+                            safeRedirect(`/?returnUrl=${returnUrl}`, '/');
                         } else if (import.meta.env.DEV) {
                             console.log(`[${effectiveAppName}] Interaction required in standalone mode, skipping redirect`);
                             const processed = AuthErrorHandler.process(error, 'SSO sign-in');
@@ -136,7 +137,7 @@ export function UnifiedAuthProvider({
                 if (debug) console.log(`[${effectiveAppName}] Received auth:signed-out event, clearing cache`);
 
                 msalInstance.setActiveAccount(null);
-                localStorage.clear();
+                clearAuthStorage();
             }
         });
 

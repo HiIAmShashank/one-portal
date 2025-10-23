@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { AuthLoadingSpinner } from '@one-portal/ui';
-import { getAndClearReturnUrl } from '@one-portal/auth/utils';
+import { getAndClearReturnUrl, safeRedirect } from '@one-portal/auth/utils';
 
 export const Route = createFileRoute('/auth/callback')({
     component: AuthCallbackComponent,
@@ -23,7 +23,7 @@ function AuthCallbackComponent() {
 
         const timer = setTimeout(() => {
             if (returnUrl) {
-                window.location.href = returnUrl;
+                safeRedirect(returnUrl, '/');
             } else {
                 navigate({ to: '/' });
             }

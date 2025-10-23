@@ -1,6 +1,7 @@
 import type { PublicClientApplication } from '@azure/msal-browser';
 import { createRouteGuard, type MsalRouteGuardConfig } from '../utils/routeGuard';
 import { AuthErrorHandler } from '../errors/AuthErrorHandler';
+import { safeRedirect } from '../utils';
 
 /**
  * Options for configuring route guard presets.
@@ -107,7 +108,7 @@ export function createProtectedRouteGuard(
         onUnauthenticated: onUnauthenticated ?? ((returnUrl: string) => {
             // Default: redirect to sign-in with return URL
             const signInUrl = `${signInRoute}?returnUrl=${encodeURIComponent(returnUrl)}`;
-            window.location.href = signInUrl;
+            safeRedirect(signInUrl, signInRoute);
         }),
         onAuthError: onAuthError ?? ((error: Error) => {
             // Default: show error toast via AuthErrorHandler
