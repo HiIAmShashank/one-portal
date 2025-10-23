@@ -227,6 +227,10 @@ export class MsalInitializer {
           );
         }
 
+        // CRITICAL: Set the active account BEFORE any redirects
+        // This ensures route guards can see the authenticated state
+        msalInstance.setActiveAccount(response.account);
+
         const loginHint = getLoginHint(response.account);
         const accountId = response.account.homeAccountId;
 
