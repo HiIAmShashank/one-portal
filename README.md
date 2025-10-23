@@ -5,30 +5,36 @@ A micro-frontend portal built with Module Federation, Turborepo, and Tailwind CS
 ## Tech Stack
 
 ### Core Framework
+
 - **[Turborepo](https://turbo.build/repo)** - High-performance monorepo build system
 - **[Vite](https://vitejs.dev)** - Lightning-fast build tool and dev server
 - **[React 19](https://react.dev)** - UI library with latest features
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe JavaScript
 
 ### Micro-Frontend Architecture
+
 - **[@originjs/vite-plugin-federation](https://github.com/originjs/vite-plugin-federation)** - Module Federation for Vite
 - **Shell Application** - Host application that loads remote modules
 - **Remote Applications** - Independently deployable micro-frontends
 
 ### Styling
+
 - **[Tailwind CSS v4](https://tailwindcss.com)** - Utility-first CSS framework (latest version)
 - **[shadcn/ui](https://ui.shadcn.com)** - Re-usable component library built with Radix UI
 - **CSS Variables** - Design tokens for theming (light/dark mode)
 
 ### Routing & Navigation
+
 - **[@tanstack/react-router](https://tanstack.com/router)** - Type-safe routing with code splitting
 - **File-based routing** - Convention-based route structure
 
 ### Deployment
+
 - **[Azure Static Web Apps](https://azure.microsoft.com/en-us/services/app-service/static/)** - Serverless hosting and deployment
 - **SWA CLI** - Local development emulator for Azure SWA
 
 ### Development Tools
+
 - **[ESLint](https://eslint.org/)** - Code linting
 - **[pnpm](https://pnpm.io/)** - Fast, disk space efficient package manager
 - **Turborepo Generators** - Code generation for new remote apps
@@ -56,19 +62,20 @@ one-portal/
 
 ```json
 {
-  "dev": "turbo run dev",                    // Start all apps in dev mode
-  "build": "turbo run build",                // Build all apps and packages
-  "lint": "turbo run lint",                  // Lint all packages
-  "typecheck": "turbo run typecheck",        // Type-check all packages
-  "format": "prettier --write \"**/*.{ts,tsx,md}\"",  // Format code
-  "swa:start": "swa start ./swa --api-location ./api",  // Start Azure SWA emulator
-  "deploy": "pnpm build && swa deploy"       // Build and deploy to Azure
+  "dev": "turbo run dev", // Start all apps in dev mode
+  "build": "turbo run build", // Build all apps and packages
+  "lint": "turbo run lint", // Lint all packages
+  "typecheck": "turbo run typecheck", // Type-check all packages
+  "format": "prettier --write \"**/*.{ts,tsx,md}\"", // Format code
+  "swa:start": "swa start ./swa --api-location ./api", // Start Azure SWA emulator
+  "deploy": "pnpm build && swa deploy" // Build and deploy to Azure
 }
 ```
 
 ### Common Package Scripts
 
 Each app/package includes:
+
 - `dev` - Start development server
 - `build` - Build for production
 - `lint` - Run ESLint
@@ -77,6 +84,7 @@ Each app/package includes:
 ### Turborepo Tasks
 
 Turborepo manages build pipelines with intelligent caching:
+
 - **Incremental builds** - Only rebuilds changed packages
 - **Remote caching** - Share build cache across team (optional)
 - **Parallel execution** - Runs tasks concurrently when possible
@@ -160,6 +168,7 @@ apps/remote-{appName}/
 ### Important: Remote Apps Don't Need CSS
 
 Remote apps use components from `@one-portal/ui` and automatically get all styles from the shell. **Do not add**:
+
 - ❌ `tailwind.config.ts`
 - ❌ CSS files
 - ❌ CSS imports
@@ -189,6 +198,7 @@ pnpm dlx shadcn@latest add button card dialog
 ### Available Components
 
 The UI package includes common shadcn components:
+
 - Button
 - Card
 - Input
@@ -204,8 +214,8 @@ See [shadcn/ui documentation](https://ui.shadcn.com/docs/components) for full li
 
 ```tsx
 // In any remote app (e.g., apps/remote-billing/src/App.tsx)
-import { Button } from '@one-portal/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@one-portal/ui/card';
+import { Button } from "@one-portal/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@one-portal/ui/card";
 
 export default function App() {
   return (
@@ -238,10 +248,83 @@ Dark mode is automatically handled via CSS variables:
 
 ```tsx
 // Toggle dark mode (in shell)
-document.documentElement.classList.toggle('dark');
+document.documentElement.classList.toggle("dark");
 ```
 
 All shadcn components and Tailwind utilities automatically adapt to dark mode.
+
+## Storybook - Component Documentation
+
+OnePortal includes a **Storybook application** for comprehensive DataTable component documentation and testing.
+
+### What is Storybook?
+
+Storybook is an interactive component showcase that demonstrates all features of the `DataTable` component from `@one-portal/ui`. It includes:
+
+- Real-world examples with realistic mock data
+- Interactive controls for all component props
+- Light/dark mode switching
+- Multiple data types (users, orders, products, transactions, tasks)
+
+### Running Storybook
+
+```bash
+# Start Storybook development server
+pnpm storybook
+
+# Build static Storybook (for documentation hosting)
+pnpm build-storybook
+```
+
+Storybook runs at `http://localhost:6006/`
+
+### Structure
+
+```
+apps/storybook/
+├── .storybook/
+│   ├── main.ts              # Storybook configuration
+│   ├── preview.tsx          # Global decorators and theme setup
+│   └── storybook.css        # Custom Storybook styles
+├── src/
+│   ├── stories/
+│   │   ├── Welcome.stories.tsx
+│   │   └── DataTable/       # DataTable feature stories
+│   └── mocks/
+│       ├── data-generators.ts    # Faker.js mock data generators
+│       └── column-definitions.tsx # Reusable column configurations
+└── package.json
+```
+
+### Story Categories
+
+Stories are organized by feature area:
+
+1. **Basic Features** - Sorting, pagination, filtering, search
+2. **Advanced Features** - Inline editing, grouping, expanding rows
+3. **Column Features** - Resizing, reordering, pinning, visibility
+4. **Selection & Actions** - Row selection, bulk actions, per-row menus
+5. **UI Variations** - Density settings, themes, filter modes
+6. **Real-World Examples** - Complete implementations with multiple data types
+7. **Persistence & State** - localStorage integration, controlled state
+
+### Mock Data
+
+Storybook uses `@faker-js/faker` to generate realistic test data:
+
+- **Users** - Names, emails, roles, departments, avatars
+- **Orders** - Order numbers, customers, amounts, statuses
+- **Products** - SKUs, pricing, stock levels, categories
+- **Transactions** - Financial data with running balances
+- **Tasks** - Project management data with priorities and tags
+
+### Deployment Note
+
+**Storybook is excluded from production builds.** It exists only for development and documentation purposes. The `scripts/combine-builds.js` script does not include Storybook in the deployment bundle.
+
+### Progress Tracking
+
+Implementation progress is tracked in `STORYBOOK_CHECKLIST.md` at the project root.
 
 ## Architecture
 
@@ -267,6 +350,7 @@ apps/remote-*/                # Inherit styles from shell
 ```
 
 **Key Benefits:**
+
 - ✅ Design tokens defined once, used everywhere
 - ✅ Apps don't need individual Tailwind configs
 - ✅ Style changes update all apps instantly
@@ -281,6 +365,7 @@ apps/remote-*/                # Inherit styles from shell
    - Consumed by all apps and packages
 
 2. **UI Package Compilation**
+
    ```bash
    # packages/ui/package.json
    "build": "tailwindcss -i ./src/index.css -o ./dist/styles.css"
@@ -292,16 +377,17 @@ apps/remote-*/                # Inherit styles from shell
    - Integrates with centralized design tokens
 
 4. **Shell Imports Compiled CSS** (`apps/shell/src/main.tsx`)
+
    ```tsx
-   import '@one-portal/ui/styles.css';  // Unconditional
+   import "@one-portal/ui/styles.css"; // Unconditional
    ```
 
 5. **Remote Apps Conditional Import** (`apps/remote-*/src/main.tsx`)
    ```tsx
    // CSS provided by shell in production
    // Import conditionally for standalone dev/preview
-   if (import.meta.env.DEV || import.meta.env.MODE === 'preview') {
-     await import('@one-portal/ui/styles.css');
+   if (import.meta.env.DEV || import.meta.env.MODE === "preview") {
+     await import("@one-portal/ui/styles.css");
    }
    ```
 
@@ -320,6 +406,7 @@ pnpm --filter remote-testgenerator1 dev
 ```
 
 **How standalone mode works:**
+
 - Apps conditionally import `@one-portal/ui/styles.css` in dev mode
 - All Tailwind classes and components work correctly
 - No dependency on other apps being built first
@@ -330,17 +417,20 @@ pnpm --filter remote-testgenerator1 dev
 Changes to shared components reflect instantly across all running apps:
 
 **Component Changes:**
+
 1. Edit any file in `packages/ui/src/` or `packages/ui/components/`
 2. HMR updates all consuming apps within ~2 seconds
 3. Component state preserved (form inputs, scroll position)
 
 **CSS/Token Changes:**
+
 1. Edit `packages/ui/src/theme.css` or `packages/tailwind-config/src/tokens.ts`
 2. Rebuild CSS: `pnpm --filter @one-portal/ui build`
 3. Refresh apps to see style changes
 
 **HMR Logging:**
 All apps include HMR event logging for debugging:
+
 ```
 [Shell HMR] File changed: packages/ui/src/components/button.tsx
 [Billing HMR] File changed: packages/ui/src/components/button.tsx
@@ -356,6 +446,7 @@ pnpm deadcode
 ```
 
 **What Knip Checks:**
+
 - Unused files
 - Unused dependencies
 - Unused devDependencies
@@ -366,6 +457,7 @@ pnpm deadcode
 Dead code checks run automatically in CI pipeline after linting and type checking. The build fails if new unused code is introduced.
 
 **Analyzed Workspaces:**
+
 - `apps/*` - All applications (shell + remotes)
 - `packages/ui` - Shared component library
 - `packages/auth` - Authentication utilities
@@ -374,13 +466,13 @@ Dead code checks run automatically in CI pipeline after linting and type checkin
 
 ### Key Differences from Tailwind v3
 
-| Tailwind v3 | Tailwind v4 |
-|-------------|-------------|
-| PostCSS plugin | CLI-based compilation |
+| Tailwind v3                    | Tailwind v4               |
+| ------------------------------ | ------------------------- |
+| PostCSS plugin                 | CLI-based compilation     |
 | `tailwind.config.js` has theme | `@theme` directive in CSS |
-| Each app compiles CSS | UI package compiles once |
-| JIT mode | Built-in optimization |
-| Inline theme values | Centralized design tokens |
+| Each app compiles CSS          | UI package compiles once  |
+| JIT mode                       | Built-in optimization     |
+| Inline theme values            | Centralized design tokens |
 
 ## Build and Deployment
 
@@ -420,13 +512,13 @@ Or use GitHub Actions / Azure DevOps pipelines.
 ```typescript
 // apps/shell/vite.config.ts
 federation({
-  name: 'shell',
+  name: "shell",
   remotes: {
-    billing: 'http://localhost:4280/billing/assets/remoteEntry.js',
-    reports: 'http://localhost:4280/reports/assets/remoteEntry.js',
+    billing: "http://localhost:4280/billing/assets/remoteEntry.js",
+    reports: "http://localhost:4280/reports/assets/remoteEntry.js",
   },
-  shared: ['react', 'react-dom'],
-})
+  shared: ["react", "react-dom"],
+});
 ```
 
 ### Remote Configuration
@@ -434,14 +526,14 @@ federation({
 ```typescript
 // apps/remote-billing/vite.config.ts
 federation({
-  name: 'billing',
-  filename: 'remoteEntry.js',
+  name: "billing",
+  filename: "remoteEntry.js",
   exposes: {
-    './App': './src/App.tsx',
-    './bootstrap': './src/bootstrap.tsx',
+    "./App": "./src/App.tsx",
+    "./bootstrap": "./src/bootstrap.tsx",
   },
-  shared: ['react', 'react-dom'],
-})
+  shared: ["react", "react-dom"],
+});
 ```
 
 ### Loading Remotes Dynamically
@@ -449,8 +541,8 @@ federation({
 The shell uses `bootstrap.tsx` from each remote to mount/unmount apps:
 
 ```typescript
-const { mount, unmount } = await import('billing/bootstrap');
-const root = mount('app-container');
+const { mount, unmount } = await import("billing/bootstrap");
+const root = mount("app-container");
 // Later: unmount(root);
 ```
 
@@ -476,6 +568,7 @@ const root = mount('app-container');
 ### CSS Not Working
 
 If Tailwind classes aren't applying:
+
 1. Rebuild UI package: `pnpm build --filter=@one-portal/ui`
 2. Verify `packages/ui/dist/styles.css` exists and is large (>50KB)
 3. Check shell imports: `import '@one-portal/ui/styles.css'` in `main.tsx`
