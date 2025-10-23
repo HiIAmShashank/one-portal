@@ -6,8 +6,11 @@ import { AppLayout } from "../components/AppLayout";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location, preload }) => {
-    // Skip authentication for sign-in route (public route)
-    if (location.pathname === "/sign-in") {
+    // Skip authentication for public routes
+    if (
+      location.pathname === "/sign-in" ||
+      location.pathname === "/auth/callback"
+    ) {
       return;
     }
 
@@ -38,9 +41,20 @@ export const Route = createRootRoute({
     await guard({ location, preload });
   },
 
-  component: () => (
-    <AppLayout>
-      <Outlet />
-    </AppLayout>
-  ),
+  component: () => {
+    const { pathname } = window.location;
+    const isPublicRoute =
+      pathname === "/sign-in" || pathname === "/auth/callback";
+
+    // Don't render AppLayout on public routes
+    if (isPublicRoute) {
+      return <Outlet />;
+    }
+
+    return (
+      <AppLayout>
+        <Outlet />
+      </AppLayout>
+    );
+  },
 });

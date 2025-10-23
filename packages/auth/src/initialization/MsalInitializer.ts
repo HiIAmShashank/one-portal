@@ -5,7 +5,7 @@
 
 import { AuthErrorHandler } from "../errors";
 import { publishAuthEvent } from "../events";
-import { getLoginHint, safeRedirect } from "../utils";
+import { getLoginHint, safeRedirect, getAndClearReturnUrl } from "../utils";
 import { isEmbeddedMode } from "../utils/environment";
 import type {
   InitConfig,
@@ -121,6 +121,9 @@ export class MsalInitializer {
     mode: InitializationMode,
     routeType?: RouteType,
   ): Promise<InitializationResult> {
+    // Reset mounted flag for React Strict Mode remounts
+    this.isMounted = true;
+
     if (this.state.isInitialized) {
       return { success: true };
     }
@@ -234,17 +237,21 @@ export class MsalInitializer {
           clientId: getAuthConfig().clientId,
         });
 
-        // Handle return URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const returnUrl = urlParams.get("returnUrl");
-
+        // Handle return URL redirect after successful authentication
+        const returnUrl = getAndClearReturnUrl();
         if (returnUrl) {
           if (debug) {
-            console.info(`[${appName}] Redirecting to:`, returnUrl);
+            console.info(`[${appName}] Redirecting to returnUrl:`, returnUrl);
           }
-          safeRedirect(decodeURIComponent(returnUrl), "/");
-          return;
+          safeRedirect(returnUrl, "/");
+        } else {
+          if (debug) {
+            console.info(
+              `[${appName}] No returnUrl found, staying on current page`,
+            );
+          }
         }
+        return;
       } else {
         // Check for existing session
         const accounts = msalInstance.getAllAccounts();
@@ -325,73 +332,74 @@ export class MsalInitializer {
   /**
    * Initialize authentication for remote app in embedded mode
    *
-   * Handles:
-   * - SSO silent authentication
-   * - Token acquisition from existing accounts
-   * - Fallback to Shell redirect (with visibility check)
+   * **Embedded Mode Strategy**: PASSIVE initialization
+   * - Initialize MSAL instance only
+   * - Do NOT attempt any authentication
+   * - Wait for Shell to publish auth:signed-in event via BroadcastChannel
+   * - UnifiedAuthProvider's event handler will perform SSO when event is received
    *
-   * **CRITICAL**: Checks document visibility to prevent redirects during route preloading
+   * This approach avoids iframe sandboxing issues and ensures proper auth flow.
    */
   private async initializeRemoteEmbedded(): Promise<void> {
-    const { msalInstance, appName, getAuthConfig, debug } = this.config;
+    const { msalInstance, appName, debug } = this.config;
 
     try {
+      // Only initialize MSAL, don't authenticate
       await msalInstance.initialize();
       await msalInstance.handleRedirectPromise();
 
       if (!this.isMounted) return;
 
+      if (debug) {
+        console.info(
+          `[${appName}] Embedded mode initialized. Waiting for Shell authentication event...`,
+        );
+      }
+
+      // Check if we already have an account from a previous session
       const accounts = msalInstance.getAllAccounts();
-
       if (accounts.length > 0) {
-        // Try to use existing account
         const account = accounts[0];
-        if (!account) return; // Type guard
-
-        msalInstance.setActiveAccount(account);
-
-        try {
-          await msalInstance.acquireTokenSilent({
-            scopes: getAuthConfig().scopes,
-            account,
-          });
-
-          if (debug) {
-            console.info(`[${appName}] Token acquired silently`);
-          }
-        } catch (_error: unknown) {
-          // Token refresh failed, try SSO
-          try {
-            const ssoResult = await msalInstance.ssoSilent({
-              scopes: getAuthConfig().scopes,
-              loginHint: account.username,
-            });
-            msalInstance.setActiveAccount(ssoResult.account);
-
-            if (debug) {
-              console.info(`[${appName}] SSO successful with existing account`);
-            }
-          } catch (_ssoError) {
-            this.handleSSOFailureEmbedded(_ssoError);
-          }
-        }
-      } else {
-        // No accounts, try SSO without loginHint
-        try {
-          const ssoResult = await msalInstance.ssoSilent({
-            scopes: getAuthConfig().scopes,
-          });
-          msalInstance.setActiveAccount(ssoResult.account);
-
+        if (account) {
+          msalInstance.setActiveAccount(account);
           if (debug) {
             console.info(
-              `[${appName}] SSO successful without existing account`,
+              `[${appName}] Found existing account:`,
+              account.username,
             );
           }
-        } catch (error) {
-          this.handleSSOFailureEmbedded(error);
+
+          // Proactively acquire tokens for this remote app's scopes
+          // This handles the case where Shell already authenticated before remote loaded
+          try {
+            const { getAuthConfig } = this.config;
+            await msalInstance.acquireTokenSilent({
+              scopes: getAuthConfig().scopes,
+              account,
+            });
+
+            if (debug) {
+              console.info(
+                `[${appName}] Successfully acquired tokens for existing account`,
+              );
+            }
+          } catch (error) {
+            // If token acquisition fails, we'll rely on the event handler
+            // when Shell re-publishes or when user interacts
+            if (debug) {
+              console.warn(
+                `[${appName}] Failed to acquire tokens during init, will retry on auth event:`,
+                error,
+              );
+            }
+          }
         }
       }
+
+      // Authentication will also be triggered by:
+      // 1. Shell publishing auth:signed-in event (for initial sign-in)
+      // 2. UnifiedAuthProvider's event subscription handler
+      // 3. That handler will call ssoSilent with loginHint from Shell
     } catch (error) {
       console.error(`[${appName}] Embedded initialization failed:`, error);
       // Don't throw - allow initialization to complete
@@ -411,20 +419,28 @@ export class MsalInitializer {
   private async initializeRemoteStandalone(): Promise<void> {
     const { msalInstance, appName, getAuthConfig, debug } = this.config;
 
+    console.info(`[${appName}] 🚀 Starting standalone mode initialization...`);
+
     try {
+      console.info(`[${appName}] Initializing MSAL instance...`);
       await msalInstance.initialize();
+
+      console.info(`[${appName}] Handling redirect promise...`);
       const response = await msalInstance.handleRedirectPromise();
 
-      if (!this.isMounted) return;
+      if (!this.isMounted) {
+        console.warn(
+          `[${appName}] Component unmounted, aborting initialization`,
+        );
+        return;
+      }
 
       // Check if returning from OAuth redirect
       if (response) {
-        if (debug) {
-          console.info(
-            `[${appName}] Standalone login successful:`,
-            response.account.username,
-          );
-        }
+        console.info(
+          `[${appName}] ✅ Standalone login successful:`,
+          response.account.username,
+        );
         msalInstance.setActiveAccount(response.account);
 
         const loginHint = getLoginHint(response.account);
@@ -436,29 +452,50 @@ export class MsalInitializer {
           appName,
           clientId: getAuthConfig().clientId,
         });
+
+        // Handle return URL redirect after successful authentication
+        const returnUrl = getAndClearReturnUrl();
+        if (returnUrl) {
+          if (debug) {
+            console.info(`[${appName}] Redirecting to returnUrl:`, returnUrl);
+          }
+          safeRedirect(returnUrl, "/");
+        } else {
+          if (debug) {
+            console.info(
+              `[${appName}] No returnUrl found, staying on current page`,
+            );
+          }
+        }
         return;
       }
 
+      console.info(
+        `[${appName}] No redirect response, checking for existing accounts...`,
+      );
+
       // Try SSO silent authentication
       const accounts = msalInstance.getAllAccounts();
+      console.info(`[${appName}] Found ${accounts.length} account(s) in cache`);
 
       if (accounts.length > 0) {
         const account = accounts[0];
         if (!account) return; // Type guard
 
+        console.info(`[${appName}] Setting active account:`, account.username);
         msalInstance.setActiveAccount(account);
 
+        console.info(`[${appName}] Attempting to acquire token silently...`);
         try {
           await msalInstance.acquireTokenSilent({
             scopes: getAuthConfig().scopes,
             account,
           });
 
-          if (debug) {
-            console.info(`[${appName}] Standalone token acquired silently`);
-          }
+          console.info(`[${appName}] ✅ Standalone token acquired silently`);
           return;
         } catch (_error: unknown) {
+          console.warn(`[${appName}] Token acquisition failed, trying SSO...`);
           // Token refresh failed, try SSO
           try {
             const ssoResult = await msalInstance.ssoSilent({
@@ -467,66 +504,52 @@ export class MsalInitializer {
             });
             msalInstance.setActiveAccount(ssoResult.account);
 
-            if (debug) {
-              console.info(`[${appName}] Standalone SSO successful`);
-            }
+            console.info(`[${appName}] ✅ Standalone SSO successful`);
             return;
           } catch (_ssoError) {
+            console.warn(
+              `[${appName}] SSO failed, will trigger interactive login`,
+            );
             // Fall through to interactive login
-            if (debug) {
-              console.info(
-                `[${appName}] SSO failed, initiating interactive login`,
-              );
-            }
           }
         }
+      } else {
+        console.info(`[${appName}] No cached accounts found`);
       }
 
       // No existing session or SSO failed - trigger interactive login
-      if (debug) {
-        console.info(
-          `[${appName}] No session found, redirecting to Azure AD for authentication`,
+      // Check if interaction is already in progress (prevents duplicate redirects in React Strict Mode)
+      const inProgress =
+        msalInstance.getActiveAccount() === null &&
+        window.sessionStorage.getItem("msal.interaction.status") !== null;
+
+      if (inProgress) {
+        console.warn(
+          `[${appName}] Interaction already in progress, skipping loginRedirect()`,
         );
+        return;
       }
+
+      console.info(
+        `[${appName}] 🔐 Triggering interactive login redirect to Azure AD...`,
+      );
+      console.info(`[${appName}] Redirect URI:`, getAuthConfig().redirectUri);
+      console.info(`[${appName}] Scopes:`, getAuthConfig().scopes);
 
       await msalInstance.loginRedirect({
         scopes: getAuthConfig().scopes,
         prompt: "select_account",
       });
+
+      console.info(`[${appName}] loginRedirect() called successfully`);
     } catch (error) {
-      console.error(`[${appName}] Standalone initialization failed:`, error);
+      console.error(`[${appName}] ❌ Standalone initialization failed:`, error);
       const processed = AuthErrorHandler.process(
         error,
         `${appName} initialization`,
       );
       AuthErrorHandler.show(processed);
       throw error;
-    }
-  }
-
-  /**
-   * Handle SSO failure in embedded mode with visibility check
-   *
-   * Only redirects to Shell if document is visible (prevents redirects during route preloading)
-   */
-  private handleSSOFailureEmbedded(error: unknown): void {
-    const { appName, debug } = this.config;
-
-    if (document.visibilityState === "visible") {
-      // Only redirect if user actually navigated to this page
-      console.error(
-        `[${appName}] SSO failed in embedded mode, redirecting to Shell:`,
-        error,
-      );
-      const returnUrl = encodeURIComponent(window.location.href);
-      safeRedirect(`/?returnUrl=${returnUrl}`, "/");
-    } else {
-      // Route was preloaded but not visible - don't redirect
-      if (debug) {
-        console.info(
-          `[${appName}] SSO failed (preloaded route), skipping redirect`,
-        );
-      }
     }
   }
 
