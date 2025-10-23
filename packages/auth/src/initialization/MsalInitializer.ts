@@ -3,6 +3,12 @@
  * @description Handles MSAL initialization for both host and remote applications
  */
 
+import {
+  EventType,
+  InteractionStatus,
+  EventMessageUtils,
+  type EventMessage,
+} from "@azure/msal-browser";
 import { AuthErrorHandler } from "../errors";
 import { publishAuthEvent } from "../events";
 import { getLoginHint, safeRedirect, getAndClearReturnUrl } from "../utils";
@@ -72,6 +78,8 @@ export class MsalInitializer {
   private state: InitializationState;
   private callbacks: Set<InitializationCallback>;
   private isMounted: boolean;
+  private interactionStatus: InteractionStatus;
+  private eventCallbackId: string | null;
 
   constructor(config: InitConfig) {
     this.config = config;
@@ -83,6 +91,11 @@ export class MsalInitializer {
     };
     this.callbacks = new Set();
     this.isMounted = true;
+    this.interactionStatus = InteractionStatus.None;
+    this.eventCallbackId = null;
+
+    // Subscribe to MSAL events to track interaction status
+    this.subscribeToMsalEvents();
   }
 
   /**
@@ -108,6 +121,54 @@ export class MsalInitializer {
    */
   public unmount(): void {
     this.isMounted = false;
+    // Unsubscribe from MSAL events
+    if (this.eventCallbackId) {
+      this.config.msalInstance.removeEventCallback(this.eventCallbackId);
+      this.eventCallbackId = null;
+    }
+  }
+
+  /**
+   * Subscribe to MSAL events to track interaction status
+   * This replaces the sessionStorage check with official MSAL API
+   */
+  private subscribeToMsalEvents(): void {
+    const { msalInstance, debug, appName } = this.config;
+
+    this.eventCallbackId = msalInstance.addEventCallback(
+      (message: EventMessage) => {
+        // Update interaction status from event
+        const status = EventMessageUtils.getInteractionStatusFromEvent(
+          message,
+          this.interactionStatus,
+        );
+
+        if (status !== null && status !== this.interactionStatus) {
+          this.interactionStatus = status;
+
+          if (debug) {
+            console.info(
+              `[${appName}] Interaction status changed:`,
+              this.interactionStatus,
+            );
+          }
+        }
+
+        // Log significant auth events in debug mode
+        if (debug) {
+          if (
+            message.eventType === EventType.LOGIN_START ||
+            message.eventType === EventType.LOGIN_SUCCESS ||
+            message.eventType === EventType.LOGIN_FAILURE ||
+            message.eventType === EventType.ACQUIRE_TOKEN_START ||
+            message.eventType === EventType.ACQUIRE_TOKEN_SUCCESS ||
+            message.eventType === EventType.ACQUIRE_TOKEN_FAILURE
+          ) {
+            console.info(`[${appName}] MSAL Event:`, message.eventType);
+          }
+        }
+      },
+    );
   }
 
   /**
@@ -533,13 +594,12 @@ export class MsalInitializer {
 
       // No existing session or SSO failed - trigger interactive login
       // Check if interaction is already in progress (prevents duplicate redirects in React Strict Mode)
-      const inProgress =
-        msalInstance.getActiveAccount() === null &&
-        window.sessionStorage.getItem("msal.interaction.status") !== null;
-
-      if (inProgress) {
+      if (
+        this.interactionStatus !== InteractionStatus.None &&
+        msalInstance.getActiveAccount() === null
+      ) {
         console.warn(
-          `[${appName}] Interaction already in progress, skipping loginRedirect()`,
+          `[${appName}] Interaction already in progress (status: ${this.interactionStatus}), skipping loginRedirect()`,
         );
         return;
       }
