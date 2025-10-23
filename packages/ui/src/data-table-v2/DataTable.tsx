@@ -6,9 +6,11 @@
 
 import * as React from "react";
 import { flexRender } from "@tanstack/react-table";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { useDataTable } from "./hooks/useDataTable";
 import { TablePagination } from "./components/TablePagination";
 import { DataTableToolbar } from "./components/DataTableToolbar";
+import { FacetedFilter } from "./components/FacetedFilter";
 import type { DataTableProps } from "./types";
 import { cn } from "../lib/utils";
 
@@ -72,9 +74,13 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
 
   // Check if filtering/toolbar is enabled
   const filteringEnabled = features?.filtering !== false;
+  const filterMode = ui?.filterMode || "toolbar";
   const showToolbar = ui?.showToolbar !== false && filteringEnabled;
   const showGlobalSearch = ui?.showGlobalSearch !== false;
-  const showColumnFilters = ui?.showColumnFilters !== false;
+  const showColumnFilters =
+    ui?.showColumnFilters !== false && filterMode === "toolbar";
+  const showInlineFilters =
+    ui?.showColumnFilters !== false && filterMode === "inline";
 
   // ============================================================================
   // RENDER
@@ -93,6 +99,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
           globalSearch={showGlobalSearch}
           columnFilters={showColumnFilters}
           globalSearchPlaceholder={ui?.globalSearchPlaceholder}
+          showViewOptions={true}
         />
       )}
 
@@ -140,66 +147,54 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                       )}
                     >
                       {header.isPlaceholder ? null : (
-                        <div
-                          className={cn(
-                            "flex items-center gap-2",
-                            canSort && "cursor-pointer select-none",
-                          )}
-                          onClick={
-                            canSort
-                              ? header.column.getToggleSortingHandler()
-                              : undefined
-                          }
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                          {canSort && (
-                            <div className="flex flex-col">
-                              {sorted === "asc" ? (
-                                <svg
-                                  className="h-4 w-4 text-foreground dark:text-foreground"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="m18 15-6-6-6 6" />
-                                </svg>
-                              ) : sorted === "desc" ? (
-                                <svg
-                                  className="h-4 w-4 text-foreground dark:text-foreground"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="m6 9 6 6 6-6" />
-                                </svg>
-                              ) : (
-                                <svg
-                                  className="h-4 w-4 text-muted-foreground/50 dark:text-muted-foreground/50"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="m7 15 5 5 5-5" />
-                                  <path d="m7 9 5-5 5 5" />
-                                </svg>
-                              )}
-                            </div>
-                          )}
+                        <div className="space-y-2">
+                          <div
+                            className={cn(
+                              "flex items-center gap-2",
+                              canSort && "cursor-pointer select-none",
+                            )}
+                            onClick={
+                              canSort
+                                ? header.column.getToggleSortingHandler()
+                                : undefined
+                            }
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                            {canSort && (
+                              <>
+                                {sorted === "asc" ? (
+                                  <ArrowUp className="h-4 w-4" />
+                                ) : sorted === "desc" ? (
+                                  <ArrowDown className="h-4 w-4" />
+                                ) : (
+                                  <ArrowUpDown className="h-4 w-4 text-muted-foreground/50" />
+                                )}
+                              </>
+                            )}
+                          </div>
+                          {/* Inline filter */}
+                          {showInlineFilters &&
+                            header.column.getCanFilter() &&
+                            header.column.columnDef.enableColumnFilter !==
+                              false && (
+                              <div
+                                className="min-w-[150px]"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <FacetedFilter
+                                  column={header.column}
+                                  title={
+                                    typeof header.column.columnDef.header ===
+                                    "string"
+                                      ? header.column.columnDef.header
+                                      : header.column.id
+                                  }
+                                />
+                              </div>
+                            )}
                         </div>
                       )}
                     </th>

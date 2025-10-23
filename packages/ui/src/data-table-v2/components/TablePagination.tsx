@@ -2,10 +2,24 @@
  * TablePagination - Pagination controls for DataTable
  *
  * Displays page info, navigation buttons, and page size selector
+ * Uses shadcn Button and Select components
  */
 
 import type { Table } from "@tanstack/react-table";
-import { cn } from "../../lib/utils";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
+import { Button } from "../../components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
 
 interface TablePaginationProps<TData> {
   table: Table<TData>;
@@ -36,28 +50,24 @@ export function TablePagination<TData>({
       {/* Left: Page size selector */}
       {showPageSizeSelector && (
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground dark:text-muted-foreground">
-            Rows per page:
-          </span>
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              table.setPageSize(Number(e.target.value));
+          <span className="text-sm text-muted-foreground">Rows per page:</span>
+          <Select
+            value={pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
             }}
-            className={cn(
-              "rounded-md border border-border dark:border-border",
-              "bg-background dark:bg-background",
-              "text-sm text-foreground dark:text-foreground",
-              "px-2 py-1",
-              "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-            )}
           >
-            {pageSizeOptions.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue placeholder={pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {pageSizeOptions.map((size) => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       )}
 
@@ -72,116 +82,46 @@ export function TablePagination<TData>({
 
       {/* Right: Navigation buttons */}
       <div className="flex items-center gap-2">
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => table.setPageIndex(0)}
           disabled={!canPreviousPage}
-          className={cn(
-            "rounded-md border border-border dark:border-border",
-            "bg-background dark:bg-background",
-            "px-3 py-1 text-sm",
-            "hover:bg-muted dark:hover:bg-muted",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            "transition-colors",
-          )}
         >
-          <svg
-            className="h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m11 17-5-5 5-5" />
-            <path d="m18 17-5-5 5-5" />
-          </svg>
-        </button>
-        <button
+          <ChevronsLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => table.previousPage()}
           disabled={!canPreviousPage}
-          className={cn(
-            "rounded-md border border-border dark:border-border",
-            "bg-background dark:bg-background",
-            "px-3 py-1 text-sm",
-            "hover:bg-muted dark:hover:bg-muted",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            "transition-colors",
-          )}
         >
-          <svg
-            className="h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
 
         {/* Page numbers */}
         <div className="flex items-center gap-1">
-          <span className="text-sm text-foreground dark:text-foreground">
+          <span className="text-sm text-foreground">
             Page {pageIndex + 1} of {pageCount}
           </span>
         </div>
 
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => table.nextPage()}
           disabled={!canNextPage}
-          className={cn(
-            "rounded-md border border-border dark:border-border",
-            "bg-background dark:bg-background",
-            "px-3 py-1 text-sm",
-            "hover:bg-muted dark:hover:bg-muted",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            "transition-colors",
-          )}
         >
-          <svg
-            className="h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </button>
-        <button
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => table.setPageIndex(pageCount - 1)}
           disabled={!canNextPage}
-          className={cn(
-            "rounded-md border border-border dark:border-border",
-            "bg-background dark:bg-background",
-            "px-3 py-1 text-sm",
-            "hover:bg-muted dark:hover:bg-muted",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            "transition-colors",
-          )}
         >
-          <svg
-            className="h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m13 17 5-5-5-5" />
-            <path d="m6 17 5-5-5-5" />
-          </svg>
-        </button>
+          <ChevronsRight className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

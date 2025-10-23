@@ -9,6 +9,7 @@ export { DataTable } from "./DataTable";
 export { TablePagination } from "./components/TablePagination";
 export { DataTableToolbar } from "./components/DataTableToolbar";
 export { FacetedFilter } from "./components/FacetedFilter";
+export { ViewOptions } from "./components/ViewOptions";
 
 // Types
 export type {
@@ -36,7 +37,7 @@ export type {
 // Hooks (for advanced usage)
 export { useDataTable } from "./hooks/useDataTable";
 export { useFaceting } from "./hooks/useFaceting";
-export type { FilterVariant, FilterMetadata } from "./hooks/useFaceting";
+export type { FilterVariant } from "./hooks/useFaceting";
 
 // Custom filter functions (for advanced usage)
 export { customFilterFns } from "./filters/customFilters";

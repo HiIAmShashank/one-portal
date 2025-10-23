@@ -4,10 +4,34 @@
  * Renders appropriate filter UI based on detected or configured filter variant
  */
 
-import * as React from "react";
 import type { Column } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useFaceting } from "../hooks/useFaceting";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../components/ui/popover";
+import { Calendar } from "../../components/ui/calendar";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../../components/ui/command";
 
 interface FacetedFilterProps<TData> {
   column: Column<TData>;
@@ -24,18 +48,12 @@ export function FacetedFilter<TData>({
   // Text filter
   if (metadata.variant === "text") {
     return (
-      <input
+      <Input
         type="text"
         value={(filterValue as string) ?? ""}
         onChange={(e) => column.setFilterValue(e.target.value || undefined)}
         placeholder={`Filter ${title || column.id}...`}
-        className={cn(
-          "h-8 w-full rounded-md border border-border dark:border-border",
-          "bg-background dark:bg-background",
-          "px-3 py-2 text-sm",
-          "placeholder:text-muted-foreground dark:placeholder:text-muted-foreground",
-          "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-        )}
+        className="h-8"
       />
     );
   }
@@ -43,69 +61,88 @@ export function FacetedFilter<TData>({
   // Select filter (single)
   if (metadata.variant === "select" && metadata.options) {
     return (
-      <select
+      <Select
         value={(filterValue as string) ?? ""}
-        onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-        className={cn(
-          "h-8 w-full rounded-md border border-border dark:border-border",
-          "bg-background dark:bg-background",
-          "px-3 py-2 text-sm",
-          "text-foreground dark:text-foreground",
-          "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-        )}
+        onValueChange={(value) => column.setFilterValue(value || undefined)}
       >
-        <option value="">All {title || column.id}</option>
-        {metadata.options.map((option) => (
-          <option key={String(option.value)} value={String(option.value)}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className="h-8 w-full">
+          <SelectValue placeholder={`All ${title || column.id}`} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">All {title || column.id}</SelectItem>
+          {metadata.options.map((option) => (
+            <SelectItem key={String(option.value)} value={String(option.value)}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     );
   }
 
-  // Multi-select filter
+  // Multi-select filter with Command/Popover
   if (metadata.variant === "multi-select" && metadata.options) {
     const selected = (filterValue as string[]) || [];
 
     return (
-      <div className="space-y-2">
-        <div className="text-sm font-medium text-foreground dark:text-foreground">
-          {title || column.id}
-        </div>
-        <div className="space-y-1 max-h-48 overflow-y-auto">
-          {metadata.options.map((option) => {
-            const isSelected = selected.includes(String(option.value));
-            return (
-              <label
-                key={String(option.value)}
-                className="flex items-center gap-2 cursor-pointer hover:bg-muted dark:hover:bg-muted rounded px-2 py-1"
-              >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      column.setFilterValue([
-                        ...selected,
-                        String(option.value),
-                      ]);
-                    } else {
-                      column.setFilterValue(
-                        selected.filter((v) => v !== String(option.value)),
-                      );
-                    }
-                  }}
-                  className="h-4 w-4 rounded border-border dark:border-border"
-                />
-                <span className="text-sm text-foreground dark:text-foreground">
-                  {option.label}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-      </div>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 w-full justify-between"
+          >
+            <span className="truncate">
+              {selected.length > 0
+                ? `${selected.length} selected`
+                : `All ${title || column.id}`}
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0" align="start">
+          <Command>
+            <CommandInput placeholder={`Search ${title || column.id}...`} />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup>
+                {metadata.options.map((option) => {
+                  const isSelected = selected.includes(String(option.value));
+                  return (
+                    <CommandItem
+                      key={String(option.value)}
+                      onSelect={() => {
+                        if (isSelected) {
+                          column.setFilterValue(
+                            selected.filter((v) => v !== String(option.value)),
+                          );
+                        } else {
+                          column.setFilterValue([
+                            ...selected,
+                            String(option.value),
+                          ]);
+                        }
+                      }}
+                    >
+                      <div
+                        className={cn(
+                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                          isSelected
+                            ? "bg-primary text-primary-foreground"
+                            : "opacity-50 [&_svg]:invisible",
+                        )}
+                      >
+                        <Check className="h-4 w-4" />
+                      </div>
+                      <span>{option.label}</span>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     );
   }
 
@@ -118,11 +155,11 @@ export function FacetedFilter<TData>({
 
     return (
       <div className="space-y-2">
-        <div className="text-sm font-medium text-foreground dark:text-foreground">
+        <div className="text-sm font-medium text-foreground">
           {title || column.id}
         </div>
         <div className="flex gap-2">
-          <input
+          <Input
             type="number"
             value={min ?? ""}
             onChange={(e) => {
@@ -133,14 +170,9 @@ export function FacetedFilter<TData>({
               ]);
             }}
             placeholder="Min"
-            className={cn(
-              "h-8 w-full rounded-md border border-border dark:border-border",
-              "bg-background dark:bg-background",
-              "px-3 py-2 text-sm",
-              "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-            )}
+            className="h-8"
           />
-          <input
+          <Input
             type="number"
             value={max ?? ""}
             onChange={(e) => {
@@ -151,12 +183,7 @@ export function FacetedFilter<TData>({
               ]);
             }}
             placeholder="Max"
-            className={cn(
-              "h-8 w-full rounded-md border border-border dark:border-border",
-              "bg-background dark:bg-background",
-              "px-3 py-2 text-sm",
-              "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-            )}
+            className="h-8"
           />
         </div>
       </div>
@@ -166,78 +193,97 @@ export function FacetedFilter<TData>({
   // Boolean filter
   if (metadata.variant === "boolean") {
     return (
-      <select
+      <Select
         value={
           filterValue === true ? "true" : filterValue === false ? "false" : ""
         }
-        onChange={(e) => {
-          const value =
-            e.target.value === "true"
-              ? true
-              : e.target.value === "false"
-                ? false
-                : undefined;
-          column.setFilterValue(value);
+        onValueChange={(value) => {
+          const newValue =
+            value === "true" ? true : value === "false" ? false : undefined;
+          column.setFilterValue(newValue);
         }}
-        className={cn(
-          "h-8 w-full rounded-md border border-border dark:border-border",
-          "bg-background dark:bg-background",
-          "px-3 py-2 text-sm",
-          "text-foreground dark:text-foreground",
-          "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-        )}
       >
-        <option value="">All</option>
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
+        <SelectTrigger className="h-8 w-full">
+          <SelectValue placeholder="All" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">All</SelectItem>
+          <SelectItem value="true">Yes</SelectItem>
+          <SelectItem value="false">No</SelectItem>
+        </SelectContent>
+      </Select>
     );
   }
 
   // Date range filter
   if (metadata.variant === "date-range") {
-    const [startDate, endDate] = (filterValue as [string, string]) || ["", ""];
+    const [startDate, endDate] = (filterValue as [Date, Date]) || [
+      undefined,
+      undefined,
+    ];
 
     return (
       <div className="space-y-2">
-        <div className="text-sm font-medium text-foreground dark:text-foreground">
+        <div className="text-sm font-medium text-foreground">
           {title || column.id}
         </div>
         <div className="flex gap-2">
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => {
-              column.setFilterValue((old: [string, string]) => [
-                e.target.value,
-                old?.[1] || "",
-              ]);
-            }}
-            className={cn(
-              "h-8 w-full rounded-md border border-border dark:border-border",
-              "bg-background dark:bg-background",
-              "px-3 py-2 text-sm",
-              "text-foreground dark:text-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-            )}
-          />
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => {
-              column.setFilterValue((old: [string, string]) => [
-                old?.[0] || "",
-                e.target.value,
-              ]);
-            }}
-            className={cn(
-              "h-8 w-full rounded-md border border-border dark:border-border",
-              "bg-background dark:bg-background",
-              "px-3 py-2 text-sm",
-              "text-foreground dark:text-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-            )}
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "h-8 w-full justify-start text-left font-normal",
+                  !startDate && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {startDate ? format(startDate, "PPP") : "Start date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={(date) => {
+                  column.setFilterValue((old: [Date, Date]) => [
+                    date,
+                    old?.[1],
+                  ]);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "h-8 w-full justify-start text-left font-normal",
+                  !endDate && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {endDate ? format(endDate, "PPP") : "End date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={(date) => {
+                  column.setFilterValue((old: [Date, Date]) => [
+                    old?.[0],
+                    date,
+                  ]);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     );
@@ -246,41 +292,33 @@ export function FacetedFilter<TData>({
   // Date filter (single date)
   if (metadata.variant === "date" && metadata.options) {
     return (
-      <select
+      <Select
         value={(filterValue as string) ?? ""}
-        onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-        className={cn(
-          "h-8 w-full rounded-md border border-border dark:border-border",
-          "bg-background dark:bg-background",
-          "px-3 py-2 text-sm",
-          "text-foreground dark:text-foreground",
-          "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-        )}
+        onValueChange={(value) => column.setFilterValue(value || undefined)}
       >
-        <option value="">All {title || column.id}</option>
-        {metadata.options.map((option) => (
-          <option key={String(option.value)} value={String(option.value)}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger className="h-8 w-full">
+          <SelectValue placeholder={`All ${title || column.id}`} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">All {title || column.id}</SelectItem>
+          {metadata.options.map((option) => (
+            <SelectItem key={String(option.value)} value={String(option.value)}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     );
   }
 
   // Fallback to text
   return (
-    <input
+    <Input
       type="text"
       value={(filterValue as string) ?? ""}
       onChange={(e) => column.setFilterValue(e.target.value || undefined)}
       placeholder={`Filter ${title || column.id}...`}
-      className={cn(
-        "h-8 w-full rounded-md border border-border dark:border-border",
-        "bg-background dark:bg-background",
-        "px-3 py-2 text-sm",
-        "placeholder:text-muted-foreground dark:placeholder:text-muted-foreground",
-        "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-      )}
+      className="h-8"
     />
   );
 }

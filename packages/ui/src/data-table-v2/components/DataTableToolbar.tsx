@@ -2,18 +2,23 @@
  * DataTableToolbar - Filter toolbar with global search and column filters
  *
  * Displays filter controls above the table
+ * Uses shadcn Input and Button components
  */
 
 import * as React from "react";
 import type { Table } from "@tanstack/react-table";
-import { cn } from "../../lib/utils";
+import { Search, X } from "lucide-react";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 import { FacetedFilter } from "./FacetedFilter";
+import { ViewOptions } from "./ViewOptions";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   globalSearch?: boolean;
   columnFilters?: boolean;
   globalSearchPlaceholder?: string;
+  showViewOptions?: boolean;
 }
 
 export function DataTableToolbar<TData>({
@@ -21,7 +26,9 @@ export function DataTableToolbar<TData>({
   globalSearch = true,
   columnFilters = true,
   globalSearchPlaceholder = "Search all columns...",
+  showViewOptions = true,
 }: DataTableToolbarProps<TData>) {
+  const [showColumnFilters, setShowColumnFilters] = React.useState(true);
   const globalFilterValue = table.getState().globalFilter;
   const hasFilters =
     table.getState().columnFilters.length > 0 || globalFilterValue;
@@ -32,61 +39,46 @@ export function DataTableToolbar<TData>({
       {globalSearch && (
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-muted-foreground"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
               type="text"
               value={(globalFilterValue as string) ?? ""}
               onChange={(e) =>
                 table.setGlobalFilter(e.target.value || undefined)
               }
               placeholder={globalSearchPlaceholder}
-              className={cn(
-                "h-9 w-full rounded-md border border-border dark:border-border",
-                "bg-background dark:bg-background",
-                "pl-10 pr-4 py-2 text-sm",
-                "text-foreground dark:text-foreground",
-                "placeholder:text-muted-foreground dark:placeholder:text-muted-foreground",
-                "focus:outline-none focus:ring-2 focus:ring-ring dark:focus:ring-ring",
-              )}
+              className="pl-10"
             />
           </div>
 
           {/* Clear All Filters Button */}
           {hasFilters && (
-            <button
+            <Button
+              variant="ghost"
               onClick={() => {
                 table.resetColumnFilters();
                 table.setGlobalFilter(undefined);
               }}
-              className={cn(
-                "h-9 px-4 rounded-md",
-                "border border-border dark:border-border",
-                "bg-background dark:bg-background",
-                "text-sm text-foreground dark:text-foreground",
-                "hover:bg-muted dark:hover:bg-muted",
-                "transition-colors",
-              )}
             >
+              <X className="mr-2 h-4 w-4" />
               Clear filters
-            </button>
+            </Button>
+          )}
+
+          {/* View Options Button */}
+          {showViewOptions && (
+            <ViewOptions
+              table={table}
+              showFilterToggle={columnFilters}
+              showFilters={showColumnFilters}
+              onFiltersToggle={setShowColumnFilters}
+            />
           )}
         </div>
       )}
 
       {/* Column Filters */}
-      {columnFilters && (
+      {columnFilters && showColumnFilters && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {table
             .getAllColumns()
