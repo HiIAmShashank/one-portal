@@ -45,6 +45,12 @@ export default defineConfig({
         '@tanstack/react-query': {
           singleton: true,
         },
+        '@tanstack/react-router': {
+          singleton: true,
+        },
+        'lucide-react': {
+          singleton: true,
+        },
         zustand: {
           singleton: true,
         },

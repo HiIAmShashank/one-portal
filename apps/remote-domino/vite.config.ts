@@ -15,7 +15,25 @@ export default defineConfig({
         './App': './src/App.tsx',
         './bootstrap': './src/bootstrap.tsx',
       },
-      shared: ['react', 'react-dom'],
+      shared: {
+        react: {
+          singleton: true,
+          requiredVersion: '^19.2.0',
+        },
+        'react-dom': {
+          singleton: true,
+          requiredVersion: '^19.2.0',
+        },
+        '@tanstack/react-query': {
+          singleton: true,
+        },
+        '@tanstack/react-router': {
+          singleton: true,
+        },
+        'lucide-react': {
+          singleton: true,
+        },
+      },
     }),
   ],
   base: process.env.NODE_ENV === 'production' ? '/domino/' : '/',
