@@ -1,0 +1,30 @@
+{
+  "name": "@one-portal/storybook",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@one-portal/ui": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.3.0",
+    "@storybook/addon-a11y": "^8.5.3",
+    "@storybook/addon-essentials": "^8.5.3",
+    "@storybook/addon-interactions": "^8.5.3",
+    "@storybook/addon-links": "^8.5.3",
+    "@storybook/addon-themes": "^8.5.3",
+    "@storybook/react": "^8.5.3",
+    "@storybook/react-vite": "^8.5.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "storybook": "^8.5.3",
+    "typescript": "~5.9.3",
+    "vite": "^6.0.11"
+  }
+}
