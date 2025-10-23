@@ -92,13 +92,13 @@ export function unmountRemote(scope: string): void {
       metadata.unmountFn(metadata.instance);
     }
 
-    metadata.instance = undefined;
-    metadata.containerId = undefined;
+    delete metadata.instance;
+    delete metadata.containerId;
 
   } catch (error) {
     console.error(`[RemoteLoader] Unmount failed for ${scope}:`, error);
-    metadata.instance = undefined;
-    metadata.containerId = undefined;
+    delete metadata.instance;
+    delete metadata.containerId;
   }
 }
 

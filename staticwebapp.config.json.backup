@@ -1,0 +1,37 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [
+      "/billing/assets/*",
+      "/reports/assets/*",
+      "/assets/*",
+      "/*.{css,js,json,png,jpg,jpeg,gif,svg,ico,woff,woff2,ttf,eot}"
+    ]
+  },
+  "routes": [
+    {
+      "route": "/billing/assets/*",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/reports/assets/*",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/assets/*",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["anonymous"]
+    }
+  ],
+  "globalHeaders": {
+    "cache-control": "no-cache, no-store, must-revalidate"
+  },
+  "mimeTypes": {
+    ".json": "application/json",
+    ".js": "application/javascript",
+    ".css": "text/css"
+  }
+}

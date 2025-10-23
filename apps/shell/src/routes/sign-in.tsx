@@ -12,10 +12,14 @@ import {
 export const Route = createFileRoute('/sign-in')({
     component: SignInComponent,
     validateSearch: (search: Record<string, unknown>): { returnUrl?: string; 'signed-out'?: string } => {
-        return {
-            returnUrl: typeof search.returnUrl === 'string' ? search.returnUrl : undefined,
-            'signed-out': typeof search['signed-out'] === 'string' ? search['signed-out'] : undefined,
-        };
+        const result: { returnUrl?: string; 'signed-out'?: string } = {};
+        if (typeof search.returnUrl === 'string') {
+            result.returnUrl = search.returnUrl;
+        }
+        if (typeof search['signed-out'] === 'string') {
+            result['signed-out'] = search['signed-out'];
+        }
+        return result;
     },
 });
 

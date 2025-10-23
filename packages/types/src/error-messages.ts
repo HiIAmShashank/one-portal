@@ -91,7 +91,7 @@ export class ShellError extends Error {
   constructor(
     public code: ErrorCode,
     message: string,
-    public cause?: unknown
+    public override cause?: unknown
   ) {
     super(message);
     this.name = 'ShellError';

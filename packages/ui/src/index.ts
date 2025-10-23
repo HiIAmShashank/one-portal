@@ -176,3 +176,5 @@ export {
   Bell,
   Search,
 } from 'lucide-react';
+
+export { RemoteErrorBoundary, withRemoteErrorBoundary } from './components/remote-error-boundary';

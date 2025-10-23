@@ -559,10 +559,13 @@ export function DataTable<TData>({
       const oldIndex = columnOrder.indexOf(String(active.id));
       const newIndex = columnOrder.indexOf(String(over.id));
       if (oldIndex !== -1 && newIndex !== -1) {
-        const newOrder = [...columnOrder];
-        newOrder.splice(oldIndex, 1);
-        newOrder.splice(newIndex, 0, columnOrder[oldIndex]);
-        setColumnOrder(newOrder);
+        const movedColumn = columnOrder[oldIndex];
+        if (movedColumn !== undefined) {
+          const newOrder = [...columnOrder];
+          newOrder.splice(oldIndex, 1);
+          newOrder.splice(newIndex, 0, movedColumn);
+          setColumnOrder(newOrder);
+        }
       }
     }
   };

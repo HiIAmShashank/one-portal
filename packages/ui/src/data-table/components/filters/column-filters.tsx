@@ -140,7 +140,7 @@ function getFilterVariant<TData>(
 
   // 4. Auto-detect from data
   const rows = table.getPreFilteredRowModel().rows;
-  if (rows.length > 0) {
+  if (rows.length > 0 && rows[0]) {
     const firstValue = rows[0].getValue(column.id);
 
     // Skip empty strings when detecting type

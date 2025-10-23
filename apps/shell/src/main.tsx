@@ -8,7 +8,20 @@ import { router } from './router';
 import { Sonner } from '@one-portal/ui';
 import './style.css';
 import '@one-portal/ui/styles.css';
+import { validateShellEnv } from '@one-portal/config/env';
 
+try {
+  validateShellEnv();
+} catch (error) {
+  console.error(error);
+  document.body.innerHTML = `
+    <div style="padding: 2rem; color: red;">
+      <h1>Configuration Error</h1>
+      <pre>${error instanceof Error ? error.message : String(error)}</pre>
+    </div>
+  `;
+  throw error;
+}
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

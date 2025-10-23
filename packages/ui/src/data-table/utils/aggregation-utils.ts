@@ -92,9 +92,13 @@ export const aggregationFunctions = {
     if (values.length === 0) return 0;
 
     const mid = Math.floor(values.length / 2);
-    return values.length % 2 === 0
-      ? (values[mid - 1] + values[mid]) / 2
-      : values[mid];
+    if (values.length % 2 === 0) {
+      const val1 = values[mid - 1];
+      const val2 = values[mid];
+      return (val1 !== undefined && val2 !== undefined) ? (val1 + val2) / 2 : 0;
+    }
+    const medianVal = values[mid];
+    return medianVal !== undefined ? medianVal : 0;
   },
 
   unique: <TData,>(columnId: string, leafRows: Row<TData>[]): any[] => {

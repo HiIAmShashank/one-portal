@@ -23,7 +23,8 @@
     "lucide-react": "^0.545.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.8",
+    "@one-portal/config": "workspace:*"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
