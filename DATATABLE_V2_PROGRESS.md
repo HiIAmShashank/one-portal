@@ -6,8 +6,17 @@
 ## Summary
 - **Total Tasks:** 52
 - **Completed:** 8 (15%)
-- **In Progress:** 5
-- **Pending:** 39
+- **In Progress:** 0
+- **Pending:** 44
+
+## Recent Changes
+**Commit:** `75704bb` - Fixed loading state, dark mode, and UI issues
+- ✅ Fixed loading spinner with proper SVG animation
+- ✅ Fixed scrollwheel flicker by conditionally applying overflow-auto
+- ✅ Added comprehensive dark mode support throughout table
+- ✅ Rebuilt UI package to generate missing Tailwind classes (px-6, even:bg-muted/30)
+- ✅ className prop already exists for custom styling
+- ✅ Created progress tracking document (this file)
 
 ---
 
@@ -142,17 +151,13 @@
 
 ## Current Issues (User Reported)
 
-### High Priority
-1. **Loading state flickering** - Scrollwheel appears/disappears, spinner not working
-2. **Tailwind classes missing** - `px-6` and `even:bg-muted/30` not available
-3. **Dark mode broken** - Background changes but table doesn't theme
-4. **Need className prop** - Allow custom CSS classes
+### ✅ Resolved (Commit 75704bb)
+1. ✅ **Loading state flickering** - Fixed with proper SVG spinner and conditional overflow-auto
+2. ✅ **Tailwind classes missing** - Fixed by rebuilding UI package (px-6, even:bg-muted/30 now available)
+3. ✅ **Dark mode broken** - Fixed with dark: prefixes throughout component
+4. ✅ **className prop** - Already exists, confirmed in DataTable.tsx props
 
-### Tasks
-- [ ] Fix loading state spinner and scrollwheel flicker
-- [ ] Rebuild UI package with Tailwind to generate missing classes
-- [ ] Fix dark mode theming on table elements
-- [ ] Add/improve className prop for custom styling
+### Optional
 - [ ] Upgrade Storybook to v9.1.11
 
 ---
