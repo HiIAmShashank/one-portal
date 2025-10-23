@@ -212,9 +212,19 @@ export class MsalInitializer {
   private async initializeHost(): Promise<void> {
     const { msalInstance, appName, getAuthConfig, debug } = this.config;
 
+    console.info(`[${appName}] initializeHost START`);
+
     try {
       await msalInstance.initialize();
+      console.info(
+        `[${appName}] MSAL initialized, calling handleRedirectPromise...`,
+      );
+
       const response = await msalInstance.handleRedirectPromise();
+      console.info(
+        `[${appName}] handleRedirectPromise completed, response:`,
+        response ? "HAS RESPONSE" : "NO RESPONSE",
+      );
 
       if (!this.isMounted) return;
 

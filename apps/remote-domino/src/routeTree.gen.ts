@@ -8,192 +8,192 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as SignInRouteImport } from "./routes/sign-in";
-import { Route as DashboardRouteImport } from "./routes/dashboard";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as DashboardIndexRouteImport } from "./routes/dashboard/index";
-import { Route as DashboardWorkflowsRouteImport } from "./routes/dashboard/workflows";
-import { Route as DashboardTasksRouteImport } from "./routes/dashboard/tasks";
-import { Route as DashboardEventsRouteImport } from "./routes/dashboard/events";
-import { Route as AuthCallbackRouteImport } from "./routes/auth/callback";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardWorkflowsRouteImport } from './routes/dashboard/workflows'
+import { Route as DashboardTasksRouteImport } from './routes/dashboard/tasks'
+import { Route as DashboardEventsRouteImport } from './routes/dashboard/events'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 
 const SignInRoute = SignInRouteImport.update({
-  id: "/sign-in",
-  path: "/sign-in",
+  id: '/sign-in',
+  path: '/sign-in',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
-  id: "/dashboard",
-  path: "/dashboard",
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => DashboardRoute,
-} as any);
+} as any)
 const DashboardWorkflowsRoute = DashboardWorkflowsRouteImport.update({
-  id: "/workflows",
-  path: "/workflows",
+  id: '/workflows',
+  path: '/workflows',
   getParentRoute: () => DashboardRoute,
-} as any);
+} as any)
 const DashboardTasksRoute = DashboardTasksRouteImport.update({
-  id: "/tasks",
-  path: "/tasks",
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => DashboardRoute,
-} as any);
+} as any)
 const DashboardEventsRoute = DashboardEventsRouteImport.update({
-  id: "/events",
-  path: "/events",
+  id: '/events',
+  path: '/events',
   getParentRoute: () => DashboardRoute,
-} as any);
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: "/auth/callback",
-  path: "/auth/callback",
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/dashboard": typeof DashboardRouteWithChildren;
-  "/sign-in": typeof SignInRoute;
-  "/auth/callback": typeof AuthCallbackRoute;
-  "/dashboard/events": typeof DashboardEventsRoute;
-  "/dashboard/tasks": typeof DashboardTasksRoute;
-  "/dashboard/workflows": typeof DashboardWorkflowsRoute;
-  "/dashboard/": typeof DashboardIndexRoute;
+  '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
+  '/dashboard/workflows': typeof DashboardWorkflowsRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/sign-in": typeof SignInRoute;
-  "/auth/callback": typeof AuthCallbackRoute;
-  "/dashboard/events": typeof DashboardEventsRoute;
-  "/dashboard/tasks": typeof DashboardTasksRoute;
-  "/dashboard/workflows": typeof DashboardWorkflowsRoute;
-  "/dashboard": typeof DashboardIndexRoute;
+  '/': typeof IndexRoute
+  '/sign-in': typeof SignInRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
+  '/dashboard/workflows': typeof DashboardWorkflowsRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/dashboard": typeof DashboardRouteWithChildren;
-  "/sign-in": typeof SignInRoute;
-  "/auth/callback": typeof AuthCallbackRoute;
-  "/dashboard/events": typeof DashboardEventsRoute;
-  "/dashboard/tasks": typeof DashboardTasksRoute;
-  "/dashboard/workflows": typeof DashboardWorkflowsRoute;
-  "/dashboard/": typeof DashboardIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/sign-in': typeof SignInRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/dashboard/events': typeof DashboardEventsRoute
+  '/dashboard/tasks': typeof DashboardTasksRoute
+  '/dashboard/workflows': typeof DashboardWorkflowsRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/dashboard"
-    | "/sign-in"
-    | "/auth/callback"
-    | "/dashboard/events"
-    | "/dashboard/tasks"
-    | "/dashboard/workflows"
-    | "/dashboard/";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/dashboard'
+    | '/sign-in'
+    | '/auth/callback'
+    | '/dashboard/events'
+    | '/dashboard/tasks'
+    | '/dashboard/workflows'
+    | '/dashboard/'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/sign-in"
-    | "/auth/callback"
-    | "/dashboard/events"
-    | "/dashboard/tasks"
-    | "/dashboard/workflows"
-    | "/dashboard";
+    | '/'
+    | '/sign-in'
+    | '/auth/callback'
+    | '/dashboard/events'
+    | '/dashboard/tasks'
+    | '/dashboard/workflows'
+    | '/dashboard'
   id:
-    | "__root__"
-    | "/"
-    | "/dashboard"
-    | "/sign-in"
-    | "/auth/callback"
-    | "/dashboard/events"
-    | "/dashboard/tasks"
-    | "/dashboard/workflows"
-    | "/dashboard/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/sign-in'
+    | '/auth/callback'
+    | '/dashboard/events'
+    | '/dashboard/tasks'
+    | '/dashboard/workflows'
+    | '/dashboard/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  DashboardRoute: typeof DashboardRouteWithChildren;
-  SignInRoute: typeof SignInRoute;
-  AuthCallbackRoute: typeof AuthCallbackRoute;
+  IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
+  SignInRoute: typeof SignInRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/sign-in": {
-      id: "/sign-in";
-      path: "/sign-in";
-      fullPath: "/sign-in";
-      preLoaderRoute: typeof SignInRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/dashboard": {
-      id: "/dashboard";
-      path: "/dashboard";
-      fullPath: "/dashboard";
-      preLoaderRoute: typeof DashboardRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/dashboard/": {
-      id: "/dashboard/";
-      path: "/";
-      fullPath: "/dashboard/";
-      preLoaderRoute: typeof DashboardIndexRouteImport;
-      parentRoute: typeof DashboardRoute;
-    };
-    "/dashboard/workflows": {
-      id: "/dashboard/workflows";
-      path: "/workflows";
-      fullPath: "/dashboard/workflows";
-      preLoaderRoute: typeof DashboardWorkflowsRouteImport;
-      parentRoute: typeof DashboardRoute;
-    };
-    "/dashboard/tasks": {
-      id: "/dashboard/tasks";
-      path: "/tasks";
-      fullPath: "/dashboard/tasks";
-      preLoaderRoute: typeof DashboardTasksRouteImport;
-      parentRoute: typeof DashboardRoute;
-    };
-    "/dashboard/events": {
-      id: "/dashboard/events";
-      path: "/events";
-      fullPath: "/dashboard/events";
-      preLoaderRoute: typeof DashboardEventsRouteImport;
-      parentRoute: typeof DashboardRoute;
-    };
-    "/auth/callback": {
-      id: "/auth/callback";
-      path: "/auth/callback";
-      fullPath: "/auth/callback";
-      preLoaderRoute: typeof AuthCallbackRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/workflows': {
+      id: '/dashboard/workflows'
+      path: '/workflows'
+      fullPath: '/dashboard/workflows'
+      preLoaderRoute: typeof DashboardWorkflowsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/tasks': {
+      id: '/dashboard/tasks'
+      path: '/tasks'
+      fullPath: '/dashboard/tasks'
+      preLoaderRoute: typeof DashboardTasksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/events': {
+      id: '/dashboard/events'
+      path: '/events'
+      fullPath: '/dashboard/events'
+      preLoaderRoute: typeof DashboardEventsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface DashboardRouteChildren {
-  DashboardEventsRoute: typeof DashboardEventsRoute;
-  DashboardTasksRoute: typeof DashboardTasksRoute;
-  DashboardWorkflowsRoute: typeof DashboardWorkflowsRoute;
-  DashboardIndexRoute: typeof DashboardIndexRoute;
+  DashboardEventsRoute: typeof DashboardEventsRoute
+  DashboardTasksRoute: typeof DashboardTasksRoute
+  DashboardWorkflowsRoute: typeof DashboardWorkflowsRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
@@ -201,18 +201,18 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardTasksRoute: DashboardTasksRoute,
   DashboardWorkflowsRoute: DashboardWorkflowsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
-};
+}
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
-);
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   SignInRoute: SignInRoute,
   AuthCallbackRoute: AuthCallbackRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
