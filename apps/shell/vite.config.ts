@@ -45,6 +45,12 @@ export default defineConfig({
         '@tanstack/react-query': {
           singleton: true,
         },
+        '@tanstack/react-router': {
+          singleton: true,
+        },
+        'lucide-react': {
+          singleton: true,
+        },
         zustand: {
           singleton: true,
         },
@@ -63,7 +69,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
     modulePreload: false,
-    minify: false,
+    minify: true,
     cssCodeSplit: false,
   },
 });

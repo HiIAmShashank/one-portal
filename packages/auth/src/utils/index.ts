@@ -55,3 +55,9 @@ export {
   type AppMode,
   type EmbeddedModeConfig,
 } from './environment';
+
+export {
+  isValidReturnUrl,
+  safeRedirect,
+  sanitizeReturnUrl,
+} from './urlValidation';

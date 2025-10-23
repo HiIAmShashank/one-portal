@@ -1,10 +1,10 @@
 import type { PersistedTableState } from '../types';
 
 const STORAGE_VERSION = '1.0.0';
-const KEY_PREFIX = 'oneportal-datatable';
+const KEY_PREFIX = 'oneportal:datatable';
 
 function getStorageKey(tableId: string): string {
-  return `${KEY_PREFIX}-${tableId}-state`;
+  return `${KEY_PREFIX}:${tableId}:state`;
 }
 
 export function saveTableState(

@@ -255,20 +255,20 @@ export function useTableState<TData>({
   // Phase 10: UI Enhancements state (persisted)
   const [density, setDensity] = useState<Density>(() => {
     if (!enablePersistence) return 'default';
-    const saved = localStorage.getItem(`table-${tableId}-density`);
+    const saved = localStorage.getItem(`oneportal:datatable:${tableId}:density`);
     return (saved as Density) || 'default';
   });
 
   const [filterMode, setFilterMode] = useState<FilterMode>(() => {
     if (!enablePersistence) return 'toolbar';
-    const saved = localStorage.getItem(`table-${tableId}-filterMode`);
+    const saved = localStorage.getItem(`oneportal:datatable:${tableId}:filterMode`);
     return (saved as FilterMode) || 'toolbar';
   });
 
   // Phase 10: Row Grouping state (persisted)
   const [grouping, setGroupingInternal] = useState<GroupingState>(() => {
     if (!enablePersistence) return initialGrouping || [];
-    const saved = localStorage.getItem(`table-${tableId}-grouping`);
+    const saved = localStorage.getItem(`oneportal:datatable:${tableId}:grouping`);
     if (saved) {
       try {
         return JSON.parse(saved) as GroupingState;
@@ -332,25 +332,25 @@ export function useTableState<TData>({
   // Persist density to localStorage
   useEffect(() => {
     if (!enablePersistence) return;
-    localStorage.setItem(`table-${tableId}-density`, density);
+    localStorage.setItem(`oneportal:datatable:${tableId}:density`, density);
   }, [tableId, density, enablePersistence]);
 
   // Persist filterMode to localStorage
   useEffect(() => {
     if (!enablePersistence) return;
-    localStorage.setItem(`table-${tableId}-filterMode`, filterMode);
+    localStorage.setItem(`oneportal:datatable:${tableId}:filterMode`, filterMode);
   }, [tableId, filterMode, enablePersistence]);
 
   // Persist grouping to localStorage
   useEffect(() => {
     if (!enablePersistence) return;
-    localStorage.setItem(`table-${tableId}-grouping`, JSON.stringify(grouping));
+    localStorage.setItem(`oneportal:datatable:${tableId}:grouping`, JSON.stringify(grouping));
   }, [tableId, grouping, enablePersistence]);
 
   // Persist expanded to localStorage
   useEffect(() => {
     if (!enablePersistence) return;
-    localStorage.setItem(`table-${tableId}-expanded`, JSON.stringify(expanded));
+    localStorage.setItem(`oneportal:datatable:${tableId}:expanded`, JSON.stringify(expanded));
   }, [tableId, expanded, enablePersistence]);
 
   // Reset all state to defaults
@@ -371,10 +371,10 @@ export function useTableState<TData>({
 
     if (enablePersistence) {
       clearTableState(tableId);
-      localStorage.removeItem(`table-${tableId}-density`);
-      localStorage.removeItem(`table-${tableId}-filterMode`);
-      localStorage.removeItem(`table-${tableId}-grouping`);
-      localStorage.removeItem(`table-${tableId}-expanded`);
+      localStorage.removeItem(`oneportal:datatable:${tableId}:density`);
+      localStorage.removeItem(`oneportal:datatable:${tableId}:filterMode`);
+      localStorage.removeItem(`oneportal:datatable:${tableId}:grouping`);
+      localStorage.removeItem(`oneportal:datatable:${tableId}:expanded`);
     }
   }, [tableId, columns, initialPageSize, enablePersistence, setGrouping, setExpanded]);
 

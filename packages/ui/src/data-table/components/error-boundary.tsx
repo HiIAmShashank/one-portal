@@ -51,9 +51,9 @@ export class DataTableErrorBoundary extends React.Component<
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('DataTable Error:', error);
       console.error('Error Info:', errorInfo);
     }
@@ -69,7 +69,7 @@ export class DataTableErrorBoundary extends React.Component<
     });
   };
 
-  render() {
+  override render() {
     if (this.state.hasError && this.state.error) {
       // Use custom fallback if provided
       if (this.props.fallback) {
@@ -108,7 +108,7 @@ function DefaultErrorFallback({ error, resetErrorBoundary }: ErrorBoundaryFallba
         The data table encountered an error and couldn't render properly.
       </p>
 
-      {process.env.NODE_ENV === 'development' && (
+      {import.meta.env.DEV && (
         <details className="mb-4 text-left max-w-2xl w-full">
           <summary className="cursor-pointer text-sm font-medium mb-2 hover:underline">
             Error Details (Development Only)

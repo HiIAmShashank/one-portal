@@ -5,7 +5,7 @@
 
 import { AuthErrorHandler } from '../errors';
 import { publishAuthEvent } from '../events';
-import { getLoginHint } from '../utils';
+import { getLoginHint, safeRedirect } from '../utils';
 import { isEmbeddedMode } from '../utils/environment';
 import type {
     InitConfig,
@@ -233,7 +233,7 @@ export class MsalInitializer {
                     if (debug) {
                         console.log(`[${appName}] Redirecting to:`, returnUrl);
                     }
-                    window.location.href = decodeURIComponent(returnUrl);
+                    safeRedirect(decodeURIComponent(returnUrl), '/');
                     return;
                 }
             } else {
@@ -319,7 +319,7 @@ export class MsalInitializer {
                     if (debug) {
                         console.log(`[${appName}] Token acquired silently`);
                     }
-                } catch (error: any) {
+                } catch (error: unknown) {
                     // Token refresh failed, try SSO
                     try {
                         const ssoResult = await msalInstance.ssoSilent({
@@ -381,7 +381,7 @@ export class MsalInitializer {
             // Only redirect if user actually navigated to this page
             console.error(`[${appName}] SSO failed, redirecting to Shell:`, error);
             const returnUrl = encodeURIComponent(window.location.href);
-            window.location.href = `/?returnUrl=${returnUrl}`;
+            safeRedirect(`/?returnUrl=${returnUrl}`, '/');
         } else {
             // Route was preloaded but not visible - don't redirect
             if (debug) {

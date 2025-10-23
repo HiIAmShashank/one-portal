@@ -1,5 +1,6 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { createProtectedRouteGuard } from '@one-portal/auth/guards';
+import { safeRedirect } from '@one-portal/auth/utils';
 import { msalInstance } from '../auth/msalInstance';
 import { AppLayout } from '../components/AppLayout';
 
@@ -18,7 +19,7 @@ export const Route = createRootRoute({
       onUnauthenticated: (returnUrl) => {
         // Redirect to Shell sign-in with returnUrl to Domino route
         const shellSignInUrl = `/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`;
-        window.location.href = shellSignInUrl;
+        safeRedirect(shellSignInUrl, '/sign-in');
       },
       onAuthError: (error) => {
         console.error('[Domino] Route guard auth error:', error);

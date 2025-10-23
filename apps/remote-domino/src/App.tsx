@@ -1,31 +1,10 @@
 import { RouterProvider, createRouter } from '@tanstack/react-router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { createQueryClient } from '@one-portal/config';
 import { isAuthError } from '@one-portal/auth/utils';
 import { routeTree } from './routeTree.gen';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,
-      retry: (failureCount, error) => {
-        if (isAuthError(error)) {
-          return false;
-        }
-        return failureCount < 2;
-      },
-      refetchOnWindowFocus: true,
-      refetchOnReconnect: true,
-    },
-    mutations: {
-      retry: (failureCount, error) => {
-        if (isAuthError(error)) {
-          return false;
-        }
-        return failureCount < 1;
-      },
-    },
-  },
-});
+const queryClient = createQueryClient({ shouldSkipRetry: isAuthError });
 
 const router = createRouter({
   routeTree,
