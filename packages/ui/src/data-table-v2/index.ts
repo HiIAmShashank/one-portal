@@ -5,6 +5,9 @@
 // Main component
 export { DataTable } from "./DataTable";
 
+// Sub-components (for advanced composition)
+export { TablePagination } from "./components/TablePagination";
+
 // Types
 export type {
   DataTableProps,

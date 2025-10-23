@@ -7,6 +7,7 @@
 import * as React from "react";
 import { flexRender } from "@tanstack/react-table";
 import { useDataTable } from "./hooks/useDataTable";
+import { TablePagination } from "./components/TablePagination";
 import type { DataTableProps } from "./types";
 import { cn } from "../lib/utils";
 
@@ -65,6 +66,9 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   const isLoading = features?.serverSide?.loading;
   const hasError = features?.serverSide?.error;
 
+  // Check if pagination is enabled
+  const paginationEnabled = features?.pagination !== false;
+
   // ============================================================================
   // RENDER
   // ============================================================================
@@ -101,27 +105,89 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                 key={headerGroup.id}
                 className="hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
               >
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    style={{ width: header.getSize() }}
-                    className={cn(
-                      cellPaddingClasses[density],
-                      "text-left align-middle font-medium",
-                      "text-muted-foreground dark:text-muted-foreground",
-                      "[&:has([role=checkbox])]:pr-0",
-                      variantClasses[variant],
-                    )}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </th>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const canSort = header.column.getCanSort();
+                  const sorted = header.column.getIsSorted();
+
+                  return (
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      style={{ width: header.getSize() }}
+                      className={cn(
+                        cellPaddingClasses[density],
+                        "text-left align-middle font-medium",
+                        "text-muted-foreground dark:text-muted-foreground",
+                        "[&:has([role=checkbox])]:pr-0",
+                        variantClasses[variant],
+                      )}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div
+                          className={cn(
+                            "flex items-center gap-2",
+                            canSort && "cursor-pointer select-none",
+                          )}
+                          onClick={
+                            canSort
+                              ? header.column.getToggleSortingHandler()
+                              : undefined
+                          }
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                          {canSort && (
+                            <div className="flex flex-col">
+                              {sorted === "asc" ? (
+                                <svg
+                                  className="h-4 w-4 text-foreground dark:text-foreground"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="m18 15-6-6-6 6" />
+                                </svg>
+                              ) : sorted === "desc" ? (
+                                <svg
+                                  className="h-4 w-4 text-foreground dark:text-foreground"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="m6 9 6 6 6-6" />
+                                </svg>
+                              ) : (
+                                <svg
+                                  className="h-4 w-4 text-muted-foreground/50 dark:text-muted-foreground/50"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="m7 15 5 5 5-5" />
+                                  <path d="m7 9 5-5 5 5" />
+                                </svg>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </th>
+                  );
+                })}
               </tr>
             ))}
           </thead>
@@ -270,6 +336,28 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {paginationEnabled && !isEmpty && !isLoading && !hasError && (
+        <TablePagination
+          table={table}
+          pageSizeOptions={
+            typeof features?.pagination === "object"
+              ? features.pagination.pageSizeOptions
+              : undefined
+          }
+          showPageInfo={
+            typeof features?.pagination === "object"
+              ? features.pagination.showPageInfo
+              : true
+          }
+          showPageSizeSelector={
+            typeof features?.pagination === "object"
+              ? features.pagination.showPageSizeSelector
+              : true
+          }
+        />
+      )}
     </div>
   );
 }

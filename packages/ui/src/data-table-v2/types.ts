@@ -190,6 +190,8 @@ export interface FeaturesConfig<TData> {
         enabled: boolean;
         pageSize?: number;
         pageSizeOptions?: number[];
+        showPageInfo?: boolean; // Default: true
+        showPageSizeSelector?: boolean; // Default: true
         initialState?: PaginationState;
         onChange?: (state: PaginationState) => void;
       };
