@@ -77,7 +77,6 @@ export class MsalInitializer {
   private config: InitConfig;
   private state: InitializationState;
   private callbacks: Set<InitializationCallback>;
-  private isMounted: boolean;
   private interactionStatus: InteractionStatus;
   private eventCallbackId: string | null;
 
@@ -90,7 +89,6 @@ export class MsalInitializer {
       hasQuickCheck: false,
     };
     this.callbacks = new Set();
-    this.isMounted = true;
     this.interactionStatus = InteractionStatus.None;
     this.eventCallbackId = null;
 
@@ -117,10 +115,10 @@ export class MsalInitializer {
   }
 
   /**
-   * Mark initializer as unmounted (prevents state updates after unmount)
+   * Clean up resources when component unmounts
+   * Unsubscribes from MSAL events to prevent memory leaks
    */
   public unmount(): void {
-    this.isMounted = false;
     // Unsubscribe from MSAL events
     if (this.eventCallbackId) {
       this.config.msalInstance.removeEventCallback(this.eventCallbackId);
@@ -323,8 +321,6 @@ export class MsalInitializer {
         response ? "HAS RESPONSE" : "NO RESPONSE",
       );
 
-      if (!this.isMounted) return;
-
       if (response) {
         // User just completed OAuth redirect
         if (debug) {
@@ -481,8 +477,6 @@ export class MsalInitializer {
       await msalInstance.initialize();
       await msalInstance.handleRedirectPromise();
 
-      if (!this.isMounted) return;
-
       if (debug) {
         console.info(
           `[${appName}] Embedded mode initialized. Checking for existing account...`,
@@ -562,13 +556,6 @@ export class MsalInitializer {
 
       console.info(`[${appName}] Handling redirect promise...`);
       const response = await msalInstance.handleRedirectPromise();
-
-      if (!this.isMounted) {
-        console.warn(
-          `[${appName}] Component unmounted, aborting initialization`,
-        );
-        return;
-      }
 
       // Check if returning from OAuth redirect
       if (response) {
