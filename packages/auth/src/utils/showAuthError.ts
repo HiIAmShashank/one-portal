@@ -67,7 +67,7 @@ export function displayFormattedError(
     options.announceToScreenReader(announcement);
   }
 
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.error('[Auth Error]', {
       title: formatted.title,
       description: formatted.description,

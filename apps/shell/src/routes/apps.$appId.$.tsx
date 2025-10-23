@@ -1,16 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { RemoteMount } from '../components/RemoteMount';
-import { RemoteErrorBoundary } from '@one-portal/ui';
 
 export const Route = createFileRoute('/apps/$appId/$')({
-  component: () => {
-    const { appId } = Route.useParams();
-    return (
-      <RemoteErrorBoundary remoteName={appId}>
-        <AppComponent />
-      </RemoteErrorBoundary>
-    );
-  },
+  component: AppComponent,
 });
 
 function AppComponent() {

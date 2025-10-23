@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { RemoteApp } from '@one-portal/types';
 import type { Root } from 'react-dom/client';
+import { RemoteErrorBoundary } from '@one-portal/auth';
 import { LoadingIndicator } from './LoadingIndicator';
 import { ErrorFallback } from './ErrorFallback';
 import { useAppStore } from '../stores/appStore';
@@ -71,32 +72,46 @@ export function RemoteMount({ app, className = '' }: RemoteMountProps) {
   }, [app.id, app.name, app.remoteEntryUrl, app.scope, containerId, setLoading, setStoreError]);
 
   return (
-    <div className="relative min-h-[calc(100vh-70px)]">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/90 z-10">
-          <LoadingIndicator />
-        </div>
-      )}
+    <RemoteErrorBoundary
+      remoteName={app.name}
+      onError={(error, errorInfo) => {
+        console.error(`[${app.name}] Rendering error:`, error, errorInfo);
+        setStoreError(error);
+      }}
+      onReset={() => {
+        setError(null);
+        setStoreError(null);
+        window.location.reload();
+      }}
+      showHomeButton={true}
+    >
+      <div className="relative min-h-[calc(100vh-70px)]">
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/90 z-10">
+            <LoadingIndicator />
+          </div>
+        )}
 
-      {error && (
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <ErrorFallback
-            error={error}
-            onRetry={() => {
-              setError(null);
-              setStoreError(null);
-              setIsLoading(true);
-            }}
-          />
-        </div>
-      )}
+        {error && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <ErrorFallback
+              error={error}
+              onRetry={() => {
+                setError(null);
+                setStoreError(null);
+                setIsLoading(true);
+              }}
+            />
+          </div>
+        )}
 
-      <div
-        id={containerId}
-        ref={containerRef}
-        className={`min-h-[calc(100vh-70px)] ${className}`}
-        aria-label={`${app.name} application`}
-      />
-    </div>
+        <div
+          id={containerId}
+          ref={containerRef}
+          className={`min-h-[calc(100vh-70px)] ${className}`}
+          aria-label={`${app.name} application`}
+        />
+      </div>
+    </RemoteErrorBoundary>
   );
 }
