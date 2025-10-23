@@ -10,7 +10,7 @@
  * - Empty/Loading/Error states
  */
 
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DataTable } from "@one-portal/ui";
 import { generateUsers } from "../../mocks/data-generators";
 import { userColumns } from "../../mocks/column-definitions";

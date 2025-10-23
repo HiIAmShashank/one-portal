@@ -10,7 +10,7 @@
  * - Disabled selection for specific rows
  */
 
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { DataTable } from "@one-portal/ui";
 import type { RowAction, BulkAction } from "@one-portal/ui";

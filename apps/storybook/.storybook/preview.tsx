@@ -1,4 +1,4 @@
-import type { Preview } from "@storybook/react";
+import type { Preview } from "@storybook/react-vite";
 import { withThemeByClassName } from "@storybook/addon-themes";
 import "@one-portal/ui/styles.css";
 import "./storybook.css";
@@ -12,19 +12,20 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: "light",
-      values: [
-        {
+      options: {
+        light: {
           name: "light",
           value: "#ffffff",
         },
-        {
+
+        dark: {
           name: "dark",
           value: "#0a0a0a",
         },
-      ],
+      },
     },
   },
+
   decorators: [
     withThemeByClassName({
       themes: {
@@ -39,6 +40,12 @@ const preview: Preview = {
       </div>
     ),
   ],
+
+  initialGlobals: {
+    backgrounds: {
+      value: "light",
+    },
+  },
 };
 
 export default preview;

@@ -11,7 +11,7 @@
  * - Custom cell renderers
  */
 
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DataTable } from "@one-portal/ui";
 import { generateUsers, generateOrders } from "../../mocks/data-generators";
 import { userColumns, orderColumns } from "../../mocks/column-definitions";

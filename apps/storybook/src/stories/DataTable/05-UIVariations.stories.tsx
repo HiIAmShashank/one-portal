@@ -8,7 +8,7 @@
  * - Theme modes (light, dark)
  */
 
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DataTable } from "@one-portal/ui";
 import { generateUsers } from "../../mocks/data-generators";
 import { userColumns } from "../../mocks/column-definitions";
@@ -274,13 +274,19 @@ export const LightMode: Story = {
     enablePagination: true,
     initialPageSize: 10,
   },
+
   parameters: {
-    backgrounds: { default: "light" },
     docs: {
       description: {
         story:
           "Light mode theme with light background colors. Default theme for most applications. Uses CSS variables that adapt to theme.",
       },
+    },
+  },
+
+  globals: {
+    backgrounds: {
+      value: "light",
     },
   },
 };
@@ -299,8 +305,8 @@ export const DarkMode: Story = {
     enablePagination: true,
     initialPageSize: 10,
   },
+
   parameters: {
-    backgrounds: { default: "dark" },
     docs: {
       description: {
         story:
@@ -308,6 +314,7 @@ export const DarkMode: Story = {
       },
     },
   },
+
   decorators: [
     (Story) => (
       <div className="dark">
@@ -315,6 +322,12 @@ export const DarkMode: Story = {
       </div>
     ),
   ],
+
+  globals: {
+    backgrounds: {
+      value: "dark",
+    },
+  },
 };
 
 /**

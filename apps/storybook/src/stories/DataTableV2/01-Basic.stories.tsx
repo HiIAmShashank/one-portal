@@ -4,7 +4,7 @@
  * Tests core functionality: rendering, empty state, loading state
  */
 
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DataTable, type ColumnDef } from "@one-portal/ui/data-table-v2";
 
 // Sample data type
@@ -352,9 +352,9 @@ export const DarkMode: Story = {
       variant: "bordered",
     },
   },
-  parameters: {
+  globals: {
     backgrounds: {
-      default: "dark",
+      value: "dark",
     },
   },
 };

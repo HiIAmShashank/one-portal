@@ -9,7 +9,7 @@
  * - State reset functionality
  */
 
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { DataTable } from "@one-portal/ui";
 import type { Density, FilterMode } from "@one-portal/ui";
