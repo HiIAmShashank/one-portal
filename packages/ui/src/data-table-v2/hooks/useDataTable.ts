@@ -141,10 +141,10 @@ export function useDataTable<TData>(
       getCoreRowModel: getCoreRowModel(),
 
       // Sorting
+      enableSorting: sortingConfig.enabled,
       ...(sortingConfig.enabled &&
         !serverSideConfig.enabled && {
           getSortedRowModel: getSortedRowModel(),
-          enableSorting: true,
           enableMultiSort: sortingConfig.multi,
         }),
       manualSorting: serverSideConfig.enabled,
@@ -214,8 +214,8 @@ export function useDataTable<TData>(
           : undefined,
       }),
 
-      // State - merge custom state with internal defaults
-      state: {
+      // Initial state for uncontrolled mode (only used if no customState provided)
+      initialState: {
         ...(sortingConfig.initialState && {
           sorting: sortingConfig.initialState,
         }),
@@ -246,8 +246,10 @@ export function useDataTable<TData>(
         ...(expandingConfig.initialState && {
           expanded: expandingConfig.initialState,
         }),
-        ...customState,
       },
+
+      // Controlled state (only if parent provides it)
+      ...(customState && { state: customState }),
 
       // Callbacks
       ...(sortingConfig.onChange && {

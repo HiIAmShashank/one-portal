@@ -1,7 +1,13 @@
 /**
  * DataTable V2 - Pagination Stories
  *
- * Tests pagination functionality: page controls, page size, navigation
+ * Tests pagination functionality with 100 customer records:
+ * - First/Previous/Next/Last page navigation
+ * - Page size selector (rows per page dropdown)
+ * - Page info display ("Showing X to Y of Z results")
+ * - Configurable options for customization
+ *
+ * All pagination controls work in uncontrolled mode by default - no state management required!
  */
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -83,7 +89,17 @@ type Story = StoryObj<typeof meta>;
  * **Default Pagination**
  *
  * Pagination enabled by default with 10 rows per page.
- * Navigation controls at the bottom with page info.
+ *
+ * Features visible:
+ * - Page size selector (dropdown showing "10")
+ * - Page info ("Showing 1 to 10 of 100 results")
+ * - Navigation buttons (First/Prev/Next/Last)
+ * - Current page indicator ("Page 1 of 10")
+ *
+ * Try:
+ * - Click Next/Previous buttons to navigate pages
+ * - Click First/Last to jump to endpoints
+ * - Change page size in dropdown to see more/fewer rows
  */
 export const DefaultPagination: Story = {
   args: {

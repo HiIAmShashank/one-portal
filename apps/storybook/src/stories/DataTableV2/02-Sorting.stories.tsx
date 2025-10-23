@@ -1,9 +1,17 @@
 /**
  * DataTable V2 - Sorting Stories
  *
- * Tests sorting functionality: single column, multi-column, custom sort
+ * Tests sorting functionality with product catalog data:
+ * - Click column headers to sort
+ * - Sort indicators: ↑ (ascending), ↓ (descending), ↕ (unsorted)
+ * - Multi-column sorting with Shift+Click
+ * - Selective column sorting (enable/disable per column)
+ * - Custom sort functions for complex data types
+ *
+ * Sorting works in both controlled and uncontrolled modes!
  */
 
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { DataTable, type ColumnDef } from "@one-portal/ui/data-table-v2";
 
@@ -144,7 +152,13 @@ type Story = StoryObj<typeof meta>;
  * **Default Sorting Enabled**
  *
  * All columns sortable by default. Click column headers to sort.
- * Click again to toggle between ascending, descending, and unsorted.
+ *
+ * How it works:
+ * - First click: Sort ascending (↑)
+ * - Second click: Sort descending (↓)
+ * - Third click: Remove sort (↕)
+ *
+ * Try clicking "Product Name", "Price", or "Rating" headers!
  */
 export const DefaultSorting: Story = {
   args: {
@@ -157,17 +171,31 @@ export const DefaultSorting: Story = {
  * **Initial Sort State**
  *
  * Table starts sorted by price (ascending).
+ * Sorting is still interactive - click headers to change sort.
  */
 export const InitialSortState: Story = {
+  render: (args) => {
+    const [sorting, setSorting] = React.useState([
+      { id: "price", desc: false },
+    ]);
+
+    return (
+      <DataTable
+        {...args}
+        state={{ sorting }}
+        onStateChange={(updater) => {
+          if (typeof updater === "function") {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const newState = updater({ sorting } as any);
+            if (newState.sorting) setSorting(newState.sorting);
+          }
+        }}
+      />
+    );
+  },
   args: {
     data: sampleProducts,
     columns,
-    features: {
-      sorting: {
-        enabled: true,
-        initialState: [{ id: "price", desc: false }],
-      },
-    },
   },
 };
 
@@ -178,17 +206,32 @@ export const InitialSortState: Story = {
  * First column is primary sort, second is secondary, etc.
  */
 export const MultiColumnSorting: Story = {
+  render: (args) => {
+    const [sorting, setSorting] = React.useState([
+      { id: "category", desc: false },
+      { id: "price", desc: true },
+    ]);
+
+    return (
+      <DataTable
+        {...args}
+        state={{ sorting }}
+        onStateChange={(updater) => {
+          if (typeof updater === "function") {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const newState = updater({ sorting } as any);
+            if (newState.sorting) setSorting(newState.sorting);
+          }
+        }}
+      />
+    );
+  },
   args: {
     data: sampleProducts,
     columns,
     features: {
       sorting: {
-        enabled: true,
         multi: true,
-        initialState: [
-          { id: "category", desc: false },
-          { id: "price", desc: true },
-        ],
       },
     },
   },
@@ -197,7 +240,12 @@ export const MultiColumnSorting: Story = {
 /**
  * **Sorting Disabled**
  *
- * No sort indicators shown, headers not clickable.
+ * When sorting is disabled globally:
+ * - No sort indicators (↕) shown on any column
+ * - Headers are not clickable
+ * - Table displays data in original order
+ *
+ * Compare this to "Selective Column Sorting" where only specific columns disable sorting.
  */
 export const SortingDisabled: Story = {
   args: {
@@ -212,8 +260,18 @@ export const SortingDisabled: Story = {
 /**
  * **Selective Column Sorting**
  *
- * Only some columns allow sorting.
- * Product name and price are sortable, others are not.
+ * Fine-grained control over which columns can be sorted.
+ *
+ * Sortable columns (with ↕ indicators):
+ * - Product Name
+ * - Price
+ *
+ * Non-sortable columns (no indicators):
+ * - Category
+ * - Stock
+ * - Rating
+ *
+ * Use `enableSorting: false` on specific columns to disable sorting.
  */
 export const SelectiveColumnSorting: Story = {
   args: {
@@ -270,7 +328,9 @@ export const SelectiveColumnSorting: Story = {
 /**
  * **Custom Sort Function**
  *
- * Rating column uses custom sort logic to handle edge cases.
+ * Rating column uses custom sort logic.
+ * Try sorting by Rating - it sorts numerically (3.8, 4.0, 4.1, 4.2, etc.)
+ * The custom sortingFn ensures proper numeric comparison instead of string comparison.
  */
 export const CustomSortFunction: Story = {
   args: {
