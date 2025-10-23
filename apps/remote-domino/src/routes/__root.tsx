@@ -6,20 +6,29 @@ import { AppLayout } from "../components/AppLayout";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location, preload }) => {
-    const isEmbeddedInShell = window.location.pathname.startsWith("/apps/");
-
-    if (!isEmbeddedInShell) {
-      console.log("[Domino] Standalone mode detected, skipping route guard");
+    // Skip authentication for sign-in route (public route)
+    if (location.pathname === "/sign-in") {
       return;
     }
 
-    // Use preset guard with skipRedirectOnPreload for lazy-loaded routes
+    // Detect if running in embedded mode (inside Shell) or standalone
+    const isEmbeddedInShell = window.location.pathname.startsWith("/apps/");
+
+    // Create route guard configuration based on mode
+    // SECURITY: Always enforce authentication in both embedded and standalone modes
     const guard = createProtectedRouteGuard(msalInstance, {
-      skipRedirectOnPreload: true,
+      skipRedirectOnPreload: true, // Prevents redirects during lazy-loading
       onUnauthenticated: (returnUrl: string) => {
-        // Redirect to Shell sign-in with returnUrl to Domino route
-        const shellSignInUrl = `/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`;
-        safeRedirect(shellSignInUrl, "/sign-in");
+        if (isEmbeddedInShell) {
+          // Embedded mode: Redirect to Shell sign-in
+          const shellSignInUrl = `/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`;
+          safeRedirect(shellSignInUrl, "/sign-in");
+        } else {
+          // Standalone mode: Redirect to local sign-in route
+          // The UnifiedAuthProvider will handle the interactive login redirect
+          const localSignInUrl = `/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`;
+          safeRedirect(localSignInUrl, "/sign-in");
+        }
       },
       onAuthError: (error: Error) => {
         console.error("[Domino] Route guard auth error:", error);

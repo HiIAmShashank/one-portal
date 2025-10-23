@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from "./routes/__root";
+import { Route as SignInRouteImport } from "./routes/sign-in";
 import { Route as DashboardRouteImport } from "./routes/dashboard";
 import { Route as IndexRouteImport } from "./routes/index";
 import { Route as DashboardIndexRouteImport } from "./routes/dashboard/index";
@@ -17,6 +18,11 @@ import { Route as DashboardTasksRouteImport } from "./routes/dashboard/tasks";
 import { Route as DashboardEventsRouteImport } from "./routes/dashboard/events";
 import { Route as AuthCallbackRouteImport } from "./routes/auth/callback";
 
+const SignInRoute = SignInRouteImport.update({
+  id: "/sign-in",
+  path: "/sign-in",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const DashboardRoute = DashboardRouteImport.update({
   id: "/dashboard",
   path: "/dashboard",
@@ -56,6 +62,7 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteWithChildren;
+  "/sign-in": typeof SignInRoute;
   "/auth/callback": typeof AuthCallbackRoute;
   "/dashboard/events": typeof DashboardEventsRoute;
   "/dashboard/tasks": typeof DashboardTasksRoute;
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
+  "/sign-in": typeof SignInRoute;
   "/auth/callback": typeof AuthCallbackRoute;
   "/dashboard/events": typeof DashboardEventsRoute;
   "/dashboard/tasks": typeof DashboardTasksRoute;
@@ -74,6 +82,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteWithChildren;
+  "/sign-in": typeof SignInRoute;
   "/auth/callback": typeof AuthCallbackRoute;
   "/dashboard/events": typeof DashboardEventsRoute;
   "/dashboard/tasks": typeof DashboardTasksRoute;
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fullPaths:
     | "/"
     | "/dashboard"
+    | "/sign-in"
     | "/auth/callback"
     | "/dashboard/events"
     | "/dashboard/tasks"
@@ -93,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo;
   to:
     | "/"
+    | "/sign-in"
     | "/auth/callback"
     | "/dashboard/events"
     | "/dashboard/tasks"
@@ -102,6 +113,7 @@ export interface FileRouteTypes {
     | "__root__"
     | "/"
     | "/dashboard"
+    | "/sign-in"
     | "/auth/callback"
     | "/dashboard/events"
     | "/dashboard/tasks"
@@ -112,11 +124,19 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
   DashboardRoute: typeof DashboardRouteWithChildren;
+  SignInRoute: typeof SignInRoute;
   AuthCallbackRoute: typeof AuthCallbackRoute;
 }
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
+    "/sign-in": {
+      id: "/sign-in";
+      path: "/sign-in";
+      fullPath: "/sign-in";
+      preLoaderRoute: typeof SignInRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/dashboard": {
       id: "/dashboard";
       path: "/dashboard";
@@ -190,6 +210,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  SignInRoute: SignInRoute,
   AuthCallbackRoute: AuthCallbackRoute,
 };
 export const routeTree = rootRouteImport
