@@ -20,6 +20,19 @@ const TRANSIENT_ERROR_CODES = [
   'temporarily_unavailable',
 ];
 
+/**
+ * @deprecated Use `AuthErrorHandler.process()` instead.
+ * This function will be removed in a future version.
+ * 
+ * Migration example:
+ * ```typescript
+ * // Old:
+ * const parsed = parseAuthError(error, 'Login');
+ * 
+ * // New:
+ * const processed = AuthErrorHandler.process(error, 'Login');
+ * ```
+ */
 export function parseAuthError(error: unknown, context?: string): AuthErrorType {
   const timestamp = new Date();
 
@@ -93,7 +106,17 @@ function getRetryAction(code: string): AuthErrorType['retryAction'] {
 }
 
 /**
- * Check if error is transient (safe to retry)
+ * @deprecated Use `AuthErrorHandler.isTransient()` instead.
+ * This function will be removed in a future version.
+ * 
+ * Migration example:
+ * ```typescript
+ * // Old:
+ * if (isTransientError(error)) { ... }
+ * 
+ * // New:
+ * if (AuthErrorHandler.isTransient(error)) { ... }
+ * ```
  */
 export function isTransientError(error: AuthErrorType | unknown): boolean {
   if (typeof error === 'object' && error !== null && 'code' in error) {
@@ -104,7 +127,20 @@ export function isTransientError(error: AuthErrorType | unknown): boolean {
 }
 
 /**
- * Get user-friendly error message
+ * @deprecated Use `AuthErrorHandler.getMessage()` or `AuthErrorHandler.process()` instead.
+ * This function will be removed in a future version.
+ * 
+ * Migration example:
+ * ```typescript
+ * // Old:
+ * const message = getUserFriendlyErrorMessage(error);
+ * 
+ * // New:
+ * const message = AuthErrorHandler.getMessage(error);
+ * // Or for full details:
+ * const processed = AuthErrorHandler.process(error);
+ * const message = processed.description;
+ * ```
  */
 export function getUserFriendlyErrorMessage(error: AuthErrorType): string {
   switch (error.code) {

@@ -2,8 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ShellMSALProvider } from './auth/MSALProvider';
-import { initializeMsal } from './auth/msalInstance';
+import { UnifiedAuthProvider } from '@one-portal/auth';
+import { msalInstance, getAuthConfig } from './auth/msalInstance';
 import { router } from './router';
 import { Sonner } from '@one-portal/ui';
 import './style.css';
@@ -19,26 +19,19 @@ const queryClient = new QueryClient({
   },
 });
 
-// Initialize MSAL before rendering
-initializeMsal().then(() => {
-  createRoot(document.getElementById('app')!).render(
-    <StrictMode>
-      <ShellMSALProvider>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
-      </ShellMSALProvider>
-      <Sonner />
-    </StrictMode>
-  );
-}).catch(error => {
-  console.error('[Shell] MSAL initialization failed:', error);
-  createRoot(document.getElementById('app')!).render(
-    <div className="flex items-center justify-center ">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-red-600 mb-2">Authentication Error</h1>
-        <p className="text-gray-600">Failed to initialize authentication. Please refresh the page.</p>
-      </div>
-    </div>
-  );
-});
+createRoot(document.getElementById('app')!).render(
+  <StrictMode>
+    <UnifiedAuthProvider
+      msalInstance={msalInstance}
+      mode="host"
+      appName="shell"
+      getAuthConfig={getAuthConfig}
+      debug={import.meta.env.DEV}
+    >
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </UnifiedAuthProvider>
+    <Sonner />
+  </StrictMode>
+);

@@ -18,7 +18,7 @@ import {
   navigationMenuTriggerStyle,
   cn,
 } from '@one-portal/ui';
-import { useMsal } from '@azure/msal-react';
+import { useAuth } from '@one-portal/auth/hooks';
 import { ThemeToggle } from './ThemeToggle';
 import { publishAuthEvent } from '@one-portal/auth/events';
 import { Link, useRouterState } from '@tanstack/react-router';
@@ -32,20 +32,15 @@ interface HeaderProps {
 }
 
 export function Header({ apps = [], className = '' }: HeaderProps) {
-  const { instance, accounts } = useMsal();
-  const account = accounts[0];
-  const isAuthenticated = accounts.length > 0;
+  const { state, login, logout } = useAuth();
+  const { isAuthenticated, account } = state;
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
   const handleSignIn = async () => {
     try {
       sessionStorage.setItem('auth_return_url', currentPath);
-
-      await instance.loginRedirect({
-        scopes: getAuthConfig().scopes,
-        prompt: 'select_account',
-      });
+      await login();
     } catch (error) {
       console.error('[Shell] Sign-in error:', error);
     }
@@ -53,7 +48,10 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
 
   const handleSignOut = async () => {
     try {
-      publishAuthEvent('auth:signed-out');
+      publishAuthEvent('auth:signed-out', {
+        appName: 'shell',
+        clientId: getAuthConfig().clientId,
+      });
 
       if (import.meta.env.DEV) {
         console.log('[Shell] Published auth:signed-out event, initiating logout redirect');
@@ -61,14 +59,12 @@ export function Header({ apps = [], className = '' }: HeaderProps) {
 
       await new Promise(resolve => setTimeout(resolve, 100));
 
+      // Redirect to sign-in page after logout (not home page which would trigger route guard)
       const postLogoutUrl = new URL(window.location.origin);
-      postLogoutUrl.pathname = '/';
+      postLogoutUrl.pathname = '/sign-in';
       postLogoutUrl.searchParams.set('signed-out', 'true');
 
-      await instance.logoutRedirect({
-        account,
-        postLogoutRedirectUri: postLogoutUrl.toString(),
-      });
+      await logout(postLogoutUrl.toString());
     } catch (error) {
       console.error('[Shell] Logout error:', error);
     }

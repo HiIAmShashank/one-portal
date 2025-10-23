@@ -7,10 +7,10 @@
 export { DataTable } from './data-table';
 
 // Error boundary
-export { 
-  DataTableErrorBoundary, 
+export {
+  DataTableErrorBoundary,
   useErrorBoundary,
-  type ErrorBoundaryFallbackProps 
+  type ErrorBoundaryFallbackProps
 } from './components/error-boundary';
 
 // Type exports
@@ -43,20 +43,32 @@ export type {
   FooterContext,
 } from './types';
 
-// Utility exports
-export {
-  getDefaultVisibility,
-  getDefaultColumnOrder,
-  getDefaultColumnSizing,
-  validateVisibility,
-  validateColumnOrder,
-  validateColumnSizing,
-  validateColumnPinning,
-  getVisibleColumnsCount,
-  isColumnPinned,
-  calculateTotalWidth,
-} from './utils/column-utils';
+// ============================================================================
+// UTILITY EXPORTS - Public API
+// ============================================================================
 
+/**
+ * Filter Functions
+ * 
+ * Use these when defining custom filter functions in column definitions.
+ * Each filter function follows the signature: (value: any, filterValue: any) => boolean
+ * 
+ * @example
+ * ```tsx
+ * const columns: ColumnDef<User>[] = [
+ *   {
+ *     id: 'name',
+ *     header: 'Name',
+ *     filterFn: defaultTextFilter, // Case-insensitive text search
+ *   },
+ *   {
+ *     id: 'age',
+ *     header: 'Age',
+ *     filterFn: numberRangeFilter, // Min/max range filtering
+ *   }
+ * ]
+ * ```
+ */
 export {
   defaultTextFilter,
   exactMatchFilter,
@@ -64,15 +76,26 @@ export {
   dateRangeFilter,
   arrayIncludesFilter,
   booleanFilter,
-  hasActiveFilters,
-  getActiveFiltersCount,
-  clearAllFilters,
-  removeFilter,
-  updateFilter,
-  debounce,
 } from './utils/filter-utils';
 
-// Phase 10: Aggregation utilities
+/**
+ * Aggregation Utilities
+ * 
+ * Use these when enabling row grouping to specify how grouped rows should be aggregated.
+ * 
+ * @example
+ * ```tsx
+ * const columns: ColumnDef<Sale>[] = [
+ *   {
+ *     id: 'revenue',
+ *     header: 'Revenue',
+ *     enableGrouping: true,
+ *     aggregationFn: aggregationFunctions.sum,
+ *     aggregatedCell: createAggregatedCellRenderer('sum', '$'),
+ *   }
+ * ]
+ * ```
+ */
 export {
   aggregationFunctions,
   formatAggregatedValue,
@@ -80,12 +103,29 @@ export {
 } from './utils/aggregation-utils';
 
 // Hook exports
+/**
+ * useLocalStorage - General-purpose localStorage hook
+ * Use for custom persistence needs outside of DataTable.
+ * For DataTable state persistence, use <DataTable tableId="..." /> instead.
+ */
 export { useLocalStorage } from './hooks/use-local-storage';
+
+/**
+ * useTableState - Core DataTable state management hook
+ * Handles all table state with automatic localStorage persistence.
+ * Used internally by DataTable component. Most users should use <DataTable />
+ * component directly rather than this hook.
+ */
 export { useTableState, type UseTableStateProps, type UseTableStateReturn } from './hooks/use-table-state';
-export { 
-  useServerData, 
-  createServerParams, 
+
+/**
+ * useServerData - Server-side data fetching hook
+ * Use for DataTable with server-side pagination, sorting, and filtering.
+ */
+export {
+  useServerData,
+  createServerParams,
   transformServerResponse,
   type UseServerDataOptions,
-  type UseServerDataReturn 
+  type UseServerDataReturn
 } from './hooks/use-server-data';

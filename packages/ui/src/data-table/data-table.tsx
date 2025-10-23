@@ -36,17 +36,74 @@ import { cn } from '../lib/utils';
  * - Row selection and bulk actions
  * - Inline editing
  * - Per-row actions
- * - localStorage persistence for column preferences
+ * - **Automatic localStorage persistence** for column preferences
  * 
- * @example
+ * ## localStorage Persistence
+ * 
+ * The `tableId` prop enables automatic persistence of user preferences across browser sessions.
+ * The following state is automatically saved to localStorage:
+ * 
+ * - **Column visibility** (show/hide columns)
+ * - **Column order** (drag & drop reordering)
+ * - **Column sizing** (resized column widths)
+ * - **Column pinning** (pinned left/right)
+ * - **UI density** (compact/default/comfortable)
+ * - **Filter mode** (toolbar/inline/both)
+ * - **Row grouping** (grouped columns)
+ * - **Expanded rows** (which groups are expanded)
+ * 
+ * ### localStorage Keys Used
+ * 
+ * For a table with `tableId="my-table"`:
+ * - `oneportal-datatable-my-table-state` - Main column preferences
+ * - `table-my-table-density` - UI density setting
+ * - `table-my-table-filterMode` - Filter display mode
+ * - `table-my-table-grouping` - Row grouping state
+ * - `table-my-table-expanded` - Expanded rows state
+ * 
+ * ### Multiple Tables
+ * 
+ * Each table must have a unique `tableId` to prevent state conflicts:
+ * ```tsx
+ * <DataTable tableId="orders-2024" data={orders2024} columns={columns} />
+ * <DataTable tableId="orders-2025" data={orders2025} columns={columns} />
+ * ```
+ * 
+ * ### Disabling Persistence
+ * 
+ * Set `enablePersistence={false}` to disable all localStorage persistence:
  * ```tsx
  * <DataTable
- *   tableId="users-table"
+ *   tableId="temp-results"
+ *   data={data}
+ *   columns={columns}
+ *   enablePersistence={false}  // No state will be saved
+ * />
+ * ```
+ * 
+ * **Note:** Sorting, filtering, pagination, and row selection are NOT persisted by default.
+ * 
+ * @see `packages/ui/src/data-table/PERSISTENCE.md` for detailed documentation
+ * 
+ * @example Basic usage with persistence
+ * ```tsx
+ * <DataTable
+ *   tableId="users-table"  // REQUIRED for persistence
  *   data={users}
  *   columns={userColumns}
  *   enableSorting
  *   enableFiltering
  *   enablePagination
+ * />
+ * ```
+ * 
+ * @example Disabling persistence
+ * ```tsx
+ * <DataTable
+ *   tableId="temporary-view"
+ *   data={data}
+ *   columns={columns}
+ *   enablePersistence={false}  // State resets on each mount
  * />
  * ```
  */
@@ -160,21 +217,43 @@ export function DataTable<TData>({
     onExpandedChange,
   });
 
-  // Phase 10: Controlled/uncontrolled pattern for density and filterMode
-  const actualDensity = densityProp ?? density;
+  // ========================================================================
+  // Controlled/Uncontrolled State Pattern
+  // ========================================================================
+  // density and filterMode support both controlled and uncontrolled modes:
+  // - Controlled: Parent passes prop + onChange callback
+  // - Uncontrolled: DataTable manages state internally
+  // Both modes persist to localStorage when tableId is provided.
+
+  /**
+   * Use controlled density if provided by parent, otherwise use internal state.
+   * This enables both controlled and uncontrolled usage patterns.
+   */
+  const currentDensity = densityProp ?? density;
+
+  /**
+   * Handler that updates both internal state and notifies parent (if controlled).
+   */
   const handleDensityChange = React.useCallback(
     (newDensity: Density) => {
-      setDensity(newDensity);
-      onDensityChange?.(newDensity);
+      setDensity(newDensity);        // Update internal state (persists to localStorage)
+      onDensityChange?.(newDensity); // Notify parent if controlled
     },
     [setDensity, onDensityChange]
   );
 
-  const actualFilterMode = filterModeProp ?? filterMode;
+  /**
+   * Use controlled filterMode if provided by parent, otherwise use internal state.
+   */
+  const currentFilterMode = filterModeProp ?? filterMode;
+
+  /**
+   * Handler that updates both internal state and notifies parent (if controlled).
+   */
   const handleFilterModeChange = React.useCallback(
     (newFilterMode: FilterMode) => {
-      setFilterMode(newFilterMode);
-      onFilterModeChange?.(newFilterMode);
+      setFilterMode(newFilterMode);        // Update internal state (persists to localStorage)
+      onFilterModeChange?.(newFilterMode); // Notify parent if controlled
     },
     [setFilterMode, onFilterModeChange]
   );
@@ -504,9 +583,9 @@ export function DataTable<TData>({
           enableExpanding={enableExpanding}
           selectedRows={selectedRows}
           bulkActions={bulkActions}
-          density={actualDensity}
+          density={currentDensity}
           onDensityChange={handleDensityChange}
-          filterMode={actualFilterMode}
+          filterMode={currentFilterMode}
           onFilterModeChange={handleFilterModeChange}
         />
       )}
@@ -531,8 +610,8 @@ export function DataTable<TData>({
                 enablePinning={enableColumnPinning}
                 enableReordering={enableColumnReordering}
                 enableGrouping={enableGrouping}
-                density={actualDensity}
-                filterMode={actualFilterMode}
+                density={currentDensity}
+                filterMode={currentFilterMode}
                 enableColumnFilters={enableColumnFilters}
                 stickyHeader={stickyHeader}
                 stickyColumns={stickyColumns}
@@ -550,7 +629,7 @@ export function DataTable<TData>({
                 enableGrouping={enableGrouping}
                 enableExpanding={enableExpanding}
                 renderExpandedRow={renderExpandedRow}
-                density={actualDensity}
+                density={currentDensity}
               />
             </table>
           </div>

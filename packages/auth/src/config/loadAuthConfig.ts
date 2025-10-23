@@ -1,5 +1,6 @@
 import type { Configuration } from '@azure/msal-browser';
 import type { AuthConfig } from '../types/auth';
+import type { AppMode } from '../utils/environment';
 
 const ENV_PREFIX = 'VITE_AUTH_';
 
@@ -9,6 +10,7 @@ export function loadAuthConfig(appName: string): AuthConfig {
   const redirectUri = import.meta.env[`${ENV_PREFIX}REDIRECT_URI`] as string | undefined;
   const postLogoutRedirectUri = import.meta.env[`${ENV_PREFIX}POST_LOGOUT_REDIRECT_URI`] as string | undefined;
   const scopesStr = import.meta.env[`${ENV_PREFIX}SCOPES`] as string | undefined;
+  const mode = import.meta.env.VITE_APP_MODE as AppMode | undefined;
 
   if (!clientId) {
     throw new Error(`${ENV_PREFIX}CLIENT_ID is required but not defined`);
@@ -29,6 +31,7 @@ export function loadAuthConfig(appName: string): AuthConfig {
     postLogoutRedirectUri: postLogoutRedirectUri || window.location.origin,
     scopes,
     appName,
+    mode: mode ?? 'auto',
   };
 }
 

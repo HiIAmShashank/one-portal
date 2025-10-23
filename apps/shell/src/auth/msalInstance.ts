@@ -1,20 +1,9 @@
-import { PublicClientApplication } from '@azure/msal-browser';
-import { loadAuthConfig, createMsalConfig, validateMsalConfig } from '@one-portal/auth/config';
+import { createMsalInstanceWithConfig } from '@one-portal/auth';
 
-const authConfig = loadAuthConfig('shell');
-const msalConfig = createMsalConfig(authConfig);
-validateMsalConfig(msalConfig);
+// Create MSAL instance using the factory function
+const { instance, authConfig } = createMsalInstanceWithConfig('shell');
 
-export const msalInstance = new PublicClientApplication(msalConfig);
-
-export async function initializeMsal(): Promise<void> {
-  try {
-    await msalInstance.initialize();
-  } catch (error) {
-    console.error('[Shell MSAL] Initialization failed:', error);
-    throw error;
-  }
-}
+export const msalInstance = instance;
 
 export function getAuthConfig() {
   return authConfig;

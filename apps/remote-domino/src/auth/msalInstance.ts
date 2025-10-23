@@ -1,11 +1,9 @@
-import { PublicClientApplication } from '@azure/msal-browser';
-import { loadAuthConfig, createMsalConfig, validateMsalConfig } from '@one-portal/auth/config';
+import { createMsalInstanceWithConfig } from '@one-portal/auth';
 
-const authConfig = loadAuthConfig('domino');
-const msalConfig = createMsalConfig(authConfig);
-validateMsalConfig(msalConfig);
+// Create MSAL instance using the factory function
+const { instance, authConfig } = createMsalInstanceWithConfig('domino');
 
-export const msalInstance = new PublicClientApplication(msalConfig);
+export const msalInstance = instance;
 
 export function getAuthConfig() {
   return authConfig;

@@ -1,6 +1,6 @@
 import type { PublicClientApplication } from '@azure/msal-browser';
 
-export interface RouteGuardConfig {
+export interface MsalRouteGuardConfig {
   msalInstance: PublicClientApplication;
   scopes: string[];
   onUnauthenticated?: (returnUrl: string) => void;
@@ -39,7 +39,7 @@ export async function attemptSilentAuth(
 /**
  * IMPORTANT: Does NOT call ssoSilent() to avoid iframe errors when no user is signed in.
  */
-export function createRouteGuard(config: RouteGuardConfig) {
+export function createRouteGuard(config: MsalRouteGuardConfig) {
   return async ({
     location,
   }: {

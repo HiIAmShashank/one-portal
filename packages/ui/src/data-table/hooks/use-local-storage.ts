@@ -1,5 +1,85 @@
 /**
- * Custom hook for localStorage persistence with validation
+ * Generic hook for persisting any value to localStorage with validation.
+ * 
+ * This is a **general-purpose utility hook** that can be used for custom
+ * persistence needs outside of the DataTable component. For DataTable state
+ * persistence, use the `DataTable` component with `tableId` prop instead.
+ * 
+ * ## Use Cases
+ * 
+ * Use this hook when you need to persist custom state that is NOT related
+ * to DataTable:
+ * 
+ * - User preferences for custom components
+ * - Form draft data
+ * - UI state for custom panels/widgets
+ * - Any other client-side state that needs persistence
+ * 
+ * **DO NOT use this for DataTable state** - The `DataTable` component handles
+ * all persistence automatically via the `tableId` prop.
+ * 
+ * ## Features
+ * 
+ * - Automatic JSON serialization/deserialization
+ * - Optional validation function for stored values
+ * - Graceful handling of localStorage errors
+ * - Type-safe API with TypeScript
+ * - Lazy initialization for performance
+ * 
+ * @example Basic usage
+ * ```tsx
+ * function MyComponent() {
+ *   const [theme, setTheme, clearTheme] = useLocalStorage<string>(
+ *     'app-theme',
+ *     'light'
+ *   );
+ * 
+ *   return (
+ *     <div>
+ *       <button onClick={() => setTheme('dark')}>Dark Mode</button>
+ *       <button onClick={() => setTheme('light')}>Light Mode</button>
+ *       <button onClick={clearTheme}>Reset</button>
+ *     </div>
+ *   );
+ * }
+ * ```
+ * 
+ * @example With validation
+ * ```tsx
+ * const [settings, setSettings] = useLocalStorage<Settings>(
+ *   'user-settings',
+ *   defaultSettings,
+ *   (stored) => {
+ *     // Validate and migrate old settings
+ *     return {
+ *       ...defaultSettings,
+ *       ...stored,
+ *       version: CURRENT_VERSION,
+ *     };
+ *   }
+ * );
+ * ```
+ * 
+ * @example Complex state
+ * ```tsx
+ * interface PanelState {
+ *   isOpen: boolean;
+ *   width: number;
+ *   position: 'left' | 'right';
+ * }
+ * 
+ * const [panelState, setPanelState] = useLocalStorage<PanelState>(
+ *   'sidebar-panel',
+ *   { isOpen: false, width: 300, position: 'left' }
+ * );
+ * ```
+ * 
+ * @param key - localStorage key (should be unique and descriptive)
+ * @param initialValue - Default value if nothing is stored
+ * @param validate - Optional validation/migration function for stored values
+ * @returns Tuple of [value, setValue, clearValue]
+ * 
+ * @see For DataTable persistence, use `<DataTable tableId="..." />` instead
  * @module data-table/hooks/use-local-storage
  */
 

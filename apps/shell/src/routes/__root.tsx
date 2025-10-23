@@ -1,41 +1,26 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { Header } from '../components/Header';
 import { ThemeProvider } from '../components/ThemeProvider';
-import { createRouteGuard } from '@one-portal/auth/utils';
+import { createProtectedRouteGuard, isPublicRoute } from '@one-portal/auth/guards';
 import { msalInstance } from '../auth/msalInstance';
 
 const PUBLIC_ROUTES = ['/sign-in', '/auth/callback'];
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
-    const isPublicRoute = PUBLIC_ROUTES.includes(location.pathname);
-    if (isPublicRoute) {
+    // Skip authentication for public routes
+    if (isPublicRoute(location.pathname, PUBLIC_ROUTES)) {
       return;
     }
-    const guard = createRouteGuard({
-      msalInstance,
-      scopes: ['openid', 'profile', 'email'],
-      onUnauthenticated: (returnUrl) => {
-        window.location.href = `/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`;
-      },
-      onAuthError: (error) => {
-        console.error('Route guard auth error:', error);
-      },
-    });
 
+    // Use preset guard for protected routes
+    const guard = createProtectedRouteGuard(msalInstance);
     await guard({ location });
   },
 
   component: () => {
     const mockApps = [
       {
-        id: 'billing',
-        name: 'Billing',
-        remoteEntryUrl: '/billing/assets/remoteEntry.js',
-        moduleName: 'billing',
-        scope: 'billing',
-        displayOrder: 1,
-      }, {
         id: 'domino',
         name: 'Domino',
         remoteEntryUrl: '/domino/assets/remoteEntry.js',

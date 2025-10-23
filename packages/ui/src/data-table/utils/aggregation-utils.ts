@@ -1,7 +1,49 @@
 import type { Row } from '@tanstack/react-table';
 
 /**
- * Built-in aggregation functions for column definitions
+ * Built-in aggregation functions for grouped row calculations.
+ * 
+ * Use these when enabling row grouping in DataTable to specify how grouped rows
+ * should be aggregated. Each function takes a columnId and array of leaf rows,
+ * and returns the aggregated value.
+ * 
+ * @example
+ * ```tsx
+ * const columns: ColumnDef<Sale>[] = [
+ *   {
+ *     id: 'revenue',
+ *     header: 'Revenue',
+ *     accessorKey: 'amount',
+ *     enableGrouping: true,
+ *     aggregationFn: aggregationFunctions.sum, // Sum all amounts in group
+ *     aggregatedCell: createAggregatedCellRenderer('sum', '$'),
+ *   },
+ *   {
+ *     id: 'itemCount',
+ *     header: 'Items',
+ *     aggregationFn: aggregationFunctions.count, // Count rows in group
+ *     aggregatedCell: ({ getValue }) => `${getValue()} items`,
+ *   },
+ *   {
+ *     id: 'avgPrice',
+ *     header: 'Avg Price',
+ *     accessorKey: 'price',
+ *     aggregationFn: aggregationFunctions.average, // Average price
+ *     aggregatedCell: createAggregatedCellRenderer('average', '$'),
+ *   }
+ * ]
+ * ```
+ * 
+ * Available functions:
+ * - `sum`: Add all numeric values in the group
+ * - `count`: Count the number of rows in the group
+ * - `average` / `mean`: Calculate mean of numeric values
+ * - `min`: Find minimum numeric value
+ * - `max`: Find maximum numeric value
+ * - `median`: Calculate median of numeric values
+ * - `unique`: Get array of unique values
+ * - `uniqueCount`: Count unique values
+ * - `extent`: Get [min, max] tuple
  */
 export const aggregationFunctions = {
   sum: <TData,>(columnId: string, leafRows: Row<TData>[]): number => {
@@ -72,6 +114,27 @@ export const aggregationFunctions = {
   },
 };
 
+/**
+ * Format aggregated values with appropriate number formatting and labels.
+ * 
+ * Provides sensible defaults for different aggregation types:
+ * - `sum`, `min`, `max`: Locale-formatted numbers (1,234.56)
+ * - `count`: "N items" or "1 item"
+ * - `average`, `median`: Fixed 2 decimal places
+ * - `custom`: String conversion
+ * 
+ * @example
+ * ```tsx
+ * formatAggregatedValue(1234.567, 'sum')     // "1,234.567"
+ * formatAggregatedValue(5, 'count')          // "5 items"
+ * formatAggregatedValue(1, 'count')          // "1 item"
+ * formatAggregatedValue(123.456, 'average')  // "123.46"
+ * ```
+ * 
+ * @param value - The aggregated value to format
+ * @param type - The aggregation type (determines formatting)
+ * @returns Formatted string representation
+ */
 export const formatAggregatedValue = (
   value: any,
   type: 'sum' | 'count' | 'average' | 'min' | 'max' | 'median' | 'custom' = 'custom'
@@ -98,6 +161,44 @@ export const formatAggregatedValue = (
   }
 };
 
+/**
+ * Create a cell renderer function for aggregated values with optional prefix/suffix.
+ * 
+ * This is a convenience function that combines `formatAggregatedValue` with
+ * prefix/suffix strings (e.g., currency symbols, units).
+ * 
+ * @example
+ * ```tsx
+ * const columns: ColumnDef<Sale>[] = [
+ *   {
+ *     id: 'revenue',
+ *     header: 'Revenue',
+ *     accessorKey: 'amount',
+ *     aggregationFn: aggregationFunctions.sum,
+ *     aggregatedCell: createAggregatedCellRenderer('sum', '$'), // "$1,234.56"
+ *   },
+ *   {
+ *     id: 'weight',
+ *     header: 'Weight',
+ *     accessorKey: 'weight',
+ *     aggregationFn: aggregationFunctions.sum,
+ *     aggregatedCell: createAggregatedCellRenderer('sum', '', ' kg'), // "1,234 kg"
+ *   },
+ *   {
+ *     id: 'avgRating',
+ *     header: 'Avg Rating',
+ *     accessorKey: 'rating',
+ *     aggregationFn: aggregationFunctions.average,
+ *     aggregatedCell: createAggregatedCellRenderer('average', '', ' ★'), // "4.25 ★"
+ *   }
+ * ]
+ * ```
+ * 
+ * @param type - The aggregation type (determines formatting)
+ * @param prefix - Optional string to prepend (e.g., "$", "€")
+ * @param suffix - Optional string to append (e.g., " kg", " items")
+ * @returns Cell renderer function compatible with TanStack Table
+ */
 export const createAggregatedCellRenderer = (
   type: 'sum' | 'count' | 'average' | 'min' | 'max' | 'median',
   prefix?: string,

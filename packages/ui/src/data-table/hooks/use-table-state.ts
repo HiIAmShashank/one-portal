@@ -1,5 +1,75 @@
 /**
- * Custom hook for managing table state with persistence
+ * Custom hook for managing table state with automatic localStorage persistence.
+ * 
+ * This is the core state management hook used by the DataTable component.
+ * It handles all table state (pagination, sorting, filtering, column configuration)
+ * and automatically persists user preferences to localStorage based on the `tableId`.
+ * 
+ * ## What Gets Persisted
+ * 
+ * When `enablePersistence` is true (default), the following state is automatically
+ * saved to localStorage and restored on mount:
+ * 
+ * - **Column visibility** - Which columns are hidden/shown
+ * - **Column order** - The order of columns (after drag & drop)
+ * - **Column sizing** - Custom column widths
+ * - **Column pinning** - Columns pinned left or right
+ * - **UI density** - Row height (compact/default/comfortable)
+ * - **Filter mode** - Where filters appear (toolbar/inline/both)
+ * - **Row grouping** - Which columns are grouped
+ * - **Expanded rows** - Which grouped rows are expanded
+ * 
+ * ## What Does NOT Get Persisted
+ * 
+ * The following state is intentionally NOT persisted (resets on each mount):
+ * 
+ * - Sorting state
+ * - Active filters (column and global)
+ * - Pagination (current page, page size)
+ * - Row selection
+ * 
+ * ## localStorage Keys
+ * 
+ * For a table with `tableId="my-table"`:
+ * - `oneportal-datatable-my-table-state` - Main preferences (JSON object)
+ * - `table-my-table-density` - UI density (string)
+ * - `table-my-table-filterMode` - Filter mode (string)
+ * - `table-my-table-grouping` - Grouping state (JSON array)
+ * - `table-my-table-expanded` - Expanded state (JSON object)
+ * 
+ * ## Validation
+ * 
+ * All persisted state is validated on load to ensure data integrity:
+ * - Column IDs are checked against current column definitions
+ * - Invalid/missing columns are filtered out
+ * - Corrupt or incompatible data is cleared
+ * 
+ * ## Version Management
+ * 
+ * Storage includes a version field (currently "1.0.0"). If the version changes
+ * in the future, old stored state will be automatically cleared to prevent
+ * compatibility issues.
+ * 
+ * @example Basic usage (internal - used by DataTable)
+ * ```tsx
+ * const state = useTableState({
+ *   tableId: 'users-table',
+ *   columns: userColumns,
+ *   initialPageSize: 25,
+ *   enablePersistence: true,  // default
+ * });
+ * ```
+ * 
+ * @example Disabling persistence
+ * ```tsx
+ * const state = useTableState({
+ *   tableId: 'temp-table',
+ *   columns: columns,
+ *   enablePersistence: false,  // No localStorage
+ * });
+ * ```
+ * 
+ * @see `packages/ui/src/data-table/PERSISTENCE.md` for detailed documentation
  * @module data-table/hooks/use-table-state
  */
 
