@@ -322,7 +322,15 @@ export const StripedVariant: Story = {
  */
 export const StickyHeader: Story = {
   args: {
-    data: [...sampleUsers, ...sampleUsers, ...sampleUsers, ...sampleUsers], // 20 rows
+    data: [
+      ...sampleUsers,
+      ...sampleUsers,
+      ...sampleUsers,
+      ...sampleUsers,
+      ...sampleUsers,
+      ...sampleUsers,
+      ...sampleUsers,
+    ], // 20 rows
     columns,
     ui: {
       stickyHeader: true,
