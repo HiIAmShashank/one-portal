@@ -10,6 +10,15 @@
 - **Pending:** 44
 
 ## Recent Changes
+
+**Commit:** `fceb06e` - Upgraded Storybook from v8.6.14 to v9.1.13
+- ✅ Ran 6 automigrations (eslintPlugin, addon-globals-api, etc.)
+- ✅ Updated all Storybook packages to v9.1.13
+- ✅ Migrated to framework-based configuration
+- ✅ Updated globals API for backgrounds/viewport
+
+**Commit:** `cd6369b` - Updated progress tracker with resolved issues
+
 **Commit:** `75704bb` - Fixed loading state, dark mode, and UI issues
 - ✅ Fixed loading spinner with proper SVG animation
 - ✅ Fixed scrollwheel flicker by conditionally applying overflow-auto
@@ -158,7 +167,7 @@
 4. ✅ **className prop** - Already exists, confirmed in DataTable.tsx props
 
 ### Optional
-- [ ] Upgrade Storybook to v9.1.11
+- [x] Upgrade Storybook to v9.1.13 (completed - commit fceb06e)
 
 ---
 
