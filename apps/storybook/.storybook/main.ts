@@ -27,6 +27,12 @@ const config: StorybookConfig = {
             "../../../packages/ui/dist/styles.css",
           ),
           "@one-portal/ui": path.resolve(__dirname, "../../../packages/ui/src"),
+          // Ensure single React instance for React 19 compatibility
+          react: path.resolve(__dirname, "../../../node_modules/react"),
+          "react-dom": path.resolve(
+            __dirname,
+            "../../../node_modules/react-dom",
+          ),
         },
       },
     });
