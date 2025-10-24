@@ -70,9 +70,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([]);
 
   // Column sizing state (internal if not controlled)
-  const [columnSizing, _setColumnSizing] = React.useState<ColumnSizingState>(
-    {},
-  );
+  const [columnSizing, setColumnSizing] = React.useState<ColumnSizingState>({});
 
   // DnD sensors for drag and drop
   const sensors = useSensors(
@@ -128,6 +126,29 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
       }
     },
     [columnOrder, features?.columns],
+  );
+
+  // Handle column sizing changes - this is the state updater for TanStack Table
+  const handleColumnSizingChange = React.useCallback(
+    (
+      updaterOrValue:
+        | ColumnSizingState
+        | ((old: ColumnSizingState) => ColumnSizingState),
+    ) => {
+      const newValue =
+        typeof updaterOrValue === "function"
+          ? updaterOrValue(state?.columnSizing ?? columnSizing)
+          : updaterOrValue;
+
+      // If controlled, notify parent via onStateChange
+      if (state?.columnSizing !== undefined && onStateChange) {
+        onStateChange({ columnSizing: newValue });
+      } else {
+        // Otherwise update internal state
+        setColumnSizing(newValue);
+      }
+    },
+    [state?.columnSizing, columnSizing, onStateChange],
   );
 
   // Current density (controlled or internal)
@@ -194,19 +215,26 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     [state?.rowSelection, rowSelection, onStateChange],
   );
 
-  // Enhanced features with row selection updater
+  // Enhanced features with row selection and column sizing updaters
   const enhancedFeatures = React.useMemo(() => {
-    if (!features?.selection) return features;
-
     return {
       ...features,
-      selection: {
-        ...features.selection,
-        // Add the state updater - this is what TanStack Table needs
-        onRowSelectionChange: handleRowSelectionChange,
-      },
+      // Add selection state updater if selection is enabled
+      ...(features?.selection && {
+        selection: {
+          ...features.selection,
+          onRowSelectionChange: handleRowSelectionChange,
+        },
+      }),
+      // Add column sizing state updater if resizing is enabled
+      ...(features?.columns?.resizing && {
+        columns: {
+          ...features.columns,
+          onSizingChange: handleColumnSizingChange,
+        },
+      }),
     };
-  }, [features, handleRowSelectionChange]);
+  }, [features, handleRowSelectionChange, handleColumnSizingChange]);
 
   // Create table instance with smart defaults
   const table = useDataTable({
