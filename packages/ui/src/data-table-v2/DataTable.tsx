@@ -9,6 +9,7 @@ import {
   flexRender,
   type RowSelectionState,
   type ColumnOrderState,
+  type ColumnSizingState,
 } from "@tanstack/react-table";
 import {
   DndContext,
@@ -67,6 +68,11 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
 
   // Column order state (internal if not controlled)
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([]);
+
+  // Column sizing state (internal if not controlled)
+  const [columnSizing, _setColumnSizing] = React.useState<ColumnSizingState>(
+    {},
+  );
 
   // DnD sensors for drag and drop
   const sensors = useSensors(
@@ -212,6 +218,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
       // Use controlled state if provided, otherwise internal state
       rowSelection: state?.rowSelection ?? rowSelection,
       columnOrder: state?.columnOrder ?? columnOrder,
+      columnSizing: state?.columnSizing ?? columnSizing,
     },
     onStateChange,
   });
