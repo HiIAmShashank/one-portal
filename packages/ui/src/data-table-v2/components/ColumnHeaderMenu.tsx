@@ -10,7 +10,7 @@
  */
 
 import * as React from "react";
-import type { Column } from "@tanstack/react-table";
+import type { Column, Table } from "@tanstack/react-table";
 import {
   ArrowUp,
   ArrowDown,
@@ -18,6 +18,7 @@ import {
   Pin,
   PinOff,
   EyeOff,
+  Eye,
   Filter,
   Layers,
   MoreVertical,
@@ -34,12 +35,16 @@ import {
 
 interface ColumnHeaderMenuProps<TData> {
   column: Column<TData, unknown>;
+  table: Table<TData>;
   title: string;
+  onFilterModeChange?: (mode: "toolbar" | "inline") => void;
 }
 
 export function ColumnHeaderMenu<TData>({
   column,
+  table,
   title,
+  onFilterModeChange,
 }: ColumnHeaderMenuProps<TData>) {
   const canSort = column.getCanSort();
   const canFilter = column.getCanFilter();
@@ -49,6 +54,25 @@ export function ColumnHeaderMenu<TData>({
 
   const isSorted = column.getIsSorted();
   const isPinned = column.getIsPinned();
+
+  // Check if any columns are currently hidden
+  const hiddenColumns = table
+    .getAllColumns()
+    .filter((col) => !col.getIsVisible() && col.getCanHide());
+  const hasHiddenColumns = hiddenColumns.length > 0;
+
+  const handleFilterByColumn = () => {
+    // Switch to inline filter mode
+    if (onFilterModeChange) {
+      onFilterModeChange("inline");
+    }
+    // Clear any existing filter value to show the filter UI fresh
+    column.setFilterValue(undefined);
+  };
+
+  const handleShowAllColumns = () => {
+    table.toggleAllColumnsVisible(true);
+  };
 
   return (
     <DropdownMenu>
@@ -94,12 +118,7 @@ export function ColumnHeaderMenu<TData>({
         {/* Filter Options */}
         {canFilter && (
           <>
-            <DropdownMenuItem
-              onClick={() => {
-                // Filter functionality is handled by FacetedFilter component
-                // This is just a placeholder for consistency
-              }}
-            >
+            <DropdownMenuItem onClick={handleFilterByColumn}>
               <Filter className="mr-2 h-4 w-4" />
               Filter by {title}
             </DropdownMenuItem>
@@ -156,10 +175,23 @@ export function ColumnHeaderMenu<TData>({
 
         {/* Visibility Options */}
         {canHide && (
-          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
-            <EyeOff className="mr-2 h-4 w-4" />
-            Hide {title} column
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
+              <EyeOff className="mr-2 h-4 w-4" />
+              Hide {title} column
+            </DropdownMenuItem>
+          </>
+        )}
+
+        {/* Show All Columns */}
+        {hasHiddenColumns && (
+          <>
+            {canHide && <DropdownMenuSeparator />}
+            <DropdownMenuItem onClick={handleShowAllColumns}>
+              <Eye className="mr-2 h-4 w-4" />
+              Show all columns
+            </DropdownMenuItem>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

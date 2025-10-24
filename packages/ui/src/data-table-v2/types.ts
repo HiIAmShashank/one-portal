@@ -11,6 +11,7 @@ import type {
   VisibilityState,
   ColumnSizingState,
   ColumnPinningState,
+  ColumnOrderState,
   RowSelectionState,
   PaginationState,
   GroupingState,
@@ -214,9 +215,11 @@ export interface FeaturesConfig<TData> {
     initialVisibility?: VisibilityState;
     initialSizing?: ColumnSizingState;
     initialPinning?: ColumnPinningState;
+    initialOrder?: ColumnOrderState;
     onVisibilityChange?: (state: VisibilityState) => void;
     onSizingChange?: (state: ColumnSizingState) => void;
     onPinningChange?: (state: ColumnPinningState) => void;
+    onOrderChange?: (state: ColumnOrderState) => void;
   };
 
   // Row Grouping
@@ -385,6 +388,7 @@ export interface TableState {
   columnVisibility: VisibilityState;
   columnSizing: ColumnSizingState;
   columnPinning: ColumnPinningState;
+  columnOrder: ColumnOrderState;
   rowSelection: RowSelectionState;
   grouping: GroupingState;
   expanded: ExpandedState;

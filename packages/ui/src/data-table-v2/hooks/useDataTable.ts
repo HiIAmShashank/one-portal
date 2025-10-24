@@ -194,6 +194,10 @@ export function useDataTable<TData>(
       enableHiding: columnConfig.visibility,
       enablePinning: columnConfig.pinning,
       columnResizeMode: "onChange" as const,
+      // Column ordering (only when reordering is enabled)
+      ...(columnConfig.reordering && {
+        onColumnOrderChange: columnConfig.onOrderChange,
+      }),
 
       // Grouping
       ...(groupingConfig.enabled && {
@@ -247,6 +251,9 @@ export function useDataTable<TData>(
         }),
         ...(columnConfig.initialPinning && {
           columnPinning: columnConfig.initialPinning,
+        }),
+        ...(columnConfig.initialOrder && {
+          columnOrder: columnConfig.initialOrder,
         }),
         ...(groupingConfig.initialState && {
           grouping: groupingConfig.initialState,

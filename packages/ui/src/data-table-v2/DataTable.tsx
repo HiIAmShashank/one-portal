@@ -5,13 +5,29 @@
  */
 
 import * as React from "react";
-import { flexRender, type RowSelectionState } from "@tanstack/react-table";
+import {
+  flexRender,
+  type RowSelectionState,
+  type ColumnOrderState,
+} from "@tanstack/react-table";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { useDataTable } from "./hooks/useDataTable";
 import { TablePagination } from "./components/TablePagination";
 import { DataTableToolbar } from "./components/DataTableToolbar";
 import { FacetedFilter } from "./components/FacetedFilter";
 import { BulkActions } from "./components/BulkActions";
 import { ColumnHeaderMenu } from "./components/ColumnHeaderMenu";
+import { DraggableColumnHeader } from "./components/DraggableColumnHeader";
 import {
   createSelectionColumn,
   createActionsColumn,
@@ -49,6 +65,18 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     "toolbar" | "inline"
   >(ui?.filterMode || "toolbar");
 
+  // Column order state (internal if not controlled)
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(
+    features?.columns?.initialOrder || [],
+  );
+
+  // DnD sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {}),
+  );
+
   // Handle density changes
   const handleDensityChange = React.useCallback(
     (newDensity: "compact" | "default" | "comfortable") => {
@@ -75,6 +103,27 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
       }
     },
     [ui?.filterMode, ui?.onFilterModeChange],
+  );
+
+  // Handle drag end for column reordering
+  const handleDragEnd = React.useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      if (over && active.id !== over.id) {
+        const oldIndex = columnOrder.indexOf(active.id as string);
+        const newIndex = columnOrder.indexOf(over.id as string);
+
+        const newOrder = arrayMove(columnOrder, oldIndex, newIndex);
+        setColumnOrder(newOrder);
+
+        // Notify parent if callback provided
+        if (features?.columns?.onOrderChange) {
+          features.columns.onOrderChange(newOrder);
+        }
+      }
+    },
+    [columnOrder, features?.columns],
   );
 
   // Current density (controlled or internal)
@@ -150,6 +199,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
       ...state,
       // Use controlled state if provided, otherwise internal state
       rowSelection: state?.rowSelection ?? rowSelection,
+      columnOrder: state?.columnOrder ?? columnOrder,
     },
     onStateChange,
   });
@@ -220,11 +270,20 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   const showInlineFilters =
     ui?.showColumnFilters !== false && filterMode === "inline";
 
+  // Check if column reordering is enabled
+  const reorderingEnabled = features?.columns?.reordering === true;
+
+  // Get column IDs for DnD (only non-pinned columns can be reordered)
+  const columnIds = React.useMemo(
+    () => table.getAllLeafColumns().map((col) => col.id),
+    [table],
+  );
+
   // ============================================================================
   // RENDER
   // ============================================================================
 
-  return (
+  const tableContent = (
     <div
       className={cn("w-full", containerClassName)}
       data-density={density}
@@ -273,103 +332,164 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                 "sticky top-0 z-20 bg-background dark:bg-background shadow-sm",
             )}
           >
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr
-                key={headerGroup.id}
-                className="hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
-              >
-                {headerGroup.headers.map((header) => {
-                  const isPinned = header.column.getIsPinned();
-                  const canResize = header.column.getCanResize();
+            {table.getHeaderGroups().map((headerGroup) => {
+              const headerRow = (
+                <tr
+                  key={headerGroup.id}
+                  className="hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
+                >
+                  {headerGroup.headers.map((header) => {
+                    const isPinned = header.column.getIsPinned();
+                    const canResize = header.column.getCanResize();
 
-                  return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      style={{
-                        width: header.getSize(),
-                        // Pinning styles
-                        position: isPinned ? "sticky" : "relative",
-                        left:
-                          isPinned === "left"
-                            ? `${header.column.getStart("left")}px`
-                            : undefined,
-                        right:
-                          isPinned === "right"
-                            ? `${header.column.getAfter("right")}px`
-                            : undefined,
-                        zIndex: isPinned ? 10 : undefined,
-                      }}
-                      className={cn(
-                        cellPaddingClasses[density],
-                        "text-left align-middle font-medium",
-                        "text-muted-foreground dark:text-muted-foreground",
-                        "[&:has([role=checkbox])]:pr-0",
-                        variantClasses[variant],
-                        (stickyHeader || isPinned) &&
-                          "bg-background dark:bg-background",
-                        isPinned && "shadow-md",
-                      )}
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2 justify-between">
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                            </div>
-                            <ColumnHeaderMenu
-                              column={header.column}
-                              title={
-                                typeof header.column.columnDef.header ===
-                                "string"
-                                  ? header.column.columnDef.header
-                                  : header.column.id
-                              }
-                            />
-                          </div>
-                          {/* Inline filter */}
-                          {showInlineFilters &&
-                            header.column.getCanFilter() &&
-                            header.column.columnDef.enableColumnFilter !==
-                              false && (
-                              <div
-                                className="min-w-[150px]"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <FacetedFilter
+                    return (
+                      <th
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        style={{
+                          width: `${header.getSize()}px`,
+                          minWidth: `${header.getSize()}px`,
+                          maxWidth: `${header.getSize()}px`,
+                          // Pinning styles
+                          position: isPinned ? "sticky" : "relative",
+                          left:
+                            isPinned === "left"
+                              ? `${header.column.getStart("left")}px`
+                              : undefined,
+                          right:
+                            isPinned === "right"
+                              ? `${header.column.getAfter("right")}px`
+                              : undefined,
+                          zIndex: isPinned ? 10 : undefined,
+                        }}
+                        className={cn(
+                          cellPaddingClasses[density],
+                          "text-left align-middle font-medium",
+                          "text-muted-foreground dark:text-muted-foreground",
+                          "[&:has([role=checkbox])]:pr-0",
+                          variantClasses[variant],
+                          (stickyHeader || isPinned) &&
+                            "bg-background dark:bg-background",
+                          isPinned && "shadow-md",
+                        )}
+                      >
+                        {header.isPlaceholder ? null : reorderingEnabled &&
+                          !isPinned ? (
+                          <DraggableColumnHeader header={header}>
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2 justify-between">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  {flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )}
+                                </div>
+                                <ColumnHeaderMenu
                                   column={header.column}
+                                  table={table}
                                   title={
                                     typeof header.column.columnDef.header ===
                                     "string"
                                       ? header.column.columnDef.header
                                       : header.column.id
                                   }
-                                  inline={true}
+                                  onFilterModeChange={handleFilterModeChange}
                                 />
                               </div>
+                              {/* Inline filter */}
+                              {showInlineFilters &&
+                                header.column.getCanFilter() &&
+                                header.column.columnDef.enableColumnFilter !==
+                                  false && (
+                                  <div
+                                    className="min-w-[150px]"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <FacetedFilter
+                                      column={header.column}
+                                      title={
+                                        typeof header.column.columnDef
+                                          .header === "string"
+                                          ? header.column.columnDef.header
+                                          : header.column.id
+                                      }
+                                      inline={true}
+                                    />
+                                  </div>
+                                )}
+                            </div>
+                          </DraggableColumnHeader>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 justify-between">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                              </div>
+                              <ColumnHeaderMenu
+                                column={header.column}
+                                table={table}
+                                title={
+                                  typeof header.column.columnDef.header ===
+                                  "string"
+                                    ? header.column.columnDef.header
+                                    : header.column.id
+                                }
+                                onFilterModeChange={handleFilterModeChange}
+                              />
+                            </div>
+                            {/* Inline filter */}
+                            {showInlineFilters &&
+                              header.column.getCanFilter() &&
+                              header.column.columnDef.enableColumnFilter !==
+                                false && (
+                                <div
+                                  className="min-w-[150px]"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <FacetedFilter
+                                    column={header.column}
+                                    title={
+                                      typeof header.column.columnDef.header ===
+                                      "string"
+                                        ? header.column.columnDef.header
+                                        : header.column.id
+                                    }
+                                    inline={true}
+                                  />
+                                </div>
+                              )}
+                          </div>
+                        )}
+                        {/* Resize handle */}
+                        {canResize && (
+                          <div
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            className={cn(
+                              "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none",
+                              "hover:bg-primary/50 active:bg-primary",
+                              header.column.getIsResizing() && "bg-primary",
                             )}
-                        </div>
-                      )}
-                      {/* Resize handle */}
-                      {canResize && (
-                        <div
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className={cn(
-                            "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none",
-                            "hover:bg-primary/50 active:bg-primary",
-                            header.column.getIsResizing() && "bg-primary",
-                          )}
-                        />
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
+                          />
+                        )}
+                      </th>
+                    );
+                  })}
+                </tr>
+              );
+
+              // Wrap with SortableContext if reordering is enabled
+              return reorderingEnabled ? (
+                <SortableContext key={headerGroup.id} items={columnIds}>
+                  {headerRow}
+                </SortableContext>
+              ) : (
+                headerRow
+              );
+            })}
           </thead>
 
           {/* Table Body */}
@@ -530,7 +650,9 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                       <td
                         key={cell.id}
                         style={{
-                          width: cell.column.getSize(),
+                          width: `${cell.column.getSize()}px`,
+                          minWidth: `${cell.column.getSize()}px`,
+                          maxWidth: `${cell.column.getSize()}px`,
                           // Pinning styles
                           position: isPinned ? "sticky" : "relative",
                           left:
@@ -597,6 +719,19 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
         />
       )}
     </div>
+  );
+
+  // Wrap with DndContext if reordering is enabled
+  return reorderingEnabled ? (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      {tableContent}
+    </DndContext>
+  ) : (
+    tableContent
   );
 }
 

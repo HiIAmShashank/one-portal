@@ -4,6 +4,7 @@
  * Demonstrates advanced column features:
  * - Column visibility toggle
  * - Column resizing
+ * - Column reordering (drag and drop)
  * - Column pinning (left/right)
  * - Column header menu
  *
@@ -198,6 +199,29 @@ export const ColumnResizing: Story = {
 };
 
 /**
+ * Column Reordering
+ *
+ * Demonstrates column reordering with drag and drop:
+ * - Drag the grip handle (⋮⋮) on any column header to reorder
+ * - Columns can be reordered by dragging
+ * - Pinned columns cannot be reordered
+ * - Visual feedback during drag operation
+ * - Reordering is enabled via features.columns.reordering
+ */
+export const ColumnReordering: Story = {
+  args: {
+    data: products.slice(0, 20),
+    columns,
+    features: {
+      pagination: false,
+      columns: {
+        reordering: true,
+      },
+    },
+  },
+};
+
+/**
  * Column Pinning
  *
  * Demonstrates column pinning:
@@ -282,7 +306,7 @@ export const ColumnHeaderMenu: Story = {
  * All Column Features Combined
  *
  * Demonstrates all column features working together:
- * - Resize, pin, hide, and sort columns
+ * - Resize, reorder, pin, hide, and sort columns
  * - With filtering and pagination enabled
  * - Full-featured data table
  */
@@ -300,6 +324,7 @@ export const AllFeaturesCombined: Story = {
       columns: {
         visibility: true,
         resizing: true,
+        reordering: true,
         pinning: true,
         initialPinning: {
           left: ["id"],

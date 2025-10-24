@@ -13,6 +13,18 @@
 
 ## Recent Changes
 
+**Phase 6 Update:** Column Reordering Implemented (2025-10-24)
+- ✅ Installed @dnd-kit dependencies (@dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities)
+- ✅ Created DraggableColumnHeader component with grip handle and drag feedback
+- ✅ Integrated DndContext and SortableContext into DataTable
+- ✅ Implemented column order state management with controlled/uncontrolled support
+- ✅ Added drag and drop sensors (mouse, touch, keyboard)
+- ✅ Pinned columns excluded from reordering (only non-pinned columns can be reordered)
+- ✅ Updated types to include ColumnOrderState and column order callbacks
+- ✅ Updated useDataTable hook to support column ordering
+- ✅ Added column reordering story to Storybook
+- ✅ Fixed filter mode switching, show all columns button, and column overlap issues
+
 **Phase 6 Complete:** Column Features (2025-10-24)
 - ✅ Created ColumnHeaderMenu component with dropdown menu for all column actions
 - ✅ Implemented column resizing with drag handles
@@ -20,8 +32,7 @@
 - ✅ Added shadow effects for pinned columns
 - ✅ Column visibility already implemented in ViewOptions
 - ✅ Clean header design with all features in dropdown menu
-- ✅ Created comprehensive Storybook stories (08-Column-Features.stories.tsx with 9 stories)
-- ✅ Column reordering excluded (requires DndKit, marked as opt-in)
+- ✅ Created comprehensive Storybook stories (08-Column-Features.stories.tsx)
 
 **Phase 5 Complete:** UI Controls - Density & Variants (2025-10-24)
 - ✅ Connected density controls from DataTable → DataTableToolbar → ViewOptions
@@ -159,11 +170,11 @@
 ### Advanced Column Controls
 - [x] Add column visibility toggle
 - [x] Add column resizing
-- [x] Add column reordering with DndKit (EXCLUDED - requires DndKit dependency, opt-in)
+- [x] Add column reordering with DndKit
 - [x] Add column pinning
 - [x] Create Storybook story - Column features
 
-**Status:** Complete - Column visibility was already implemented. Added ColumnHeaderMenu component with clean dropdown menu design for all column actions (sort, pin, hide, filter). Implemented column resizing with drag handles and pinning with sticky positioning. Created 9 comprehensive Storybook stories demonstrating all features. Column reordering excluded as it requires DndKit (can be added as opt-in feature later).
+**Status:** Complete - Column visibility was already implemented. Added ColumnHeaderMenu component with clean dropdown menu design for all column actions (sort, pin, hide, filter). Implemented column resizing with drag handles and pinning with sticky positioning. Implemented column reordering with @dnd-kit (drag handle with grip icon, works with non-pinned columns only). Created comprehensive Storybook stories demonstrating all features including reordering.
 
 ---
 
