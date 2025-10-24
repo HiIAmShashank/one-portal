@@ -38,11 +38,13 @@ import {
 interface FacetedFilterProps<TData> {
   column: Column<TData>;
   title?: string;
+  inline?: boolean; // Hide labels in inline mode
 }
 
 export function FacetedFilter<TData>({
   column,
   title,
+  inline = false,
 }: FacetedFilterProps<TData>) {
   const metadata = useFaceting(column);
   const filterValue = column.getFilterValue();
@@ -54,9 +56,14 @@ export function FacetedFilter<TData>({
   if (metadata.variant === "text") {
     return (
       <div className="space-y-2">
-        <Label htmlFor={`filter-${column.id}`} className="text-sm font-medium">
-          {title || column.id}
-        </Label>
+        {!inline && (
+          <Label
+            htmlFor={`filter-${column.id}`}
+            className="text-sm font-medium"
+          >
+            {title || column.id}
+          </Label>
+        )}
         <Input
           id={`filter-${column.id}`}
           type="text"
@@ -73,9 +80,14 @@ export function FacetedFilter<TData>({
   if (metadata.variant === "select" && metadata.options) {
     return (
       <div className="space-y-2">
-        <Label htmlFor={`filter-${column.id}`} className="text-sm font-medium">
-          {title || column.id}
-        </Label>
+        {!inline && (
+          <Label
+            htmlFor={`filter-${column.id}`}
+            className="text-sm font-medium"
+          >
+            {title || column.id}
+          </Label>
+        )}
         <Select
           value={(filterValue as string) ?? "__all__"}
           onValueChange={(value) =>
@@ -107,7 +119,9 @@ export function FacetedFilter<TData>({
 
     return (
       <div className="space-y-2">
-        <Label className="text-sm font-medium">{title || column.id}</Label>
+        {!inline && (
+          <Label className="text-sm font-medium">{title || column.id}</Label>
+        )}
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -179,55 +193,53 @@ export function FacetedFilter<TData>({
       number | undefined,
     ]) || [undefined, undefined];
 
+    const handleMinChange = (value: string) => {
+      const newMin = value ? Number(value) : undefined;
+      const currentMax = (
+        column.getFilterValue() as [number | undefined, number | undefined]
+      )?.[1];
+
+      // Clear filter if both values are undefined
+      if (newMin === undefined && currentMax === undefined) {
+        column.setFilterValue(undefined);
+      } else {
+        column.setFilterValue([newMin, currentMax]);
+      }
+    };
+
+    const handleMaxChange = (value: string) => {
+      const newMax = value ? Number(value) : undefined;
+      const currentMin = (
+        column.getFilterValue() as [number | undefined, number | undefined]
+      )?.[0];
+
+      // Clear filter if both values are undefined
+      if (currentMin === undefined && newMax === undefined) {
+        column.setFilterValue(undefined);
+      } else {
+        column.setFilterValue([currentMin, newMax]);
+      }
+    };
+
     return (
       <div className="space-y-2">
-        <Label className="text-sm font-medium">{title || column.id}</Label>
+        {!inline && (
+          <Label className="text-sm font-medium">{title || column.id}</Label>
+        )}
         <div className="flex gap-2">
           <Input
             type="number"
             value={min ?? ""}
-            onChange={(e) => {
-              const newMin = e.target.value
-                ? Number(e.target.value)
-                : undefined;
-              const currentMax = (
-                column.getFilterValue() as [
-                  number | undefined,
-                  number | undefined,
-                ]
-              )?.[1];
-
-              // Clear filter if both values are undefined
-              if (newMin === undefined && currentMax === undefined) {
-                column.setFilterValue(undefined);
-              } else {
-                column.setFilterValue([newMin, currentMax]);
-              }
-            }}
+            onChange={(e) => handleMinChange(e.target.value)}
+            onBlur={(e) => handleMinChange(e.target.value)} // Filter on blur
             placeholder="Min"
             className="h-8"
           />
           <Input
             type="number"
             value={max ?? ""}
-            onChange={(e) => {
-              const newMax = e.target.value
-                ? Number(e.target.value)
-                : undefined;
-              const currentMin = (
-                column.getFilterValue() as [
-                  number | undefined,
-                  number | undefined,
-                ]
-              )?.[0];
-
-              // Clear filter if both values are undefined
-              if (currentMin === undefined && newMax === undefined) {
-                column.setFilterValue(undefined);
-              } else {
-                column.setFilterValue([currentMin, newMax]);
-              }
-            }}
+            onChange={(e) => handleMaxChange(e.target.value)}
+            onBlur={(e) => handleMaxChange(e.target.value)} // Filter on blur
             placeholder="Max"
             className="h-8"
           />
@@ -240,9 +252,14 @@ export function FacetedFilter<TData>({
   if (metadata.variant === "boolean") {
     return (
       <div className="space-y-2">
-        <Label htmlFor={`filter-${column.id}`} className="text-sm font-medium">
-          {title || column.id}
-        </Label>
+        {!inline && (
+          <Label
+            htmlFor={`filter-${column.id}`}
+            className="text-sm font-medium"
+          >
+            {title || column.id}
+          </Label>
+        )}
         <Select
           value={
             filterValue === true
@@ -287,7 +304,9 @@ export function FacetedFilter<TData>({
 
     return (
       <div className="space-y-2">
-        <Label className="text-sm font-medium">{title || column.id}</Label>
+        {!inline && (
+          <Label className="text-sm font-medium">{title || column.id}</Label>
+        )}
         <div className="flex gap-2">
           {/* Start Date */}
           <div className="relative flex-1">
@@ -393,9 +412,14 @@ export function FacetedFilter<TData>({
   if (metadata.variant === "date" && metadata.options) {
     return (
       <div className="space-y-2">
-        <Label htmlFor={`filter-${column.id}`} className="text-sm font-medium">
-          {title || column.id}
-        </Label>
+        {!inline && (
+          <Label
+            htmlFor={`filter-${column.id}`}
+            className="text-sm font-medium"
+          >
+            {title || column.id}
+          </Label>
+        )}
         <Select
           value={(filterValue as string) ?? "__all__"}
           onValueChange={(value) =>
@@ -424,9 +448,11 @@ export function FacetedFilter<TData>({
   // Fallback to text
   return (
     <div className="space-y-2">
-      <Label htmlFor={`filter-${column.id}`} className="text-sm font-medium">
-        {title || column.id}
-      </Label>
+      {!inline && (
+        <Label htmlFor={`filter-${column.id}`} className="text-sm font-medium">
+          {title || column.id}
+        </Label>
+      )}
       <Input
         id={`filter-${column.id}`}
         type="text"

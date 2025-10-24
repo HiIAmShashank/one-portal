@@ -192,6 +192,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                                       ? header.column.columnDef.header
                                       : header.column.id
                                   }
+                                  inline={true}
                                 />
                               </div>
                             )}

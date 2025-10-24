@@ -344,7 +344,6 @@ export const InlineFilterMode: Story = {
     ui: {
       filterMode: "inline", // Key prop - moves filters to column headers
       showToolbar: true, // Still shows toolbar for global search
-      showColumnFilters: false, // Hides toolbar filters (shown inline instead)
     },
   },
 };

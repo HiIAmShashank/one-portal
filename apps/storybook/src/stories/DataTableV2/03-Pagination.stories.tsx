@@ -16,7 +16,7 @@ import { faker } from "@faker-js/faker";
 
 // Sample data type
 interface Customer {
-  id: string;
+  id: number;
   name: string;
   email: string;
   company: string;
@@ -27,7 +27,7 @@ interface Customer {
 // Generate large dataset for pagination testing
 const generateCustomers = (count: number): Customer[] => {
   return Array.from({ length: count }, (_, i) => ({
-    id: `${i + 1}`,
+    id: i + 1,
     name: faker.person.fullName(),
     email: faker.internet.email(),
     company: faker.company.name(),
