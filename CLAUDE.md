@@ -77,6 +77,19 @@ pnpm docker:logs
 pnpm docker:down
 ```
 
+### Storybook (Component Documentation)
+```bash
+# Start Storybook dev server
+pnpm storybook
+
+# Build static Storybook
+pnpm build-storybook
+
+# Storybook runs at http://localhost:6006
+```
+
+**Important:** Storybook is located at `apps/storybook/` and is **excluded from deployment** builds. It's for development and documentation only.
+
 ## Architecture Deep Dive
 
 ### Module Federation Flow
@@ -373,6 +386,101 @@ const root = await loadAndMountRemote(
 // Later, unmount
 unmountRemote('domino');
 ```
+
+## Storybook - DataTable Component Documentation
+
+OnePortal includes a comprehensive Storybook app at `apps/storybook/` that documents all DataTable component features.
+
+### Running Storybook
+
+```bash
+# Start development server
+pnpm storybook
+
+# Build static site
+pnpm build-storybook
+
+# Access at http://localhost:6006
+```
+
+### Structure
+
+```
+apps/storybook/
+├── .storybook/          # Storybook configuration
+│   ├── main.ts          # Vite builder, addons, stories location
+│   ├── preview.tsx      # Global decorators, theme provider
+│   └── storybook.css    # Custom Storybook styles
+├── src/
+│   ├── stories/         # Story files organized by feature
+│   │   ├── DataTable/   # DataTable feature stories
+│   │   └── Welcome.stories.tsx
+│   └── mocks/           # Mock data infrastructure
+│       ├── data-generators.ts   # Faker.js data generators
+│       └── column-definitions.tsx  # Reusable column configs
+├── package.json
+└── tsconfig.json
+```
+
+### Mock Data Generators
+
+Located in `src/mocks/data-generators.ts`, provides realistic test data:
+
+- **Users**: name, email, role, status, avatar, department
+- **Orders**: order number, customer, amount, status, date
+- **Products**: SKU, price, stock, category, supplier
+- **Transactions**: debits/credits with running balances
+- **Tasks**: priorities, statuses, due dates, tags
+
+```typescript
+import { generateUsers, generateOrders } from '@/mocks/data-generators';
+
+const users = generateUsers(50);  // Generate 50 realistic users
+const orders = generateOrders(100); // Generate 100 orders
+```
+
+### Column Definitions
+
+Located in `src/mocks/column-definitions.tsx`, provides reusable column configs:
+
+- Custom cell renderers (badges, avatars, formatted currency/dates)
+- Filter configurations (select, multi-select, date-range, number-range)
+- Inline editing configurations
+- Aggregation functions for grouping
+- Sort functions and conditional styling
+
+```typescript
+import { userColumns, orderColumns } from '@/mocks/column-definitions';
+
+<DataTable data={users} columns={userColumns} />
+```
+
+### Story Categories
+
+Stories are organized by feature area:
+
+1. **Basic Features** - Sorting, filtering, pagination, search
+2. **Advanced Features** - Inline editing, grouping, expanding, server-side
+3. **Column Features** - Resizing, reordering, pinning, visibility
+4. **Selection & Actions** - Row selection, bulk actions, per-row actions
+5. **UI Variations** - Density, themes, filter modes, variants
+6. **Real-World Examples** - Users, orders, products, financial data
+7. **Persistence & State** - localStorage, controlled/uncontrolled modes
+
+### Deployment Exclusion
+
+**IMPORTANT:** Storybook is automatically excluded from production deployment:
+
+- `scripts/combine-builds.js` does NOT include storybook
+- `pnpm build:deploy` ignores storybook app
+- Only used for development and documentation
+
+### Progress Tracking
+
+See `STORYBOOK_CHECKLIST.md` at project root for implementation progress. This file tracks:
+- Completed phases and tasks
+- Current implementation status
+- Next steps for story development
 
 ## Common Development Patterns
 
