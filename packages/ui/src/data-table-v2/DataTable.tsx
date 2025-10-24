@@ -6,12 +6,12 @@
 
 import * as React from "react";
 import { flexRender, type RowSelectionState } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { useDataTable } from "./hooks/useDataTable";
 import { TablePagination } from "./components/TablePagination";
 import { DataTableToolbar } from "./components/DataTableToolbar";
 import { FacetedFilter } from "./components/FacetedFilter";
 import { BulkActions } from "./components/BulkActions";
+import { ColumnHeaderMenu } from "./components/ColumnHeaderMenu";
 import {
   createSelectionColumn,
   createActionsColumn,
@@ -279,51 +279,56 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                 className="hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
               >
                 {headerGroup.headers.map((header) => {
-                  const canSort = header.column.getCanSort();
-                  const sorted = header.column.getIsSorted();
+                  const isPinned = header.column.getIsPinned();
+                  const canResize = header.column.getCanResize();
 
                   return (
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      style={{ width: header.getSize() }}
+                      style={{
+                        width: header.getSize(),
+                        // Pinning styles
+                        position: isPinned ? "sticky" : "relative",
+                        left:
+                          isPinned === "left"
+                            ? `${header.column.getStart("left")}px`
+                            : undefined,
+                        right:
+                          isPinned === "right"
+                            ? `${header.column.getAfter("right")}px`
+                            : undefined,
+                        zIndex: isPinned ? 10 : undefined,
+                      }}
                       className={cn(
                         cellPaddingClasses[density],
                         "text-left align-middle font-medium",
                         "text-muted-foreground dark:text-muted-foreground",
                         "[&:has([role=checkbox])]:pr-0",
                         variantClasses[variant],
-                        stickyHeader && "bg-background dark:bg-background",
+                        (stickyHeader || isPinned) &&
+                          "bg-background dark:bg-background",
+                        isPinned && "shadow-md",
                       )}
                     >
                       {header.isPlaceholder ? null : (
                         <div className="space-y-2">
-                          <div
-                            className={cn(
-                              "flex items-center gap-2",
-                              canSort && "cursor-pointer select-none",
-                            )}
-                            onClick={
-                              canSort
-                                ? header.column.getToggleSortingHandler()
-                                : undefined
-                            }
-                          >
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                            {canSort && (
-                              <>
-                                {sorted === "asc" ? (
-                                  <ArrowUp className="h-4 w-4" />
-                                ) : sorted === "desc" ? (
-                                  <ArrowDown className="h-4 w-4" />
-                                ) : (
-                                  <ArrowUpDown className="h-4 w-4 text-muted-foreground/50" />
-                                )}
-                              </>
-                            )}
+                          <div className="flex items-center gap-2 justify-between">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                            </div>
+                            <ColumnHeaderMenu
+                              column={header.column}
+                              title={
+                                typeof header.column.columnDef.header ===
+                                "string"
+                                  ? header.column.columnDef.header
+                                  : header.column.id
+                              }
+                            />
                           </div>
                           {/* Inline filter */}
                           {showInlineFilters &&
@@ -347,6 +352,18 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                               </div>
                             )}
                         </div>
+                      )}
+                      {/* Resize handle */}
+                      {canResize && (
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={cn(
+                            "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none",
+                            "hover:bg-primary/50 active:bg-primary",
+                            header.column.getIsResizing() && "bg-primary",
+                          )}
+                        />
                       )}
                     </th>
                   );
@@ -506,33 +523,52 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                   )}
                   data-state={row.getIsSelected() ? "selected" : undefined}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      style={{ width: cell.column.getSize() }}
-                      onClick={(e) => {
-                        if (onCellClick) {
-                          e.stopPropagation();
-                          onCellClick({
-                            row: row.original,
-                            columnId: cell.column.id,
-                            value: cell.getValue(),
-                          });
-                        }
-                      }}
-                      className={cn(
-                        cellPaddingClasses[density],
-                        "align-middle",
-                        "[&:has([role=checkbox])]:pr-0",
-                        variantClasses[variant],
-                      )}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const isPinned = cell.column.getIsPinned();
+
+                    return (
+                      <td
+                        key={cell.id}
+                        style={{
+                          width: cell.column.getSize(),
+                          // Pinning styles
+                          position: isPinned ? "sticky" : "relative",
+                          left:
+                            isPinned === "left"
+                              ? `${cell.column.getStart("left")}px`
+                              : undefined,
+                          right:
+                            isPinned === "right"
+                              ? `${cell.column.getAfter("right")}px`
+                              : undefined,
+                          zIndex: isPinned ? 9 : undefined,
+                        }}
+                        onClick={(e) => {
+                          if (onCellClick) {
+                            e.stopPropagation();
+                            onCellClick({
+                              row: row.original,
+                              columnId: cell.column.id,
+                              value: cell.getValue(),
+                            });
+                          }
+                        }}
+                        className={cn(
+                          cellPaddingClasses[density],
+                          "align-middle",
+                          "[&:has([role=checkbox])]:pr-0",
+                          variantClasses[variant],
+                          isPinned &&
+                            "bg-background dark:bg-background shadow-md",
+                        )}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
           </tbody>
