@@ -13,6 +13,17 @@
 
 ## Recent Changes
 
+**Phase 6 Polish & Bug Fixes** (2025-10-24)
+- ✅ Fixed column header text/icon overlap with hover-only menu icon on separate layer (Commit: 0903a99)
+- ✅ Fixed column reordering initialization - populated columnOrder state with actual column IDs (Commit: 0903a99)
+- ✅ Added cell text truncation with configurable min-width per column (Commit: 4f5ccad)
+- ✅ Set default minSize to 80px (button + padding) in useDataTable (Commit: 4f5ccad)
+- ✅ Created TextTruncationAndOverflow story to test long headers and cell content (Commit: 0d72cfb)
+- ✅ Fixed column resizing by adding columnSizing state and handleColumnSizingChange callback (Commits: fefdcea, 3812b1e, 3df84a0)
+- ✅ Added table-layout: fixed to enable column resizing - was the root cause (Commit: 731a2c1)
+- ✅ Restored directional shadows for pinned columns (left shadow on right, right shadow on left) (Commit: 975931a)
+- ✅ Enhanced pinned column shadows with stronger visibility in dark mode
+
 **Phase 6 Update:** Column Reordering Implemented (2025-10-24)
 - ✅ Installed @dnd-kit dependencies (@dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities)
 - ✅ Created DraggableColumnHeader component with grip handle and drag feedback
@@ -235,11 +246,16 @@
 
 ## Current Issues (User Reported)
 
-### ✅ Resolved (Commit 75704bb)
-1. ✅ **Loading state flickering** - Fixed with proper SVG spinner and conditional overflow-auto
-2. ✅ **Tailwind classes missing** - Fixed by rebuilding UI package (px-6, even:bg-muted/30 now available)
-3. ✅ **Dark mode broken** - Fixed with dark: prefixes throughout component
-4. ✅ **className prop** - Already exists, confirmed in DataTable.tsx props
+### ✅ Resolved
+1. ✅ **Loading state flickering** - Fixed with proper SVG spinner and conditional overflow-auto (Commit: 75704bb)
+2. ✅ **Tailwind classes missing** - Fixed by rebuilding UI package (Commit: 75704bb)
+3. ✅ **Dark mode broken** - Fixed with dark: prefixes throughout component (Commit: 75704bb)
+4. ✅ **className prop** - Already exists, confirmed in DataTable.tsx props (Commit: 75704bb)
+5. ✅ **Column header text/icon overlap** - Fixed with hover-only icon on separate layer (Commit: 0903a99)
+6. ✅ **Column reordering not working** - Fixed columnOrder state initialization (Commit: 0903a99)
+7. ✅ **Cell text overlapping** - Added text truncation with configurable min-width (Commit: 4f5ccad)
+8. ✅ **Column resizing not working** - Fixed state management and table-layout (Commits: 3df84a0, 731a2c1)
+9. ✅ **Pinned column shadows missing** - Restored directional shadows (Commit: 975931a)
 
 ### Optional
 - [x] Upgrade Storybook to v9.1.13 (completed - commit fceb06e)
