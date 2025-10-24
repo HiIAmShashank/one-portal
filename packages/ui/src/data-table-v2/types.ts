@@ -19,100 +19,50 @@ import type {
   Row,
   Column,
   Table,
-  AggregationFn,
+  ColumnDef as TanStackColumnDef,
 } from "@tanstack/react-table";
+
+// Extend TanStack Table's ColumnMeta interface
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData, TValue> {
+    // Manual filter config (overrides auto-detection)
+    filterVariant?:
+      | "text"
+      | "number"
+      | "number-range"
+      | "select"
+      | "multi-select"
+      | "boolean"
+      | "date"
+      | "date-range";
+    filterOptions?: Array<{ label: string; value: unknown }>;
+    filterPlaceholder?: string;
+
+    // Display
+    headerClassName?: string;
+    cellClassName?: string;
+    footerClassName?: string;
+    tooltip?: string;
+  }
+}
 
 // ============================================================================
 // COLUMN DEFINITION
 // ============================================================================
 
 /**
- * Simplified column definition
+ * Re-export TanStack Table's ColumnDef with our extended ColumnMeta
  */
-export interface ColumnDef<TData> {
-  // Identity
-  id: string;
-  accessorKey?: keyof TData;
-  accessorFn?: (row: TData) => unknown;
-
-  // Display
-  header: string | ((props: HeaderContext<TData>) => React.ReactNode);
-  cell?: (props: CellContext<TData>) => React.ReactNode;
-  footer?: string | ((props: FooterContext<TData>) => React.ReactNode);
-
-  // Sizing
-  size?: number;
-  minSize?: number;
-  maxSize?: number;
-
-  // Features (opt-out)
-  enableSorting?: boolean;
-  enableFiltering?: boolean;
-  enableResizing?: boolean;
-  enablePinning?: boolean;
-  enableHiding?: boolean;
-  enableGrouping?: boolean;
-
-  // Sorting
-  sortingFn?:
-    | "alphanumeric"
-    | "datetime"
-    | "basic"
-    | ((rowA: Row<TData>, rowB: Row<TData>, columnId: string) => number);
-  sortDescFirst?: boolean;
-
-  // Filtering (V2: Auto-detected via faceting if not specified)
-  filterFn?:
-    | "includesString"
-    | "equalsString"
-    | "betweenNumbers"
-    | "inNumberRange"
-    | ((row: Row<TData>, columnId: string, filterValue: unknown) => boolean);
-
-  // Aggregation (for grouped rows)
-  aggregationFn?:
-    | "sum"
-    | "min"
-    | "max"
-    | "extent"
-    | "mean"
-    | "median"
-    | "unique"
-    | "uniqueCount"
-    | "count"
-    | AggregationFn<TData>;
-  aggregatedCell?: (props: CellContext<TData>) => React.ReactNode;
-
-  // Meta (extensible)
-  meta?: ColumnMeta;
-}
+export type ColumnDef<TData, TValue = unknown> = TanStackColumnDef<
+  TData,
+  TValue
+>;
 
 /**
- * Column metadata - auto-detected filter config
+ * Re-export ColumnMeta from TanStack Table (extended via declaration merging above)
  */
-export interface ColumnMeta {
-  // Manual filter config (overrides auto-detection)
-  filterVariant?:
-    | "text"
-    | "number"
-    | "number-range"
-    | "select"
-    | "multi-select"
-    | "boolean"
-    | "date"
-    | "date-range";
-  filterOptions?: Array<{ label: string; value: unknown }>;
-  filterPlaceholder?: string; // Custom placeholder for filter input
-
-  // Display
-  headerClassName?: string;
-  cellClassName?: string;
-  footerClassName?: string;
-  tooltip?: string;
-
-  // Extensible for custom features
-  [key: string]: unknown;
-}
+export type { ColumnMeta } from "@tanstack/react-table";
 
 // ============================================================================
 // MAIN DATATABLE PROPS
@@ -121,7 +71,7 @@ export interface ColumnMeta {
 export interface DataTableProps<TData> {
   // Core data
   data: TData[];
-  columns: ColumnDef<TData>[];
+  columns: ColumnDef<TData, any>[];
 
   // Feature configuration (grouped)
   features?: FeaturesConfig<TData>;
@@ -131,6 +81,8 @@ export interface DataTableProps<TData> {
 
   // Persistence configuration (grouped)
   persistence?: PersistenceConfig;
+  persistState?: boolean;
+  stateKey?: string;
 
   // Actions configuration (grouped)
   actions?: ActionsConfig<TData>;
@@ -143,11 +95,41 @@ export interface DataTableProps<TData> {
     value: unknown;
   }) => void;
 
+  // Custom row functions
+  getRowId?: (row: TData, index: number) => string;
+  getSubRows?: (row: TData) => TData[] | undefined;
+  renderExpandedRow?: (row: Row<TData>) => React.ReactNode;
+
   // Custom state (advanced users)
   state?: Partial<TableState>;
   onStateChange?: (state: Partial<TableState>) => void;
 
+  // Individual state control (controlled mode)
+  sorting?: SortingState;
+  onSortingChange?: (sorting: SortingState) => void;
+  columnFilters?: ColumnFiltersState;
+  onColumnFiltersChange?: (filters: ColumnFiltersState) => void;
+  globalFilter?: string;
+  onGlobalFilterChange?: (filter: string) => void;
+  pagination?: PaginationState;
+  onPaginationChange?: (pagination: PaginationState) => void;
+  columnVisibility?: VisibilityState;
+  onColumnVisibilityChange?: (visibility: VisibilityState) => void;
+  columnSizing?: ColumnSizingState;
+  onColumnSizingChange?: (sizing: ColumnSizingState) => void;
+  columnPinning?: ColumnPinningState;
+  onColumnPinningChange?: (pinning: ColumnPinningState) => void;
+  columnOrder?: ColumnOrderState;
+  onColumnOrderChange?: (order: ColumnOrderState) => void;
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: (selection: RowSelectionState) => void;
+  grouping?: GroupingState;
+  onGroupingChange?: (grouping: GroupingState) => void;
+  expanded?: ExpandedState;
+  onExpandedChange?: (expanded: ExpandedState) => void;
+
   // Advanced: Full TanStack Table instance access
+  table?: Table<TData>;
   onTableReady?: (table: Table<TData>) => void;
 
   // Styling
@@ -162,48 +144,57 @@ export interface DataTableProps<TData> {
 /**
  * Features configuration - all table features in one place
  */
-export interface FeaturesConfig<TData> {
+export interface FeaturesConfig<TData = unknown> {
   // Sorting
   sorting?:
     | boolean
     | {
-        enabled: boolean;
+        enabled?: boolean;
         multi?: boolean;
         initialState?: SortingState;
         onChange?: (state: SortingState) => void;
       };
 
-  // Filtering
+  // Filtering (legacy "filtering", modern "filters")
   filtering?:
     | boolean
     | {
-        enabled: boolean;
-        mode?: "faceted" | "manual"; // V2: Faceted auto-detects types
+        enabled?: boolean;
+        mode?: "faceted" | "manual";
         global?: boolean;
         columns?: boolean;
         initialState?: ColumnFiltersState;
         onChange?: (state: ColumnFiltersState) => void;
       };
 
+  // Filtering (modern "filters" prop)
+  filters?: {
+    enabled?: boolean;
+    mode?: "toolbar" | "inline" | "faceted";
+    debounceMs?: number;
+  };
+
   // Pagination
   pagination?:
     | boolean
     | {
-        enabled: boolean;
+        enabled?: boolean;
         pageSize?: number;
         pageSizeOptions?: number[];
-        showPageInfo?: boolean; // Default: true
-        showPageSizeSelector?: boolean; // Default: true
+        showPageInfo?: boolean;
+        showPageSizeSelector?: boolean;
+        manual?: boolean;
         initialState?: PaginationState;
         onChange?: (state: PaginationState) => void;
       };
 
   // Row Selection
   selection?: {
-    mode: "single" | "multiple";
-    pinLeft?: boolean; // Default: true
-    getCanSelect?: (row: TData) => boolean;
-    onChange?: (rows: TData[]) => void;
+    enabled?: boolean;
+    mode?: "single" | "multiple";
+    pinLeft?: boolean;
+    getCanSelect?: (row: Row<TData>) => boolean;
+    onChange?: (selection: RowSelectionState) => void;
   };
 
   // Column Management
@@ -224,24 +215,27 @@ export interface FeaturesConfig<TData> {
 
   // Row Grouping
   grouping?: {
-    enabled: boolean;
+    enabled?: boolean;
+    manualGrouping?: boolean;
     initialState?: GroupingState;
     onChange?: (state: GroupingState) => void;
   };
 
   // Row Expanding
   expanding?: {
-    enabled: boolean;
+    enabled?: boolean;
+    showExpandColumn?: boolean;
     getSubRows?: (row: TData) => TData[] | undefined;
     getCanExpand?: (row: Row<TData>) => boolean;
     renderExpandedRow?: (row: Row<TData>) => React.ReactNode;
+    defaultExpanded?: boolean;
     initialState?: ExpandedState;
     onChange?: (state: ExpandedState) => void;
   };
 
   // Virtualization (V2: NEW!)
   virtualization?: {
-    enabled: boolean;
+    enabled?: boolean;
     rowHeight?: number | ((row: TData) => number);
     overscan?: number;
   };
@@ -252,7 +246,7 @@ export interface FeaturesConfig<TData> {
     totalCount: number;
     loading?: boolean;
     error?: Error | null;
-    onFetch?: (params: ServerSideParams) => Promise<void>;
+    onFetch?: (params: ServerSideParams) => Promise<void> | void;
   };
 }
 

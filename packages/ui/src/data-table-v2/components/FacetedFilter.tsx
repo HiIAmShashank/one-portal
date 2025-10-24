@@ -52,6 +52,24 @@ export function FacetedFilter<TData>({
     (column.columnDef.meta as any)?.filterPlaceholder ||
     `Filter ${title || column.id}...`;
 
+  // Initialize all state hooks unconditionally (Rules of Hooks)
+  // Date range states - only initialize if variant is date-range
+  const dateRangeValue =
+    metadata.variant === "date-range" ? (filterValue as [Date, Date]) : null;
+  const [startDate, endDate] = dateRangeValue || [undefined, undefined];
+  const [startOpen, setStartOpen] = React.useState(false);
+  const [endOpen, setEndOpen] = React.useState(false);
+  const [startValue, setStartValue] = React.useState(
+    startDate && startDate instanceof Date && !isNaN(startDate.getTime())
+      ? format(startDate, "PPP")
+      : "",
+  );
+  const [endValue, setEndValue] = React.useState(
+    endDate && endDate instanceof Date && !isNaN(endDate.getTime())
+      ? format(endDate, "PPP")
+      : "",
+  );
+
   // Text filter
   if (metadata.variant === "text") {
     return (
@@ -289,19 +307,6 @@ export function FacetedFilter<TData>({
 
   // Date range filter
   if (metadata.variant === "date-range") {
-    const [startDate, endDate] = (filterValue as [Date, Date]) || [
-      undefined,
-      undefined,
-    ];
-    const [startOpen, setStartOpen] = React.useState(false);
-    const [endOpen, setEndOpen] = React.useState(false);
-    const [startValue, setStartValue] = React.useState(
-      startDate ? format(startDate, "PPP") : "",
-    );
-    const [endValue, setEndValue] = React.useState(
-      endDate ? format(endDate, "PPP") : "",
-    );
-
     return (
       <div className="space-y-2">
         {!inline && (
@@ -317,6 +322,26 @@ export function FacetedFilter<TData>({
               onChange={(e) => {
                 const val = e.target.value;
                 setStartValue(val);
+
+                // Handle empty input - clear start date
+                if (!val || val.trim() === "") {
+                  const currentEnd = (
+                    column.getFilterValue() as [
+                      Date | undefined,
+                      Date | undefined,
+                    ]
+                  )?.[1];
+                  // If both dates are now empty, clear the entire filter
+                  if (!currentEnd) {
+                    column.setFilterValue(undefined);
+                  } else {
+                    // Keep end date, clear start date
+                    column.setFilterValue([undefined, currentEnd]);
+                  }
+                  return;
+                }
+
+                // Try to parse the date
                 const date = new Date(val);
                 if (!isNaN(date.getTime())) {
                   column.setFilterValue((old: [Date, Date]) => [
@@ -365,6 +390,26 @@ export function FacetedFilter<TData>({
               onChange={(e) => {
                 const val = e.target.value;
                 setEndValue(val);
+
+                // Handle empty input - clear end date
+                if (!val || val.trim() === "") {
+                  const currentStart = (
+                    column.getFilterValue() as [
+                      Date | undefined,
+                      Date | undefined,
+                    ]
+                  )?.[0];
+                  // If both dates are now empty, clear the entire filter
+                  if (!currentStart) {
+                    column.setFilterValue(undefined);
+                  } else {
+                    // Keep start date, clear end date
+                    column.setFilterValue([currentStart, undefined]);
+                  }
+                  return;
+                }
+
+                // Try to parse the date
                 const date = new Date(val);
                 if (!isNaN(date.getTime())) {
                   column.setFilterValue((old: [Date, Date]) => [

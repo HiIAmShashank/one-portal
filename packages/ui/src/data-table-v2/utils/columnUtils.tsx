@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, ChevronRight, ChevronDown } from "lucide-react";
 
 /**
  * Creates a selection column (checkbox or radio)
@@ -114,6 +114,66 @@ export function createActionsColumn<TData>(
     size: 60,
     minSize: 60,
     maxSize: 60,
+    enableSorting: false,
+    enableHiding: false,
+    enableResizing: false,
+  };
+}
+
+/**
+ * Creates an expand column for row expansion
+ * Used for rows with sub-rows or custom expandable content
+ */
+export function createExpandColumn<TData>(): ColumnDef<TData> {
+  return {
+    id: "expand",
+    header: ({ table }) => {
+      const canSomeRowsExpand = table.getCanSomeRowsExpand();
+      if (!canSomeRowsExpand) return null;
+
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => table.toggleAllRowsExpanded()}
+          className="h-8 w-8 p-0"
+        >
+          {table.getIsAllRowsExpanded() ? (
+            <ChevronDown className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+          <span className="sr-only">Toggle all rows</span>
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      if (!row.getCanExpand()) {
+        return <div className="h-8 w-8" />; // Placeholder to maintain column width
+      }
+
+      return (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            row.toggleExpanded();
+          }}
+          className="h-8 w-8 p-0"
+        >
+          {row.getIsExpanded() ? (
+            <ChevronDown className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+          <span className="sr-only">Toggle row expansion</span>
+        </Button>
+      );
+    },
+    size: 48,
+    minSize: 48,
+    maxSize: 48,
     enableSorting: false,
     enableHiding: false,
     enableResizing: false,

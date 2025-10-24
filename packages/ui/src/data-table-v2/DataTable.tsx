@@ -23,6 +23,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { useDataTable } from "./hooks/useDataTable";
+import { usePersistence } from "./hooks/usePersistence";
 import { TablePagination } from "./components/TablePagination";
 import { DataTableToolbar } from "./components/DataTableToolbar";
 import { FacetedFilter } from "./components/FacetedFilter";
@@ -30,8 +31,15 @@ import { BulkActions } from "./components/BulkActions";
 import { ColumnHeaderMenu } from "./components/ColumnHeaderMenu";
 import { DraggableColumnHeader } from "./components/DraggableColumnHeader";
 import {
+  EmptyState,
+  LoadingState,
+  ErrorState,
+  NoResultsState,
+} from "./components/states";
+import {
   createSelectionColumn,
   createActionsColumn,
+  createExpandColumn,
 } from "./utils/columnUtils";
 import type { DataTableProps } from "./types";
 import { cn } from "../lib/utils";
@@ -42,7 +50,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     columns,
     features,
     ui,
-    persistence: _persistence,
+    persistence,
     actions,
     onRowClick,
     onCellClick,
@@ -53,24 +61,41 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     containerClassName,
   } = props;
 
+  // Initialize persistence hook
+  const { saveState, restoreState } = usePersistence(persistence);
+
+  // Restore persisted state on mount (only once)
+  const persistedState = React.useMemo(
+    () => {
+      return restoreState();
+    },
+    // Empty deps array is intentional - only restore on mount
+
+    [],
+  );
+
   // Row selection state (internal if not controlled)
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
   // Density state (internal if not controlled)
   const [internalDensity, setInternalDensity] = React.useState<
     "compact" | "default" | "comfortable"
-  >(ui?.density || "default");
+  >(persistedState.density || ui?.density || "default");
 
   // Filter mode state (internal if not controlled)
   const [internalFilterMode, setInternalFilterMode] = React.useState<
     "toolbar" | "inline"
-  >(ui?.filterMode || "toolbar");
+  >(persistedState.filterMode || ui?.filterMode || "toolbar");
 
   // Column order state (internal if not controlled)
-  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([]);
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(
+    persistedState.order || [],
+  );
 
   // Column sizing state (internal if not controlled)
-  const [columnSizing, setColumnSizing] = React.useState<ColumnSizingState>({});
+  const [columnSizing, setColumnSizing] = React.useState<ColumnSizingState>(
+    persistedState.sizing || {},
+  );
 
   // DnD sensors for drag and drop
   const sensors = useSensors(
@@ -157,7 +182,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   // Current filter mode (controlled or internal)
   const currentFilterMode = ui?.filterMode ?? internalFilterMode;
 
-  // Build final columns array with selection and actions
+  // Build final columns array with selection, expand, and actions
   const finalColumns = React.useMemo(() => {
     let cols = [...columns];
 
@@ -169,6 +194,12 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
       cols = [selectionCol, ...cols];
     }
 
+    // Prepend expand column if expanding is enabled and explicit column requested
+    if (features?.expanding?.enabled && features?.expanding?.showExpandColumn) {
+      const expandCol = createExpandColumn<TData>();
+      cols = [expandCol, ...cols];
+    }
+
     // Append actions column if provided
     if (actions?.row && actions.row.length > 0) {
       const actionsCol = createActionsColumn<TData>(actions.row);
@@ -176,21 +207,26 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     }
 
     return cols;
-  }, [columns, features?.selection, actions?.row]);
+  }, [columns, features?.selection, features?.expanding, actions?.row]);
 
   // Initialize column order from finalColumns or use provided initialOrder
   React.useEffect(() => {
-    if (
-      features?.columns?.initialOrder &&
-      features.columns.initialOrder.length > 0
-    ) {
-      setColumnOrder(features.columns.initialOrder);
-    } else {
-      // Initialize with column IDs from finalColumns
-      const colIds = finalColumns.map((col) => col.id);
-      setColumnOrder(colIds);
+    // Only initialize if columnOrder is empty (not set from persistence)
+    if (columnOrder.length === 0) {
+      if (
+        features?.columns?.initialOrder &&
+        features.columns.initialOrder.length > 0
+      ) {
+        setColumnOrder(features.columns.initialOrder);
+      } else {
+        // Initialize with column IDs from finalColumns
+        const colIds = finalColumns
+          .map((col) => col.id)
+          .filter((id): id is string => id !== undefined);
+        setColumnOrder(colIds);
+      }
     }
-  }, [finalColumns, features?.columns?.initialOrder]);
+  }, [finalColumns, features?.columns?.initialOrder, columnOrder.length]);
 
   // Handle row selection changes - this is the state updater for TanStack Table
   const handleRowSelectionChange = React.useCallback(
@@ -215,10 +251,36 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     [state?.rowSelection, rowSelection, onStateChange],
   );
 
-  // Enhanced features with row selection and column sizing updaters
+  // Enhanced features with row selection, column sizing updaters, and persisted initial state
   const enhancedFeatures = React.useMemo(() => {
     return {
       ...features,
+      // Inject persisted sorting state
+      ...(features?.sorting &&
+        persistedState.sorting && {
+          sorting: {
+            ...(typeof features.sorting === "object" ? features.sorting : {}),
+            initialState: persistedState.sorting,
+          },
+        }),
+      // Inject persisted filtering state
+      ...(features?.filtering &&
+        persistedState.filters && {
+          filtering: {
+            ...(typeof features.filtering === "object"
+              ? features.filtering
+              : {}),
+            initialState: persistedState.filters,
+          },
+        }),
+      // Inject persisted grouping state
+      ...(features?.grouping &&
+        persistedState.grouping && {
+          grouping: {
+            ...features.grouping,
+            initialState: persistedState.grouping,
+          },
+        }),
       // Add selection state updater if selection is enabled
       ...(features?.selection && {
         selection: {
@@ -226,15 +288,33 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
           onRowSelectionChange: handleRowSelectionChange,
         },
       }),
-      // Add column sizing state updater if resizing is enabled
-      ...(features?.columns?.resizing && {
+      // Inject persisted column state and add column sizing state updater
+      ...(features?.columns?.resizing !== false && {
         columns: {
-          ...features.columns,
+          ...features?.columns,
           onSizingChange: handleColumnSizingChange,
+          // Inject persisted column state
+          ...(persistedState.visibility && {
+            initialVisibility: persistedState.visibility,
+          }),
+          ...(persistedState.sizing && {
+            initialSizing: persistedState.sizing,
+          }),
+          ...(persistedState.pinning && {
+            initialPinning: persistedState.pinning,
+          }),
+          ...(persistedState.order && {
+            initialOrder: persistedState.order,
+          }),
         },
       }),
     };
-  }, [features, handleRowSelectionChange, handleColumnSizingChange]);
+  }, [
+    features,
+    handleRowSelectionChange,
+    handleColumnSizingChange,
+    persistedState,
+  ]);
 
   // Create table instance with smart defaults
   const table = useDataTable({
@@ -256,6 +336,37 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     onTableReady?.(table);
   }, [table, onTableReady]);
 
+  // Persist table state changes to localStorage
+  React.useEffect(() => {
+    if (persistence && persistence.enabled !== false) {
+      const tableState = table.getState();
+
+      saveState({
+        visibility: tableState.columnVisibility,
+        sizing: columnSizing,
+        pinning: tableState.columnPinning,
+        order: columnOrder,
+        sorting: tableState.sorting,
+        filters: tableState.columnFilters,
+        density: internalDensity,
+        filterMode: internalFilterMode,
+        grouping: tableState.grouping,
+      });
+    }
+  }, [
+    persistence,
+    table.getState().columnVisibility,
+    table.getState().columnPinning,
+    table.getState().sorting,
+    table.getState().columnFilters,
+    table.getState().grouping,
+    columnSizing,
+    columnOrder,
+    internalDensity,
+    internalFilterMode,
+    saveState,
+  ]);
+
   // Handle row selection changes
   React.useEffect(() => {
     const currentSelection = table.getState().rowSelection;
@@ -267,12 +378,51 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
 
     // Call onChange callback if provided
     if (features?.selection?.onChange) {
-      const selectedRows = table
-        .getSelectedRowModel()
-        .rows.map((row) => row.original);
-      features.selection.onChange(selectedRows);
+      features.selection.onChange(table.getState().rowSelection);
     }
   }, [table.getState().rowSelection, features?.selection, state?.rowSelection]);
+
+  // Build server-side fetch function
+  const handleServerFetch = React.useCallback(() => {
+    if (features?.serverSide?.enabled && features.serverSide.onFetch) {
+      const tableState = table.getState();
+
+      // Build filters object from column filters
+      const filters: Record<string, unknown> = {};
+      for (const filter of tableState.columnFilters) {
+        if (filter.value !== undefined && filter.value !== null) {
+          filters[filter.id] = filter.value;
+        }
+      }
+
+      // Build server-side params
+      const params = {
+        page: tableState.pagination.pageIndex,
+        pageSize: tableState.pagination.pageSize,
+        sortBy: tableState.sorting[0]?.id,
+        sortOrder: tableState.sorting[0]?.desc
+          ? ("desc" as const)
+          : ("asc" as const),
+        filters,
+        globalFilter: tableState.globalFilter as string | undefined,
+      };
+
+      // Trigger fetch callback
+      features.serverSide.onFetch(params);
+    }
+  }, [features?.serverSide, table]);
+
+  // Handle server-side data fetching
+  React.useEffect(() => {
+    handleServerFetch();
+  }, [
+    handleServerFetch,
+    table.getState().pagination.pageIndex,
+    table.getState().pagination.pageSize,
+    table.getState().sorting,
+    table.getState().columnFilters,
+    table.getState().globalFilter,
+  ]);
 
   // Extract UI config with defaults
   const density = currentDensity;
@@ -303,6 +453,11 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   const isEmpty = data.length === 0;
   const isLoading = features?.serverSide?.loading;
   const hasError = features?.serverSide?.error;
+
+  // Calculate visible column count for state components
+  const visibleColumnCount = table
+    .getAllColumns()
+    .filter((col) => col.getIsVisible()).length;
 
   // Check if pagination is enabled
   const paginationEnabled = features?.pagination !== false;
@@ -383,9 +538,10 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
             )}
           >
             {table.getHeaderGroups().map((headerGroup) => {
+              // Header row - column titles, sort, menu, resize
               const headerRow = (
                 <tr
-                  key={headerGroup.id}
+                  key={`${headerGroup.id}-header`}
                   className="hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
                 >
                   {headerGroup.headers.map((header) => {
@@ -416,6 +572,8 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                           "text-left align-middle font-medium",
                           "text-muted-foreground dark:text-muted-foreground",
                           "[&:has([role=checkbox])]:pr-0",
+                          // Special handling for expand column to prevent cutoff
+                          header.column.id === "expand" && "!px-2",
                           variantClasses[variant],
                           (stickyHeader || isPinned) &&
                             "bg-background dark:bg-background",
@@ -429,17 +587,55 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                         {header.isPlaceholder ? null : reorderingEnabled &&
                           !isPinned ? (
                           <DraggableColumnHeader header={header}>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-1 justify-between relative">
-                                <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
-                                  <span className="truncate">
-                                    {flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext(),
-                                    )}
-                                  </span>
+                            <div className="flex items-center gap-1 justify-between relative">
+                              <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+                                <span className="truncate">
+                                  {flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )}
+                                </span>
+                              </div>
+                              {/* Only show menu for non-special columns */}
+                              {!["select", "expand", "actions"].includes(
+                                header.column.id,
+                              ) && (
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bg-background dark:bg-background pointer-events-none">
+                                  <div className="pointer-events-auto">
+                                    <ColumnHeaderMenu
+                                      column={header.column}
+                                      table={table}
+                                      title={
+                                        typeof header.column.columnDef
+                                          .header === "string"
+                                          ? header.column.columnDef.header
+                                          : header.column.id
+                                      }
+                                      onFilterModeChange={
+                                        handleFilterModeChange
+                                      }
+                                    />
+                                  </div>
                                 </div>
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bg-background dark:bg-background">
+                              )}
+                            </div>
+                          </DraggableColumnHeader>
+                        ) : (
+                          <div className="flex items-center gap-1 justify-between relative">
+                            <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+                              <span className="truncate">
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                              </span>
+                            </div>
+                            {/* Only show menu for non-special columns */}
+                            {!["select", "expand", "actions"].includes(
+                              header.column.id,
+                            ) && (
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bg-background dark:bg-background pointer-events-none">
+                                <div className="pointer-events-auto">
                                   <ColumnHeaderMenu
                                     column={header.column}
                                     table={table}
@@ -453,75 +649,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                                   />
                                 </div>
                               </div>
-                              {/* Inline filter */}
-                              {showInlineFilters &&
-                                header.column.getCanFilter() &&
-                                header.column.columnDef.enableColumnFilter !==
-                                  false && (
-                                  <div
-                                    className="min-w-[150px]"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <FacetedFilter
-                                      column={header.column}
-                                      title={
-                                        typeof header.column.columnDef
-                                          .header === "string"
-                                          ? header.column.columnDef.header
-                                          : header.column.id
-                                      }
-                                      inline={true}
-                                    />
-                                  </div>
-                                )}
-                            </div>
-                          </DraggableColumnHeader>
-                        ) : (
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-1 justify-between relative">
-                              <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
-                                <span className="truncate">
-                                  {flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext(),
-                                  )}
-                                </span>
-                              </div>
-                              <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bg-background dark:bg-background">
-                                <ColumnHeaderMenu
-                                  column={header.column}
-                                  table={table}
-                                  title={
-                                    typeof header.column.columnDef.header ===
-                                    "string"
-                                      ? header.column.columnDef.header
-                                      : header.column.id
-                                  }
-                                  onFilterModeChange={handleFilterModeChange}
-                                />
-                              </div>
-                            </div>
-                            {/* Inline filter */}
-                            {showInlineFilters &&
-                              header.column.getCanFilter() &&
-                              header.column.columnDef.enableColumnFilter !==
-                                false && (
-                                <div
-                                  className="min-w-[150px]"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <FacetedFilter
-                                    column={header.column}
-                                    title={
-                                      typeof header.column.columnDef.header ===
-                                      "string"
-                                        ? header.column.columnDef.header
-                                        : header.column.id
-                                    }
-                                    inline={true}
-                                  />
-                                </div>
-                              )}
+                            )}
                           </div>
                         )}
                         {/* Resize handle */}
@@ -542,13 +670,89 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                 </tr>
               );
 
+              // Filter row - separate row for inline filters
+              const filterRow = showInlineFilters ? (
+                <tr
+                  key={`${headerGroup.id}-filters`}
+                  className="bg-muted/30 dark:bg-muted/20 border-b border-border dark:border-border"
+                >
+                  {headerGroup.headers.map((header) => {
+                    const isPinned = header.column.getIsPinned();
+                    const isSpecialColumn = [
+                      "select",
+                      "expand",
+                      "actions",
+                    ].includes(header.column.id);
+
+                    return (
+                      <th
+                        key={`${header.id}-filter`}
+                        style={{
+                          width: `${header.getSize()}px`,
+                          // Pinning styles
+                          position: isPinned ? "sticky" : "relative",
+                          left:
+                            isPinned === "left"
+                              ? `${header.column.getStart("left")}px`
+                              : undefined,
+                          right:
+                            isPinned === "right"
+                              ? `${header.column.getAfter("right")}px`
+                              : undefined,
+                          zIndex: isPinned ? 10 : undefined,
+                        }}
+                        className={cn(
+                          cellPaddingClasses[density],
+                          (stickyHeader || isPinned) &&
+                            "bg-muted/30 dark:bg-muted/20",
+                          // Directional shadows for pinned columns
+                          isPinned === "left" &&
+                            "shadow-[4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                          isPinned === "right" &&
+                            "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                        )}
+                      >
+                        {/* Show filter only for non-special columns that allow filtering */}
+                        {!isSpecialColumn &&
+                        header.column.getCanFilter() &&
+                        header.column.columnDef.enableColumnFilter !== false ? (
+                          <div onClick={(e) => e.stopPropagation()}>
+                            <FacetedFilter
+                              column={header.column}
+                              title={
+                                typeof header.column.columnDef.header ===
+                                "string"
+                                  ? header.column.columnDef.header
+                                  : header.column.id
+                              }
+                              inline={true}
+                            />
+                          </div>
+                        ) : (
+                          // Empty placeholder to maintain consistent hook calls
+                          <div className="h-8" />
+                        )}
+                      </th>
+                    );
+                  })}
+                </tr>
+              ) : null;
+
+              // Wrap both rows in Fragment
+              const headerContent = (
+                <React.Fragment key={headerGroup.id}>
+                  {headerRow}
+                  {filterRow}
+                </React.Fragment>
+              );
+
               // Wrap with SortableContext if reordering is enabled
               return reorderingEnabled ? (
                 <SortableContext key={headerGroup.id} items={columnIds}>
-                  {headerRow}
+                  {headerContent}
                 </SortableContext>
               ) : (
-                headerRow
+                headerContent
               );
             })}
           </thead>
@@ -558,33 +762,20 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
             {/* Loading State */}
             {isLoading && (
               <tr>
-                <td colSpan={columns.length} className="h-32 text-center">
-                  <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground dark:text-muted-foreground">
-                    {/* Better loading spinner - proper SVG */}
-                    <svg
-                      className="h-6 w-6 animate-spin text-primary dark:text-primary"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <span className="text-sm">
-                      {ui?.loadingMessage || "Loading..."}
-                    </span>
-                  </div>
+                <td colSpan={visibleColumnCount}>
+                  {typeof ui?.loadingState === "object" &&
+                  React.isValidElement(ui.loadingState) ? (
+                    ui.loadingState
+                  ) : (
+                    <LoadingState
+                      message={ui?.loadingMessage}
+                      mode={
+                        ui?.loadingState === "skeleton" ? "skeleton" : "spinner"
+                      }
+                      columnCount={visibleColumnCount}
+                      density={currentDensity}
+                    />
+                  )}
                 </td>
               </tr>
             )}
@@ -592,31 +783,17 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
             {/* Error State */}
             {hasError && !isLoading && (
               <tr>
-                <td colSpan={columns.length} className="h-32 text-center">
-                  <div className="flex flex-col items-center justify-center gap-2 text-destructive dark:text-destructive">
-                    <svg
-                      className="h-12 w-12 opacity-50"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
-                    <span className="font-medium">
-                      {ui?.errorMessage || "Error loading data"}
-                    </span>
-                    {features?.serverSide?.error && (
-                      <span className="text-sm text-muted-foreground dark:text-muted-foreground">
-                        {features.serverSide.error.message}
-                      </span>
-                    )}
-                  </div>
+                <td colSpan={visibleColumnCount}>
+                  {typeof ui?.errorState === "object" &&
+                  React.isValidElement(ui.errorState) ? (
+                    ui.errorState
+                  ) : (
+                    <ErrorState
+                      message={ui?.errorMessage}
+                      details={features?.serverSide?.error?.message}
+                      onRetry={handleServerFetch}
+                    />
+                  )}
                 </td>
               </tr>
             )}
@@ -624,25 +801,12 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
             {/* Empty State */}
             {isEmpty && !isLoading && !hasError && (
               <tr>
-                <td colSpan={columns.length} className="h-32 text-center">
-                  {ui?.emptyState || (
-                    <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground dark:text-muted-foreground">
-                      <svg
-                        className="h-12 w-12 opacity-20 dark:opacity-20"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                        />
-                      </svg>
-                      <span>{ui?.emptyMessage || "No data available"}</span>
-                    </div>
+                <td colSpan={visibleColumnCount}>
+                  {typeof ui?.emptyState === "object" &&
+                  React.isValidElement(ui.emptyState) ? (
+                    ui.emptyState
+                  ) : (
+                    <EmptyState message={ui?.emptyMessage} />
                   )}
                 </td>
               </tr>
@@ -654,35 +818,13 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
               !hasError &&
               table.getRowModel().rows.length === 0 && (
                 <tr>
-                  <td colSpan={columns.length} className="h-32 text-center">
-                    <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground dark:text-muted-foreground">
-                      <svg
-                        className="h-12 w-12 opacity-20"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 10l4 4m0-4l-4 4"
-                        />
-                      </svg>
-                      <div className="space-y-1">
-                        <p className="font-medium">No results found</p>
-                        <p className="text-sm">
-                          Try adjusting your filters or search terms
-                        </p>
-                      </div>
-                    </div>
+                  <td colSpan={visibleColumnCount}>
+                    <NoResultsState
+                      onClearFilters={() => {
+                        table.resetColumnFilters();
+                        table.setGlobalFilter("");
+                      }}
+                    />
                   </td>
                 </tr>
               )}
@@ -692,71 +834,157 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
               !hasError &&
               !isEmpty &&
               table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  onClick={() => onRowClick?.(row.original)}
-                  className={cn(
-                    "border-b border-border dark:border-border transition-colors",
-                    "hover:bg-muted/50 dark:hover:bg-muted/50",
-                    onRowClick && "cursor-pointer",
-                    variant === "striped" &&
-                      "even:bg-muted/30 dark:even:bg-muted/20",
-                  )}
-                  data-state={row.getIsSelected() ? "selected" : undefined}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    const isPinned = cell.column.getIsPinned();
+                <React.Fragment key={row.id}>
+                  <tr
+                    onClick={() => onRowClick?.(row.original)}
+                    className={cn(
+                      "border-b border-border dark:border-border transition-colors",
+                      "hover:bg-muted/50 dark:hover:bg-muted/50",
+                      onRowClick && "cursor-pointer",
+                      variant === "striped" &&
+                        "even:bg-muted/30 dark:even:bg-muted/20",
+                    )}
+                    data-state={row.getIsSelected() ? "selected" : undefined}
+                  >
+                    {row.getVisibleCells().map((cell, cellIndex) => {
+                      const isPinned = cell.column.getIsPinned();
 
-                    return (
-                      <td
-                        key={cell.id}
-                        style={{
-                          width: `${cell.column.getSize()}px`,
-                          // Pinning styles
-                          position: isPinned ? "sticky" : "relative",
-                          left:
-                            isPinned === "left"
-                              ? `${cell.column.getStart("left")}px`
-                              : undefined,
-                          right:
-                            isPinned === "right"
-                              ? `${cell.column.getAfter("right")}px`
-                              : undefined,
-                          zIndex: isPinned ? 9 : undefined,
-                        }}
-                        onClick={(e) => {
-                          if (onCellClick) {
-                            e.stopPropagation();
-                            onCellClick({
-                              row: row.original,
-                              columnId: cell.column.id,
-                              value: cell.getValue(),
-                            });
-                          }
-                        }}
-                        className={cn(
-                          cellPaddingClasses[density],
-                          "align-middle",
-                          "[&:has([role=checkbox])]:pr-0",
-                          variantClasses[variant],
-                          isPinned && "bg-background dark:bg-background",
-                          // Directional shadows for pinned columns
-                          isPinned === "left" &&
-                            "shadow-[4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]",
-                          isPinned === "right" &&
-                            "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.3)]",
-                        )}
-                      >
-                        <div className="truncate">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
+                      // Check if this is the first data column for row expansion indentation
+                      // Skip special columns (expand, select, actions) and apply to first content column
+                      const visibleCells = row.getVisibleCells();
+                      const firstDataColumnIndex = visibleCells.findIndex(
+                        (c) =>
+                          c.column.id !== "expand" &&
+                          c.column.id !== "select" &&
+                          c.column.id !== "actions",
+                      );
+                      const isFirstDataColumn =
+                        cellIndex === firstDataColumnIndex;
+
+                      // Calculate indentation based on row depth for hierarchical data
+                      // Use larger multiplier (2.5rem per level) for better visibility
+                      const depthIndentation =
+                        isFirstDataColumn && row.depth > 0
+                          ? `${row.depth * 2.5}rem`
+                          : undefined;
+
+                      return (
+                        <td
+                          key={cell.id}
+                          style={{
+                            width: `${cell.column.getSize()}px`,
+                            // Pinning styles
+                            position: isPinned ? "sticky" : "relative",
+                            left:
+                              isPinned === "left"
+                                ? `${cell.column.getStart("left")}px`
+                                : undefined,
+                            right:
+                              isPinned === "right"
+                                ? `${cell.column.getAfter("right")}px`
+                                : undefined,
+                            zIndex: isPinned ? 9 : undefined,
+                            // Add indentation based on row depth for hierarchical data
+                            // Only applied to first data column for visual tree structure
+                            paddingLeft: depthIndentation,
+                          }}
+                          onClick={(e) => {
+                            if (onCellClick) {
+                              e.stopPropagation();
+                              onCellClick({
+                                row: row.original,
+                                columnId: cell.column.id,
+                                value: cell.getValue(),
+                              });
+                            }
+                          }}
+                          className={cn(
+                            cellPaddingClasses[density],
+                            "align-middle",
+                            "[&:has([role=checkbox])]:pr-0",
+                            // Special handling for expand column to prevent cutoff
+                            cell.column.id === "expand" && "!px-2",
+                            variantClasses[variant],
+                            isPinned && "bg-background dark:bg-background",
+                            // Directional shadows for pinned columns
+                            isPinned === "left" &&
+                              "shadow-[4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                            isPinned === "right" &&
+                              "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.3)]",
                           )}
-                        </div>
-                      </td>
-                    );
-                  })}
-                </tr>
+                        >
+                          {/* Special columns (expand, select, actions) - always render normally */}
+                          {["expand", "select", "actions"].includes(
+                            cell.column.id,
+                          ) ? (
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )
+                          ) : /* Grouped cell with expand/collapse */
+                          cell.getIsGrouped() ? (
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  row.toggleExpanded();
+                                }}
+                                className="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
+                              >
+                                {row.getIsExpanded() ? (
+                                  <span className="text-sm">▼</span>
+                                ) : (
+                                  <span className="text-sm">▶</span>
+                                )}
+                              </button>
+                              <span className="font-medium">
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext(),
+                                )}
+                              </span>
+                              <span className="text-xs text-muted-foreground dark:text-muted-foreground">
+                                ({row.subRows.length})
+                              </span>
+                            </div>
+                          ) : cell.getIsAggregated() ? (
+                            /* Aggregated cell */
+                            <div className="font-medium">
+                              {flexRender(
+                                cell.column.columnDef.aggregatedCell ??
+                                  cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </div>
+                          ) : cell.getIsPlaceholder() ? null : (
+                            /* Normal cell */
+                            <div className="truncate">
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  {/* Custom expandable content (detail panel) - renders immediately after parent row */}
+                  {row.getIsExpanded() &&
+                    features?.expanding?.renderExpandedRow && (
+                      <tr>
+                        <td
+                          colSpan={row.getAllCells().length}
+                          className={cn(
+                            cellPaddingClasses[density],
+                            "bg-muted/30 dark:bg-muted/10",
+                          )}
+                        >
+                          {features.expanding.renderExpandedRow(row)}
+                        </td>
+                      </tr>
+                    )}
+                </React.Fragment>
               ))}
           </tbody>
 

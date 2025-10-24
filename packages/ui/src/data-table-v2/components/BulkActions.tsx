@@ -4,7 +4,6 @@
  * Shows action buttons when rows are selected
  */
 
-import * as React from "react";
 import type { Table } from "@tanstack/react-table";
 import { Button } from "../../components/ui/button";
 import type { BulkAction } from "../types";
@@ -32,10 +31,11 @@ export function BulkActions<TData>({
 
       <div className="flex items-center gap-2 ml-auto">
         {actions.map((action) => {
-          const isDisabled =
+          const isDisabled = Boolean(
             action.disabled?.(selectedData) ||
-            (action.minSelection && selectedCount < action.minSelection) ||
-            (action.maxSelection && selectedCount > action.maxSelection);
+              (action.minSelection && selectedCount < action.minSelection) ||
+              (action.maxSelection && selectedCount > action.maxSelection),
+          );
 
           return (
             <Button

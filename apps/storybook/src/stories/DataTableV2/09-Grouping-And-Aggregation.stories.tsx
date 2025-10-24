@@ -459,3 +459,318 @@ export const FooterWithPinnedColumns: Story = {
     },
   },
 };
+
+/**
+ * Basic Row Grouping
+ *
+ * Demonstrates grouping rows by a single column:
+ * - Rows are grouped by Category
+ * - Click expand/collapse buttons to show/hide group items
+ * - Group rows show count of items in parentheses
+ * - Groups are collapsed by default
+ */
+export const BasicRowGrouping: Story = {
+  args: {
+    data: salesData,
+    columns: [
+      {
+        id: "category",
+        accessorKey: "category",
+        header: "Category",
+        size: 150,
+        enableGrouping: true,
+      },
+      {
+        id: "product",
+        accessorKey: "product",
+        header: "Product",
+        size: 200,
+      },
+      {
+        id: "customer",
+        accessorKey: "customer",
+        header: "Customer",
+        size: 180,
+      },
+      {
+        id: "quantity",
+        accessorKey: "quantity",
+        header: "Quantity",
+        size: 100,
+      },
+      {
+        id: "totalAmount",
+        accessorKey: "totalAmount",
+        header: "Amount",
+        size: 120,
+        cell: ({ row }) => (
+          <span className="font-mono">
+            ${row.original.totalAmount.toFixed(2)}
+          </span>
+        ),
+      },
+    ] as ColumnDef<SalesTransaction>[],
+    features: {
+      sorting: true,
+      pagination: {
+        enabled: true,
+        pageSize: 15,
+      },
+      grouping: {
+        enabled: true,
+        initialState: ["category"],
+      },
+      expanding: {
+        enabled: true,
+      },
+    },
+  },
+};
+
+/**
+ * Multi-Level Row Grouping
+ *
+ * Demonstrates grouping by multiple columns:
+ * - First level: Group by Region
+ * - Second level: Group by Category within each region
+ * - Hierarchical expand/collapse
+ * - Shows nested group structure
+ */
+export const MultiLevelGrouping: Story = {
+  args: {
+    data: salesData,
+    columns: [
+      {
+        id: "region",
+        accessorKey: "region",
+        header: "Region",
+        size: 120,
+        enableGrouping: true,
+      },
+      {
+        id: "category",
+        accessorKey: "category",
+        header: "Category",
+        size: 130,
+        enableGrouping: true,
+      },
+      {
+        id: "product",
+        accessorKey: "product",
+        header: "Product",
+        size: 200,
+      },
+      {
+        id: "quantity",
+        accessorKey: "quantity",
+        header: "Qty",
+        size: 80,
+      },
+      {
+        id: "totalAmount",
+        accessorKey: "totalAmount",
+        header: "Amount",
+        size: 120,
+        cell: ({ row }) => (
+          <span className="font-mono">
+            ${row.original.totalAmount.toFixed(2)}
+          </span>
+        ),
+      },
+    ] as ColumnDef<SalesTransaction>[],
+    features: {
+      sorting: true,
+      pagination: {
+        enabled: true,
+        pageSize: 15,
+      },
+      grouping: {
+        enabled: true,
+        initialState: ["region", "category"],
+      },
+      expanding: {
+        enabled: true,
+      },
+    },
+  },
+};
+
+/**
+ * Row Grouping with Aggregations
+ *
+ * Demonstrates grouping with aggregated values:
+ * - Group by Category
+ * - Quantity column shows sum for each group
+ * - Total Amount column shows sum for each group
+ * - Aggregated cells are bold to distinguish from regular cells
+ */
+export const GroupingWithAggregations: Story = {
+  args: {
+    data: salesData,
+    columns: [
+      {
+        id: "category",
+        accessorKey: "category",
+        header: "Category",
+        size: 150,
+        enableGrouping: true,
+      },
+      {
+        id: "product",
+        accessorKey: "product",
+        header: "Product",
+        size: 200,
+      },
+      {
+        id: "customer",
+        accessorKey: "customer",
+        header: "Customer",
+        size: 180,
+      },
+      {
+        id: "quantity",
+        accessorKey: "quantity",
+        header: "Quantity",
+        size: 100,
+        aggregationFn: "sum",
+        aggregatedCell: ({ getValue }) => (
+          <span className="font-mono font-bold text-primary dark:text-primary">
+            {getValue() as number} items
+          </span>
+        ),
+      },
+      {
+        id: "totalAmount",
+        accessorKey: "totalAmount",
+        header: "Total Amount",
+        size: 140,
+        cell: ({ row }) => (
+          <span className="font-mono">
+            ${row.original.totalAmount.toFixed(2)}
+          </span>
+        ),
+        aggregationFn: "sum",
+        aggregatedCell: ({ getValue }) => (
+          <span className="font-mono font-bold text-green-700 dark:text-green-400">
+            ${(getValue() as number).toFixed(2)}
+          </span>
+        ),
+      },
+    ] as ColumnDef<SalesTransaction>[],
+    features: {
+      sorting: true,
+      pagination: {
+        enabled: true,
+        pageSize: 15,
+      },
+      grouping: {
+        enabled: true,
+        initialState: ["category"],
+      },
+      expanding: {
+        enabled: true,
+      },
+    },
+  },
+};
+
+/**
+ * Row Grouping with Footer
+ *
+ * Demonstrates both row-level and table-level aggregations:
+ * - Rows grouped by Region
+ * - Each group shows sum of quantity and amount
+ * - Footer shows grand totals across all groups
+ * - Combines row grouping with footer aggregations
+ */
+export const GroupingWithFooter: Story = {
+  args: {
+    data: salesData,
+    columns: [
+      {
+        id: "region",
+        accessorKey: "region",
+        header: "Region",
+        size: 120,
+        enableGrouping: true,
+        footer: "Grand Total:",
+      },
+      {
+        id: "category",
+        accessorKey: "category",
+        header: "Category",
+        size: 130,
+      },
+      {
+        id: "product",
+        accessorKey: "product",
+        header: "Product",
+        size: 200,
+      },
+      {
+        id: "quantity",
+        accessorKey: "quantity",
+        header: "Quantity",
+        size: 100,
+        aggregationFn: "sum",
+        aggregatedCell: ({ getValue }) => (
+          <span className="font-mono font-bold">
+            {getValue() as number} items
+          </span>
+        ),
+        footer: ({ table }) => {
+          const total = table
+            .getFilteredRowModel()
+            .rows.reduce((sum, row) => sum + row.original.quantity, 0);
+          return (
+            <span className="font-mono font-bold text-primary dark:text-primary">
+              {total}
+            </span>
+          );
+        },
+      },
+      {
+        id: "totalAmount",
+        accessorKey: "totalAmount",
+        header: "Amount",
+        size: 140,
+        cell: ({ row }) => (
+          <span className="font-mono">
+            ${row.original.totalAmount.toFixed(2)}
+          </span>
+        ),
+        aggregationFn: "sum",
+        aggregatedCell: ({ getValue }) => (
+          <span className="font-mono font-bold text-green-700 dark:text-green-400">
+            ${(getValue() as number).toFixed(2)}
+          </span>
+        ),
+        footer: ({ table }) => {
+          const total = table
+            .getFilteredRowModel()
+            .rows.reduce((sum, row) => sum + row.original.totalAmount, 0);
+          return (
+            <span className="font-mono font-bold text-green-700 dark:text-green-400">
+              ${total.toFixed(2)}
+            </span>
+          );
+        },
+      },
+    ] as ColumnDef<SalesTransaction>[],
+    features: {
+      sorting: true,
+      filtering: true,
+      pagination: {
+        enabled: true,
+        pageSize: 15,
+      },
+      grouping: {
+        enabled: true,
+        initialState: ["region"],
+      },
+      expanding: {
+        enabled: true,
+      },
+    },
+  },
+};

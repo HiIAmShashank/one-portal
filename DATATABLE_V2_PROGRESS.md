@@ -4,16 +4,102 @@
 **Last Updated:** 2025-10-24
 
 ## Summary
-- **Total Tasks:** 52
-- **Completed:** 35 (67%)
+- **Total Tasks:** 54
+- **Completed:** 52 (96%)
 - **In Progress:** 0
-- **Pending:** 17
+- **Pending:** 2
 
-**Next Phase:** Phase 8 - Grouping & Aggregation
+**Next Phase:** Phase 7 - Virtualization (Deferred)
 
 **Note:** Phase 7 (Virtualization) deferred - will revisit later
 
 ## Recent Changes
+
+**Phase 11 & 12 Complete:** Server-Side + Documentation & Finalization (2025-10-24)
+- ✅ Implemented full server-side operations with manual pagination, sorting, and filtering
+- ✅ Created mock server API utilities (`server-api.ts`) with realistic delays and error simulation
+- ✅ Added `useDebounce` hook for optimized search inputs
+- ✅ Created 7 server-side Storybook stories (14-Server-Side.stories.tsx)
+- ✅ Exported DataTable V2 as default in UI package (`src/index.ts`)
+- ✅ Created comprehensive README.md documentation with full API reference
+- ✅ Fixed all TypeScript type errors (22 errors → 0 errors)
+- ✅ Extended TanStack Table's ColumnMeta interface with custom properties
+- ✅ Added proper type guards and normalized config types
+- ✅ Build completes successfully with no errors
+- **Migration Guide:** Not needed (V1 not in use)
+
+**Inline Filter Layout Fix:** Two-Row Header Structure (2025-10-24)
+- ✅ Fixed resize handle overlapping with inline filter controls
+- ✅ Fixed filter controls overflowing column width
+- ✅ Implemented two-row header structure (AG Grid / MUI pattern)
+- ✅ Row 1: Column headers with sort, resize, menu
+- ✅ Row 2: Filter inputs aligned under each column
+- ✅ Empty filter cells for special columns (select, expand, actions)
+- ✅ Preserved column pinning with shadows on both rows
+- ✅ Preserved sticky header behavior for both rows
+- ✅ Filter row respects density settings
+- ✅ Removed inline filters from header cells (lines 562-582, 617-637)
+- ✅ Cleaner header structure with better visual separation
+
+**Phase 10 Complete:** Persistence (2025-10-24)
+- ✅ Created usePersistence hook for localStorage management
+- ✅ Follows OnePortal localStorage key convention: `oneportal:datatable:{key}:{property}`
+- ✅ Supports include/exclude patterns for selective persistence
+- ✅ Auto-saves state changes to localStorage
+- ✅ Auto-restores state on mount from localStorage
+- ✅ Persists column visibility, sizing, pinning, order
+- ✅ Persists sorting, filters, density, grouping
+- ✅ Integrated into DataTable with automatic persistence
+- ✅ Exported usePersistence and PersistedState for advanced usage
+- ✅ Exported state components (EmptyState, LoadingState, ErrorState, NoResultsState)
+- ✅ Created comprehensive Storybook story (12-Persistence.stories.tsx) with 7 stories
+- ✅ Demonstrates full persistence, selective persistence, manual control, multiple tables
+
+**Phase 9 Complete:** States & Loading (2025-10-24)
+- ✅ Created EmptyState component with icon and optional action button
+- ✅ Created LoadingState component with spinner and skeleton modes
+- ✅ Created ErrorState component with retry button support
+- ✅ Created NoResultsState component with clear filters functionality
+- ✅ Integrated all state components into DataTable.tsx
+- ✅ Support for custom state components via ui.emptyState, ui.loadingState, ui.errorState props
+- ✅ Support for loading skeleton mode via ui.loadingState="skeleton"
+- ✅ Automatic retry via features.serverSide.onFetch callback
+- ✅ Automatic clear filters via table.resetColumnFilters() and table.setGlobalFilter("")
+- ✅ Created comprehensive Storybook story (11-States.stories.tsx) with 12 stories
+- ✅ All states responsive to density settings
+
+**Phase 8 Update:** Removed Column Header Grouping (2025-10-24)
+- ❌ Removed column header grouping feature (multi-level headers with `columns` property)
+  - Removed `columns` property from ColumnDef interface
+  - Reverted recursive column conversion in useDataTable
+  - Reverted leaf column ID extraction in DataTable
+  - Deleted 11-Column-Header-Grouping.stories.tsx (7 stories removed)
+  - **Reason**: Feature caused conflicts with pinning, resizing, and column visibility
+- ✅ Improved row expansion indentation visibility
+  - Changed indentation target from expand column to first data column
+  - Increased indentation multiplier to 2.5rem per depth level
+  - Indentation now clearly shows 3-level hierarchy (Alice → Bob → Charlie)
+- ✅ Fixed features.columns undefined spread error in DataTable:237
+- ✅ Fixed individual row expansion not working (2025-10-24)
+  - **Root Cause**: Expand column cells had `isAggregated: true`, causing them to hit aggregated cell rendering path
+  - **Fix**: Added special column check for expand/select/actions columns BEFORE aggregation logic
+  - Individual row expand buttons now render correctly on parent rows
+  - Each row can be expanded/collapsed independently
+
+**Phase 8 Complete:** Grouping & Aggregation (2025-10-24)
+- ✅ Implemented table footer with aggregations (sum, count, mean, min, max)
+- ✅ Created createFooter utility for generating footer rows with aggregated values
+- ✅ Implemented row grouping with expand/collapse functionality
+- ✅ Fixed row expansion rendering to place expanded content adjacent to parent row
+- ✅ Added depth-based indentation for hierarchical data visualization
+- ✅ Fixed expand column button visibility across all density modes
+- ✅ Implemented column header grouping (multi-level headers)
+- ✅ Added `columns` property to ColumnDef for creating grouped columns
+- ✅ Created comprehensive grouping stories:
+  - 09-Grouping-And-Aggregation.stories.tsx (5 stories: row grouping, aggregations, footer)
+  - 10-Row-Expansion.stories.tsx (4 stories: sub-rows, detail panels, expansion with features)
+  - 11-Column-Header-Grouping.stories.tsx (7 stories: 2-level, 3-level, mixed, with features)
+- ✅ Fixed Tailwind CSS class generation by adding @source directives to index.css
 
 **Phase 6 Polish & Bug Fixes** (2025-10-24)
 - ✅ Fixed column header text/icon overlap with hover-only menu icon on separate layer (Commit: 0903a99)
@@ -202,49 +288,88 @@
 
 ---
 
-## Phase 8: Grouping & Aggregation (0/4 completed)
+## Phase 8: Grouping & Aggregation ✅ (3/4 completed - 1 removed)
 
 ### Advanced Features
-- [ ] Add column grouping headers support
-- [ ] Create TableFoot component with aggregations
-- [ ] Add row grouping with aggregations
-- [ ] Create Storybook story - Grouping & aggregations
+- [~] ~~Add column grouping headers support~~ - **REMOVED** (caused conflicts with other features)
+- [x] Create TableFoot component with aggregations
+- [x] Add row grouping with aggregations
+- [x] Create Storybook story - Grouping & aggregations
+
+**Status:** Complete - Implemented table footer with aggregations (sum, count, mean, min, max), row grouping with expand/collapse, and row expansion (sub-rows and detail panels). Column header grouping was removed due to conflicts with pinning, resizing, and column visibility. Individual row expansion fully functional with proper indentation. Created 9 comprehensive Storybook stories (09-Grouping-And-Aggregation: 5 stories, 10-Row-Expansion: 4 stories).
 
 ---
 
-## Phase 9: States & Loading (0/4 completed)
+## Phase 9: States & Loading ✅ (4/4 completed)
 
 ### Better UX
-- [ ] Create EmptyState component with icon
-- [ ] Create LoadingState component with skeleton
-- [ ] Create ErrorState component
-- [ ] Create Storybook story - States
+- [x] Create EmptyState component with icon
+- [x] Create LoadingState component with skeleton
+- [x] Create ErrorState component
+- [x] Create Storybook story - States
+
+**Status:** Complete - Created all state components (EmptyState, LoadingState, ErrorState, NoResultsState) with full customization support. LoadingState supports both spinner and skeleton modes. ErrorState includes retry functionality. NoResultsState provides clear filters button. All states integrated into DataTable with support for custom components. Created 12 comprehensive Storybook stories demonstrating all states and transitions.
 
 ---
 
-## Phase 10: Persistence (0/3 completed)
+## Phase 10: Persistence ✅ (3/3 completed)
 
 ### localStorage Integration
-- [ ] Implement usePersistence hook (localStorage)
-- [ ] Add persistence for column preferences
-- [ ] Create Storybook story - Persistence
+- [x] Implement usePersistence hook (localStorage)
+- [x] Add persistence for column preferences
+- [x] Create Storybook story - Persistence
+
+**Status:** Complete - Created usePersistence hook with include/exclude patterns for selective persistence. Follows OnePortal localStorage key convention (`oneportal:datatable:{key}:{property}`). Automatically saves and restores all table state including column preferences (visibility, sizing, pinning, order), sorting, filters, density, and grouping. Created 7 comprehensive Storybook stories demonstrating full persistence, selective persistence (include/exclude), manual control with reset button, and multiple independent tables.
 
 ---
 
-## Phase 11: Server-Side (0/2 completed)
+## Phase 11: Server-Side ✅ (2/2 completed)
 
 ### Server-Side Operations
-- [ ] Add server-side mode support
-- [ ] Create Storybook story - Server-side
+- [x] Add server-side mode support
+- [x] Create Storybook story - Server-side
+
+**Status:** Complete - Implemented full server-side support with manual pagination, sorting, and filtering. Server handles all data operations, enabling massive datasets without performance issues.
+
+**Implementation Details:**
+- **useDataTable Hook:** Already had `manualPagination`, `manualSorting`, `manualFiltering` flags when server-side enabled, plus `pageCount` calculation
+- **DataTable Component:** Added useEffect to trigger `onFetch` callback when pagination/sorting/filtering state changes
+- **Mock Server API:** Created comprehensive mock server utilities (`server-api.ts`) with:
+  - Realistic network delays (configurable)
+  - Global and column filtering
+  - Sorting (any column)
+  - Pagination with total count
+  - Error simulation
+  - Three presets: Fast (200ms), Normal (500ms), Unreliable (15% errors)
+- **Debounce Utility:** Added `useDebounce` hook for optimized search inputs
+- **Storybook Stories:** Created 14-Server-Side.stories.tsx with 7 comprehensive demonstrations:
+  1. Server-Side Pagination (1,000 rows)
+  2. Server-Side Sorting (500 rows)
+  3. Server-Side Filtering (800 rows)
+  4. Server-Side Combined - All operations (2,000 rows)
+  5. Server-Side with Error Handling (unreliable API)
+  6. Server-Side Performance (10,000 rows, fast API)
+  7. Server-Side with Debounced Search (1,500 rows, slow API)
+
+**Key Features:**
+- ✅ Manual mode flags prevent client-side operations
+- ✅ `onFetch` callback triggered on state changes
+- ✅ Loading states (skeleton/spinner) during fetch
+- ✅ Error states with retry functionality
+- ✅ Proper total count for pagination calculations
+- ✅ Debounce support for search inputs
+- ✅ Works seamlessly with all other DataTable features
 
 ---
 
-## Phase 12: Documentation & Finalization (0/3 completed)
+## Phase 12: Documentation & Finalization ✅ (3/3 completed)
 
 ### Polish & Ship
-- [ ] Update UI package exports for V2
-- [ ] Write comprehensive API documentation
-- [ ] Write migration guide from V1 to V2
+- [x] Update UI package exports for V2
+- [x] Write comprehensive API documentation
+- [~] ~~Write migration guide from V1 to V2~~ - **NOT NEEDED** (V1 not in use)
+
+**Status:** Complete - DataTable V2 is fully exported from `@one-portal/ui`, comprehensive README.md created with full API reference, examples, and troubleshooting guide. Migration guide not needed since V1 is not in use. All TypeScript errors fixed, build succeeds.
 
 ---
 

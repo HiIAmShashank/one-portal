@@ -11,6 +11,20 @@ export { DataTableToolbar } from "./components/DataTableToolbar";
 export { FacetedFilter } from "./components/FacetedFilter";
 export { ViewOptions } from "./components/ViewOptions";
 
+// State components (for custom state rendering)
+export {
+  EmptyState,
+  LoadingState,
+  ErrorState,
+  NoResultsState,
+} from "./components/states";
+export type {
+  EmptyStateProps,
+  LoadingStateProps,
+  ErrorStateProps,
+  NoResultsStateProps,
+} from "./components/states";
+
 // Types
 export type {
   DataTableProps,
@@ -38,6 +52,11 @@ export type {
 export { useDataTable } from "./hooks/useDataTable";
 export { useFaceting } from "./hooks/useFaceting";
 export type { FilterVariant } from "./hooks/useFaceting";
+export { usePersistence, usePersistenceSync } from "./hooks/usePersistence";
+export type { PersistedState } from "./hooks/usePersistence";
+
+// Utilities (for advanced usage)
+export { useDebounce } from "./utils/debounce";
 
 // Custom filter functions (for advanced usage)
 export { customFilterFns } from "./filters/customFilters";

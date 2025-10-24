@@ -9,7 +9,6 @@
  * - Grouping
  */
 
-import * as React from "react";
 import type { Column, Table } from "@tanstack/react-table";
 import {
   ArrowUp,

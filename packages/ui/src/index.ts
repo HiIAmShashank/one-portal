@@ -1,5 +1,9 @@
 // Shadcn UI Components - Layout & Navigation
-export { Button, buttonVariants, type ButtonProps } from './components/ui/button';
+export {
+  Button,
+  buttonVariants,
+  type ButtonProps,
+} from "./components/ui/button";
 export {
   NavigationMenu,
   NavigationMenuList,
@@ -10,7 +14,7 @@ export {
   NavigationMenuIndicator,
   NavigationMenuViewport,
   navigationMenuTriggerStyle,
-} from './components/ui/navigation-menu';
+} from "./components/ui/navigation-menu";
 export {
   Sidebar,
   SidebarContent,
@@ -36,7 +40,7 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-} from './components/ui/sidebar';
+} from "./components/ui/sidebar";
 export {
   Breadcrumb,
   BreadcrumbItem,
@@ -45,12 +49,12 @@ export {
   BreadcrumbPage,
   BreadcrumbSeparator,
   BreadcrumbEllipsis,
-} from './components/ui/breadcrumb';
+} from "./components/ui/breadcrumb";
 export {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from './components/ui/collapsible';
+} from "./components/ui/collapsible";
 export {
   Sheet,
   SheetClose,
@@ -62,11 +66,11 @@ export {
   SheetPortal,
   SheetTitle,
   SheetTrigger,
-} from './components/ui/sheet';
+} from "./components/ui/sheet";
 
 // Shadcn UI Components - Display
-export { Avatar, AvatarImage, AvatarFallback } from './components/ui/avatar';
-export { Alert, AlertTitle, AlertDescription } from './components/ui/alert';
+export { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar";
+export { Alert, AlertTitle, AlertDescription } from "./components/ui/alert";
 export {
   Card,
   CardHeader,
@@ -74,16 +78,17 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
-} from './components/ui/card';
-export { Badge, badgeVariants } from './components/ui/badge';
-export { Separator } from './components/ui/separator';
-export { Skeleton } from './components/ui/skeleton';
+} from "./components/ui/card";
+export { Badge, badgeVariants } from "./components/ui/badge";
+export { Separator } from "./components/ui/separator";
+export { Skeleton } from "./components/ui/skeleton";
+export { Progress } from "./components/ui/progress";
 export {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-} from './components/ui/tooltip';
+} from "./components/ui/tooltip";
 export {
   Empty,
   EmptyHeader,
@@ -91,7 +96,7 @@ export {
   EmptyDescription,
   EmptyContent,
   EmptyMedia,
-} from './components/ui/empty';
+} from "./components/ui/empty";
 
 // Shadcn UI Components - Overlays
 export {
@@ -105,7 +110,7 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
-} from './components/ui/dialog';
+} from "./components/ui/dialog";
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -122,15 +127,15 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
-} from './components/ui/dropdown-menu';
-export { Toaster as Sonner } from './components/ui/sonner';
-export { toast } from 'sonner';
+} from "./components/ui/dropdown-menu";
+export { Toaster as Sonner } from "./components/ui/sonner";
+export { toast } from "sonner";
 
 // Shadcn UI Components - Forms
-export { Input } from './components/ui/input';
-export { Label } from './components/ui/label';
-export { Switch } from './components/ui/switch';
-export { Checkbox } from './components/ui/checkbox';
+export { Input } from "./components/ui/input";
+export { Label } from "./components/ui/label";
+export { Switch } from "./components/ui/switch";
+export { Checkbox } from "./components/ui/checkbox";
 export {
   Select,
   SelectGroup,
@@ -142,24 +147,28 @@ export {
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
-} from './components/ui/select';
+} from "./components/ui/select";
 
 // Shadcn UI Components - Overlays
-export { Popover, PopoverTrigger, PopoverContent } from './components/ui/popover';
+export {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "./components/ui/popover";
 
 // Legacy components (deprecated - use shadcn equivalents)
-export { Spinner, type SpinnerProps } from './components/ui/spinner';
+export { Spinner, type SpinnerProps } from "./components/ui/spinner";
 
 // Auth Components
-export { SignInPrompt } from './components/auth/SignInPrompt';
-export { AuthLoadingSpinner } from './components/auth/AuthLoadingSpinner';
+export { SignInPrompt } from "./components/auth/SignInPrompt";
+export { AuthLoadingSpinner } from "./components/auth/AuthLoadingSpinner";
 
 // Utilities
-export { cn } from './lib/utils';
-export { useIsMobile } from './hooks/use-mobile';
+export { cn } from "./lib/utils";
+export { useIsMobile } from "./hooks/use-mobile";
 
-// DataTable Component
-export * from './data-table';
+// DataTable Component (V2)
+export * from "./data-table-v2";
 
 // Icons (re-export from lucide-react for convenience)
 export {
@@ -175,4 +184,4 @@ export {
   UserCircle,
   Bell,
   Search,
-} from 'lucide-react';
+} from "lucide-react";

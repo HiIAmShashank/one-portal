@@ -17,7 +17,13 @@ import {
   getFacetedUniqueValues,
   getFacetedMinMaxValues,
 } from "@tanstack/react-table";
-import type { Table, Row } from "@tanstack/react-table";
+import type {
+  Table,
+  Row,
+  SortingState,
+  ColumnFiltersState,
+  PaginationState,
+} from "@tanstack/react-table";
 import type { DataTableProps } from "../types";
 import { customFilterFns } from "../filters/customFilters";
 
@@ -25,6 +31,34 @@ type UseDataTableProps<TData> = Pick<
   DataTableProps<TData>,
   "data" | "columns" | "features" | "state" | "onStateChange"
 >;
+
+// Normalized config types (resolved from union types)
+type NormalizedSortingConfig = {
+  enabled: boolean;
+  multi?: boolean;
+  initialState?: SortingState;
+  onChange?: (state: SortingState) => void;
+};
+
+type NormalizedFilteringConfig = {
+  enabled: boolean;
+  mode: "faceted" | "manual";
+  global: boolean;
+  columns: boolean;
+  initialState?: ColumnFiltersState;
+  onChange?: (state: ColumnFiltersState) => void;
+};
+
+type NormalizedPaginationConfig = {
+  enabled: boolean;
+  pageSize: number;
+  pageSizeOptions?: number[];
+  showPageInfo?: boolean;
+  showPageSizeSelector?: boolean;
+  manual?: boolean;
+  initialState?: PaginationState;
+  onChange?: (state: PaginationState) => void;
+};
 
 /**
  * Core hook that wraps TanStack Table with smart defaults
@@ -45,7 +79,7 @@ export function useDataTable<TData>(
   // ============================================================================
 
   // Sorting config
-  const sortingConfig = useMemo(() => {
+  const sortingConfig: NormalizedSortingConfig = useMemo(() => {
     if (features.sorting === false) return { enabled: false };
     if (features.sorting === true || features.sorting === undefined)
       return { enabled: true, multi: true };
@@ -53,7 +87,7 @@ export function useDataTable<TData>(
   }, [features.sorting]);
 
   // Filtering config
-  const filteringConfig = useMemo(() => {
+  const filteringConfig: NormalizedFilteringConfig = useMemo(() => {
     if (features.filtering === false)
       return {
         enabled: false,
@@ -79,7 +113,7 @@ export function useDataTable<TData>(
   }, [features.filtering]);
 
   // Pagination config
-  const paginationConfig = useMemo(() => {
+  const paginationConfig: NormalizedPaginationConfig = useMemo(() => {
     if (features.pagination === false) return { enabled: false, pageSize: 10 };
     if (features.pagination === true || features.pagination === undefined)
       return { enabled: true, pageSize: 10 };
@@ -117,7 +151,8 @@ export function useDataTable<TData>(
 
   // Server-side config
   const serverSideConfig = useMemo(() => {
-    if (!features.serverSide) return { enabled: false };
+    if (!features.serverSide)
+      return { enabled: false, totalCount: 0, loading: false, error: null };
     return features.serverSide;
   }, [features.serverSide]);
 
@@ -130,7 +165,8 @@ export function useDataTable<TData>(
     const tanstackColumns = columns.map((col) => ({
       ...col,
       // Ensure accessorKey is properly typed
-      ...(col.accessorKey && { accessorKey: col.accessorKey as string }),
+      ...("accessorKey" in col &&
+        col.accessorKey && { accessorKey: col.accessorKey as string }),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     })) as any;
 
@@ -185,7 +221,7 @@ export function useDataTable<TData>(
       ...(selectionConfig.mode !== "none" && {
         // V2: enableRowSelection can be boolean or function for conditional selection
         enableRowSelection: selectionConfig.getCanSelect
-          ? (row: Row<TData>) => selectionConfig.getCanSelect!(row.original)
+          ? (row: Row<TData>) => selectionConfig.getCanSelect!(row)
           : true,
         enableMultiRowSelection: selectionConfig.mode === "multiple",
         // V2: Add state updater for controlled/uncontrolled mode
@@ -265,8 +301,8 @@ export function useDataTable<TData>(
         ...(groupingConfig.initialState && {
           grouping: groupingConfig.initialState,
         }),
-        ...(expandingConfig.initialState && {
-          expanded: expandingConfig.initialState,
+        ...(expandingConfig.enabled && {
+          expanded: expandingConfig.initialState || {}, // Default to collapsed
         }),
       },
 
@@ -315,7 +351,7 @@ export function useDataTable<TData>(
     onStateChange,
   ]);
 
-  const table = useReactTable(tableOptions);
+  const table = useReactTable(tableOptions) as Table<TData>;
 
   return table;
 }
