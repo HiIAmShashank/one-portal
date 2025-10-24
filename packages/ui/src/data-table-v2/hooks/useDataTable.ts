@@ -94,13 +94,20 @@ export function useDataTable<TData>(
 
   // Column config
   const columnConfig = useMemo(() => {
-    return {
+    const config = {
       visibility: true,
       resizing: true,
       reordering: false, // Requires DndContext, opt-in
       pinning: true,
       ...features.columns,
     };
+
+    console.log("[useDataTable] Column config", {
+      resizing: config.resizing,
+      hasOnSizingChange: !!config.onSizingChange,
+    });
+
+    return config;
   }, [features.columns]);
 
   // Grouping config
@@ -287,7 +294,13 @@ export function useDataTable<TData>(
         onColumnVisibilityChange: columnConfig.onVisibilityChange,
       }),
       ...(columnConfig.onSizingChange && {
-        onColumnSizingChange: columnConfig.onSizingChange,
+        onColumnSizingChange: (...args: unknown[]) => {
+          console.log(
+            "[useDataTable] onColumnSizingChange called by TanStack",
+            args,
+          );
+          return columnConfig.onSizingChange?.(...args);
+        },
       }),
       ...(columnConfig.onPinningChange && {
         onColumnPinningChange: columnConfig.onPinningChange,
@@ -314,6 +327,13 @@ export function useDataTable<TData>(
     customState,
     onStateChange,
   ]);
+
+  console.log("[useDataTable] Table options summary", {
+    enableColumnResizing: tableOptions.enableColumnResizing,
+    columnResizeMode: tableOptions.columnResizeMode,
+    hasOnColumnSizingChange: !!tableOptions.onColumnSizingChange,
+    state: tableOptions.state,
+  });
 
   const table = useReactTable(tableOptions);
 

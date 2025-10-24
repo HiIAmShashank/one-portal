@@ -135,16 +135,24 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
         | ColumnSizingState
         | ((old: ColumnSizingState) => ColumnSizingState),
     ) => {
+      console.log("[DataTable] handleColumnSizingChange called", {
+        type: typeof updaterOrValue,
+        currentState: state?.columnSizing ?? columnSizing,
+      });
+
       const newValue =
         typeof updaterOrValue === "function"
           ? updaterOrValue(state?.columnSizing ?? columnSizing)
           : updaterOrValue;
 
+      console.log("[DataTable] New column sizing value:", newValue);
+
       // If controlled, notify parent via onStateChange
       if (state?.columnSizing !== undefined && onStateChange) {
+        console.log("[DataTable] Controlled mode - calling onStateChange");
         onStateChange({ columnSizing: newValue });
       } else {
-        // Otherwise update internal state
+        console.log("[DataTable] Uncontrolled mode - calling setColumnSizing");
         setColumnSizing(newValue);
       }
     },
@@ -217,7 +225,12 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
 
   // Enhanced features with row selection and column sizing updaters
   const enhancedFeatures = React.useMemo(() => {
-    return {
+    console.log("[DataTable] Creating enhancedFeatures", {
+      hasResizing: features?.columns?.resizing,
+      hasCallback: !!handleColumnSizingChange,
+    });
+
+    const enhanced = {
       ...features,
       // Add selection state updater if selection is enabled
       ...(features?.selection && {
@@ -234,6 +247,13 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
         },
       }),
     };
+
+    console.log("[DataTable] Enhanced features created", {
+      hasColumnsConfig: !!enhanced.columns,
+      hasOnSizingChange: !!enhanced.columns?.onSizingChange,
+    });
+
+    return enhanced;
   }, [features, handleRowSelectionChange, handleColumnSizingChange]);
 
   // Create table instance with smart defaults
@@ -370,7 +390,10 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
           className,
         )}
       >
-        <table className={cn("w-full caption-bottom", densityClasses[density])}>
+        <table
+          className={cn("w-full caption-bottom", densityClasses[density])}
+          style={{ tableLayout: "fixed" }}
+        >
           {/* Table Head */}
           <thead
             className={cn(
