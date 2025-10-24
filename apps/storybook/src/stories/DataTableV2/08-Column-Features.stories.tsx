@@ -422,3 +422,114 @@ export const WideTableWithPinning: Story = {
     },
   },
 };
+
+/**
+ * Text Truncation and Overflow Handling
+ *
+ * Demonstrates how the table handles very long text:
+ * - Column headers with very long names truncate with ellipsis
+ * - Cell content with long text also truncates
+ * - Hover on header shows menu icon without breaking layout
+ * - Try resizing columns to see text truncation behavior
+ * - Minimum column width prevents UI elements from overlapping
+ */
+export const TextTruncationAndOverflow: Story = {
+  render: () => {
+    // Generate data with very long text values
+    interface LongTextData {
+      id: number;
+      veryLongProductDescription: string;
+      extremelyLongCategoryWithMultipleWords: string;
+      anotherVeryLongColumnNameToTestHeaderTruncation: string;
+      shortName: string;
+    }
+
+    const longTextData: LongTextData[] = Array.from({ length: 20 }, (_, i) => ({
+      id: i + 1,
+      veryLongProductDescription:
+        "This is an extremely long product description that contains multiple sentences and should definitely be truncated when the column is narrow. It demonstrates how the table handles overflow text gracefully without breaking the layout or causing visual issues.",
+      extremelyLongCategoryWithMultipleWords:
+        "Electronics > Computers > Laptops > Gaming Laptops > High Performance Gaming Laptops > RGB Gaming Laptops with Advanced Cooling Systems",
+      anotherVeryLongColumnNameToTestHeaderTruncation: `Sample data ${i + 1} with moderately long text content that should also demonstrate truncation behavior`,
+      shortName: `Item ${i + 1}`,
+    }));
+
+    const longTextColumns: ColumnDef<LongTextData>[] = [
+      {
+        id: "id",
+        accessorKey: "id",
+        header: "ID",
+        size: 60,
+        minSize: 60,
+        enableResizing: true,
+      },
+      {
+        id: "veryLongProductDescription",
+        accessorKey: "veryLongProductDescription",
+        header:
+          "Very Long Product Description That Should Truncate In The Header",
+        size: 200,
+        minSize: 80,
+        enableResizing: true,
+      },
+      {
+        id: "extremelyLongCategoryWithMultipleWords",
+        accessorKey: "extremelyLongCategoryWithMultipleWords",
+        header:
+          "Extremely Long Category Name With Multiple Words To Test Header Truncation Behavior",
+        size: 180,
+        minSize: 80,
+        enableResizing: true,
+      },
+      {
+        id: "anotherVeryLongColumnNameToTestHeaderTruncation",
+        accessorKey: "anotherVeryLongColumnNameToTestHeaderTruncation",
+        header:
+          "Another Very Long Column Name To Test Header Truncation And Menu Icon Visibility On Hover",
+        size: 200,
+        minSize: 80,
+        enableResizing: true,
+      },
+      {
+        id: "shortName",
+        accessorKey: "shortName",
+        header: "Short",
+        size: 100,
+        minSize: 80,
+        enableResizing: true,
+      },
+    ];
+
+    return (
+      <div className="space-y-4">
+        <div className="rounded border border-border bg-muted/50 p-4 text-sm">
+          <p className="font-semibold mb-2">Testing Text Truncation:</p>
+          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+            <li>Column headers with very long names truncate with ellipsis</li>
+            <li>Cell content also truncates to prevent overflow</li>
+            <li>
+              Hover on headers to see menu icon (appears without breaking
+              layout)
+            </li>
+            <li>Try resizing columns narrow to see truncation in action</li>
+            <li>Minimum width (80px) ensures menu button always fits</li>
+          </ul>
+        </div>
+        <DataTable
+          data={longTextData}
+          columns={longTextColumns}
+          features={{
+            pagination: {
+              enabled: true,
+              pageSize: 10,
+            },
+            columns: {
+              resizing: true,
+              visibility: true,
+            },
+          }}
+        />
+      </div>
+    );
+  },
+};
