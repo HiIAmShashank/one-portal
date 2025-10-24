@@ -135,24 +135,16 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
         | ColumnSizingState
         | ((old: ColumnSizingState) => ColumnSizingState),
     ) => {
-      console.log("[DataTable] handleColumnSizingChange called", {
-        type: typeof updaterOrValue,
-        currentState: state?.columnSizing ?? columnSizing,
-      });
-
       const newValue =
         typeof updaterOrValue === "function"
           ? updaterOrValue(state?.columnSizing ?? columnSizing)
           : updaterOrValue;
 
-      console.log("[DataTable] New column sizing value:", newValue);
-
       // If controlled, notify parent via onStateChange
       if (state?.columnSizing !== undefined && onStateChange) {
-        console.log("[DataTable] Controlled mode - calling onStateChange");
         onStateChange({ columnSizing: newValue });
       } else {
-        console.log("[DataTable] Uncontrolled mode - calling setColumnSizing");
+        // Otherwise update internal state
         setColumnSizing(newValue);
       }
     },
@@ -225,12 +217,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
 
   // Enhanced features with row selection and column sizing updaters
   const enhancedFeatures = React.useMemo(() => {
-    console.log("[DataTable] Creating enhancedFeatures", {
-      hasResizing: features?.columns?.resizing,
-      hasCallback: !!handleColumnSizingChange,
-    });
-
-    const enhanced = {
+    return {
       ...features,
       // Add selection state updater if selection is enabled
       ...(features?.selection && {
@@ -247,13 +234,6 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
         },
       }),
     };
-
-    console.log("[DataTable] Enhanced features created", {
-      hasColumnsConfig: !!enhanced.columns,
-      hasOnSizingChange: !!enhanced.columns?.onSizingChange,
-    });
-
-    return enhanced;
   }, [features, handleRowSelectionChange, handleColumnSizingChange]);
 
   // Create table instance with smart defaults
