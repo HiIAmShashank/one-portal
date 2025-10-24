@@ -19,6 +19,10 @@ interface DataTableToolbarProps<TData> {
   columnFilters?: boolean;
   globalSearchPlaceholder?: string;
   showViewOptions?: boolean;
+  density?: "compact" | "default" | "comfortable";
+  onDensityChange?: (density: "compact" | "default" | "comfortable") => void;
+  filterMode?: "toolbar" | "inline";
+  onFilterModeChange?: (mode: "toolbar" | "inline") => void;
 }
 
 export function DataTableToolbar<TData>({
@@ -27,6 +31,10 @@ export function DataTableToolbar<TData>({
   columnFilters = true,
   globalSearchPlaceholder = "Search all columns...",
   showViewOptions = true,
+  density = "default",
+  onDensityChange,
+  filterMode = "toolbar",
+  onFilterModeChange,
 }: DataTableToolbarProps<TData>) {
   const [showColumnFilters, setShowColumnFilters] = React.useState(true);
   const globalFilterValue = table.getState().globalFilter;
@@ -72,6 +80,12 @@ export function DataTableToolbar<TData>({
               showFilterToggle={columnFilters}
               showFilters={showColumnFilters}
               onFiltersToggle={setShowColumnFilters}
+              showDensityToggle={true}
+              density={density}
+              onDensityChange={onDensityChange}
+              showFilterModeToggle={columnFilters}
+              filterMode={filterMode}
+              onFilterModeChange={onFilterModeChange}
             />
           )}
         </div>

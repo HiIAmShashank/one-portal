@@ -176,12 +176,16 @@ export function useDataTable<TData>(
 
       // Row selection
       ...(selectionConfig.mode !== "none" && {
-        enableRowSelection: true,
+        // V2: enableRowSelection can be boolean or function for conditional selection
+        enableRowSelection: selectionConfig.getCanSelect
+          ? (row: Row<TData>) => selectionConfig.getCanSelect!(row.original)
+          : true,
         enableMultiRowSelection: selectionConfig.mode === "multiple",
-        // V2: Properly expose getRowCanSelect
-        ...(selectionConfig.getCanSelect && {
-          getRowCanSelect: (row: Row<TData>) =>
-            selectionConfig.getCanSelect!(row.original),
+        // V2: Add state updater for controlled/uncontrolled mode
+        // @ts-expect-error - onRowSelectionChange is added by DataTable component
+        ...(selectionConfig.onRowSelectionChange && {
+          // @ts-expect-error - onRowSelectionChange is added by DataTable component
+          onRowSelectionChange: selectionConfig.onRowSelectionChange,
         }),
       }),
 

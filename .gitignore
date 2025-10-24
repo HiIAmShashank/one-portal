@@ -55,3 +55,7 @@ coverage
 packages/auth/tsconfig.tsbuildinfo
 tsconfig.tsbuildinfo
 apps/shell/tsconfig.tsbuildinfo
+# Storybook
+apps/storybook/node_modules/*
+apps/storybook/.cache
+storybook-static

@@ -277,6 +277,7 @@ export interface UIConfig {
   showColumnFilters?: boolean; // Default: true
   globalSearchPlaceholder?: string;
   filterMode?: "toolbar" | "inline"; // Default: "toolbar" - where to show column filters
+  onFilterModeChange?: (mode: "toolbar" | "inline") => void;
 
   // States
   emptyState?: React.ReactNode;

@@ -1,15 +1,50 @@
 # DataTable V2 - Progress Tracker
 
 **Branch:** `feature/datatable-v2-rewrite`
-**Last Updated:** 2025-10-23
+**Last Updated:** 2025-10-24
 
 ## Summary
 - **Total Tasks:** 52
-- **Completed:** 12 (23%)
+- **Completed:** 30 (58%)
 - **In Progress:** 0
-- **Pending:** 40
+- **Pending:** 22
+
+**Next Phase:** Phase 6 - Column Features (Visibility, Resizing, Reordering, Pinning)
 
 ## Recent Changes
+
+**Phase 5 Complete:** UI Controls - Density & Variants (2025-10-24)
+- ✅ Connected density controls from DataTable → DataTableToolbar → ViewOptions
+- ✅ Added internal density state management with controlled/uncontrolled support
+- ✅ Implemented density switcher in View menu (Settings dropdown)
+- ✅ 3 density levels: compact (text-xs, px-2 py-1), default (text-sm, px-4 py-2), comfortable (text-base, px-6 py-4)
+- ✅ 3 visual variants: default (minimal), bordered (full cell borders), striped (alternating rows)
+- ✅ Comprehensive dark mode support across all variants and densities
+- ✅ Created Storybook story (06-Density.stories.tsx) with 7 stories
+- ✅ Created Storybook story (07-Variants-And-Themes.stories.tsx) with 12 stories
+- ✅ All combinations tested: density × variant × theme (light/dark)
+
+**Phase 4 Complete:** Selection & Actions (2025-10-24)
+- ✅ Created columnUtils.tsx with createSelectionColumn and createActionsColumn utilities
+- ✅ Integrated row selection (single and multiple modes) with checkbox UI
+- ✅ Added conditional selection support with getCanSelect
+- ✅ Created BulkActions component for operations on selected rows
+- ✅ Added row actions dropdown menu with per-row operations
+- ✅ Implemented min/max selection constraints for bulk actions
+- ✅ Added controlled/uncontrolled selection state support
+- ✅ Created comprehensive Storybook story (05-Selection-And-Actions.stories.tsx)
+- ✅ 11 stories covering: multi-select, single-select, conditional selection, row actions, bulk actions, constraints
+- ✅ Fixed row selection state management with proper onRowSelectionChange handler
+- ✅ Fixed conditional selection to use enableRowSelection as function (TanStack Table pattern)
+- ✅ Comprehensive sanity check against TanStack Table documentation - 100% compliant
+
+**Phase 3 Complete:** Filtering (2025-10-23)
+- ✅ Created useFaceting hook with auto-detection of filter types
+- ✅ Created FacetedFilter component with text, select, multi-select, boolean, number-range, date-range support
+- ✅ Integrated smart filtering with global search and column filters
+- ✅ Added toolbar/inline filter modes
+- ✅ Created comprehensive Storybook story (04-Filtering.stories.tsx)
+- ✅ Fixed ID type issues, inline filters, and number range behavior
 
 **Commit:** `41210ad` - Added sorting and pagination (Phase 2)
 - ✅ Sortable column headers with visual indicators
@@ -65,41 +100,47 @@
 
 ---
 
-## Phase 3: Filtering (0/6 completed)
+## Phase 3: Filtering ✅ (6/6 completed)
 
 ### Faceted Filtering (Smart Auto-Detection)
-- [ ] Implement useFaceting hook (auto-detect filter types)
-- [ ] Create FacetedFilter component with shadcn
-- [ ] Add column filtering with auto-detection
-- [ ] Create Storybook story - Filtering
-- [ ] Create GlobalSearch component
-- [ ] Create Storybook story - Global search
+- [x] Implement useFaceting hook (auto-detect filter types)
+- [x] Create FacetedFilter component with shadcn
+- [x] Add column filtering with auto-detection
+- [x] Create Storybook story - Filtering
+- [x] Create GlobalSearch component
+- [x] Create Storybook story - Global search
+
+**Status:** Complete - Smart filtering with auto-detection of text, select, multi-select, boolean, number-range, and date-range filters. Global search and column-specific filters work together. Supports toolbar and inline filter modes.
 
 ---
 
-## Phase 4: Selection & Actions (0/6 completed)
+## Phase 4: Selection & Actions ✅ (6/6 completed)
 
 ### Row Selection
-- [ ] Create SelectColumn component (auto-pinned left)
-- [ ] Add row selection with getCanSelect prop
-- [ ] Create Storybook story - Row selection
+- [x] Create SelectColumn component (auto-pinned left)
+- [x] Add row selection with getCanSelect prop
+- [x] Create Storybook story - Row selection
 
 ### Actions
-- [ ] Create ActionsColumn component (auto-pinned right)
-- [ ] Add row actions and bulk actions
-- [ ] Create Storybook story - Actions
+- [x] Create ActionsColumn component (auto-pinned right)
+- [x] Add row actions and bulk actions
+- [x] Create Storybook story - Actions
+
+**Status:** Complete - Full selection support (single/multiple modes), conditional selection with getCanSelect, per-row actions dropdown, bulk actions with min/max constraints, controlled/uncontrolled state management. 11 comprehensive Storybook stories demonstrating all features.
 
 ---
 
-## Phase 5: UI Controls (0/6 completed)
+## Phase 5: UI Controls ✅ (6/6 completed)
 
 ### Density & Variants
-- [ ] Create DensityMenu component (dropdown with shadcn)
-- [ ] Add density control (compact/default/relaxed)
-- [ ] Create Storybook story - Density
-- [ ] Add variant styles (default/bordered/striped)
-- [ ] Test light and dark mode support
-- [ ] Create Storybook story - Variants & themes
+- [x] Create DensityMenu component (dropdown with shadcn)
+- [x] Add density control (compact/default/relaxed)
+- [x] Create Storybook story - Density
+- [x] Add variant styles (default/bordered/striped)
+- [x] Test light and dark mode support
+- [x] Create Storybook story - Variants & themes
+
+**Status:** Complete - Full density control (3 levels) with View menu integration, 3 visual variants, comprehensive dark mode support. Controlled/uncontrolled density state management. 19 Storybook stories demonstrating all combinations.
 
 ---
 

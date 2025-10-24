@@ -26,8 +26,11 @@ interface ViewOptionsProps<TData> {
   showFilterToggle?: boolean;
   showColumnToggle?: boolean;
   showDensityToggle?: boolean;
+  showFilterModeToggle?: boolean;
   density?: "compact" | "default" | "comfortable";
   onDensityChange?: (density: "compact" | "default" | "comfortable") => void;
+  filterMode?: "toolbar" | "inline";
+  onFilterModeChange?: (mode: "toolbar" | "inline") => void;
   showFilters?: boolean;
   onFiltersToggle?: (show: boolean) => void;
 }
@@ -37,8 +40,11 @@ export function ViewOptions<TData>({
   showFilterToggle = true,
   showColumnToggle = true,
   showDensityToggle = false,
+  showFilterModeToggle = false,
   density = "default",
   onDensityChange,
+  filterMode = "toolbar",
+  onFilterModeChange,
   showFilters = true,
   onFiltersToggle,
 }: ViewOptionsProps<TData>) {
@@ -114,6 +120,27 @@ export function ViewOptions<TData>({
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="comfortable">
                 Comfortable
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
+          </>
+        )}
+
+        {/* Filter mode options */}
+        {showFilterModeToggle && onFilterModeChange && (
+          <>
+            <DropdownMenuLabel>Filter Mode</DropdownMenuLabel>
+            <DropdownMenuRadioGroup
+              value={filterMode}
+              onValueChange={(value) =>
+                onFilterModeChange(value as "toolbar" | "inline")
+              }
+            >
+              <DropdownMenuRadioItem value="toolbar">
+                Toolbar
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="inline">
+                Inline
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </>

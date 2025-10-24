@@ -5,12 +5,17 @@
  */
 
 import * as React from "react";
-import { flexRender } from "@tanstack/react-table";
+import { flexRender, type RowSelectionState } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { useDataTable } from "./hooks/useDataTable";
 import { TablePagination } from "./components/TablePagination";
 import { DataTableToolbar } from "./components/DataTableToolbar";
 import { FacetedFilter } from "./components/FacetedFilter";
+import { BulkActions } from "./components/BulkActions";
+import {
+  createSelectionColumn,
+  createActionsColumn,
+} from "./utils/columnUtils";
 import type { DataTableProps } from "./types";
 import { cn } from "../lib/utils";
 
@@ -21,7 +26,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     features,
     ui,
     persistence: _persistence,
-    actions: _actions,
+    actions,
     onRowClick,
     onCellClick,
     state,
@@ -31,16 +36,149 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     containerClassName,
   } = props;
 
+  // Row selection state (internal if not controlled)
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
+  // Density state (internal if not controlled)
+  const [internalDensity, setInternalDensity] = React.useState<
+    "compact" | "default" | "comfortable"
+  >(ui?.density || "default");
+
+  // Filter mode state (internal if not controlled)
+  const [internalFilterMode, setInternalFilterMode] = React.useState<
+    "toolbar" | "inline"
+  >(ui?.filterMode || "toolbar");
+
+  // Handle density changes
+  const handleDensityChange = React.useCallback(
+    (newDensity: "compact" | "default" | "comfortable") => {
+      // If controlled, notify parent
+      if (ui?.density !== undefined && ui?.onDensityChange) {
+        ui.onDensityChange(newDensity);
+      } else {
+        // Otherwise update internal state
+        setInternalDensity(newDensity);
+      }
+    },
+    [ui?.density, ui?.onDensityChange],
+  );
+
+  // Handle filter mode changes
+  const handleFilterModeChange = React.useCallback(
+    (newMode: "toolbar" | "inline") => {
+      // If controlled, notify parent
+      if (ui?.filterMode !== undefined && ui?.onFilterModeChange) {
+        ui.onFilterModeChange(newMode);
+      } else {
+        // Otherwise update internal state
+        setInternalFilterMode(newMode);
+      }
+    },
+    [ui?.filterMode, ui?.onFilterModeChange],
+  );
+
+  // Current density (controlled or internal)
+  const currentDensity = ui?.density ?? internalDensity;
+
+  // Current filter mode (controlled or internal)
+  const currentFilterMode = ui?.filterMode ?? internalFilterMode;
+
+  // Build final columns array with selection and actions
+  const finalColumns = React.useMemo(() => {
+    let cols = [...columns];
+
+    // Prepend selection column if enabled
+    if (features?.selection) {
+      const selectionCol = createSelectionColumn<TData>({
+        mode: features.selection.mode,
+      });
+      cols = [selectionCol, ...cols];
+    }
+
+    // Append actions column if provided
+    if (actions?.row && actions.row.length > 0) {
+      const actionsCol = createActionsColumn<TData>(actions.row);
+      cols = [...cols, actionsCol];
+    }
+
+    return cols;
+  }, [columns, features?.selection, actions?.row]);
+
+  // Handle row selection changes - this is the state updater for TanStack Table
+  const handleRowSelectionChange = React.useCallback(
+    (
+      updaterOrValue:
+        | RowSelectionState
+        | ((old: RowSelectionState) => RowSelectionState),
+    ) => {
+      const newValue =
+        typeof updaterOrValue === "function"
+          ? updaterOrValue(state?.rowSelection ?? rowSelection)
+          : updaterOrValue;
+
+      // If controlled, notify parent via onStateChange
+      if (state?.rowSelection !== undefined && onStateChange) {
+        onStateChange({ rowSelection: newValue });
+      } else {
+        // Otherwise update internal state
+        setRowSelection(newValue);
+      }
+    },
+    [state?.rowSelection, rowSelection, onStateChange],
+  );
+
+  // Enhanced features with row selection updater
+  const enhancedFeatures = React.useMemo(() => {
+    if (!features?.selection) return features;
+
+    return {
+      ...features,
+      selection: {
+        ...features.selection,
+        // Add the state updater - this is what TanStack Table needs
+        onRowSelectionChange: handleRowSelectionChange,
+      },
+    };
+  }, [features, handleRowSelectionChange]);
+
   // Create table instance with smart defaults
-  const table = useDataTable({ data, columns, features, state, onStateChange });
+  const table = useDataTable({
+    data,
+    columns: finalColumns,
+    features: enhancedFeatures,
+    state: {
+      ...state,
+      // Use controlled state if provided, otherwise internal state
+      rowSelection: state?.rowSelection ?? rowSelection,
+    },
+    onStateChange,
+  });
 
   // Expose table instance to parent
   React.useEffect(() => {
     onTableReady?.(table);
   }, [table, onTableReady]);
 
+  // Handle row selection changes
+  React.useEffect(() => {
+    const currentSelection = table.getState().rowSelection;
+
+    // Update internal state if not controlled
+    if (!state?.rowSelection) {
+      setRowSelection(currentSelection);
+    }
+
+    // Call onChange callback if provided
+    if (features?.selection?.onChange) {
+      const selectedRows = table
+        .getSelectedRowModel()
+        .rows.map((row) => row.original);
+      features.selection.onChange(selectedRows);
+    }
+  }, [table.getState().rowSelection, features?.selection, state?.rowSelection]);
+
   // Extract UI config with defaults
-  const density = ui?.density || "default";
+  const density = currentDensity;
   const variant = ui?.variant || "default";
   const stickyHeader = ui?.stickyHeader || false;
 
@@ -74,7 +212,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
 
   // Check if filtering/toolbar is enabled
   const filteringEnabled = features?.filtering !== false;
-  const filterMode = ui?.filterMode || "toolbar";
+  const filterMode = currentFilterMode;
   const showToolbar = ui?.showToolbar !== false && filteringEnabled;
   const showGlobalSearch = ui?.showGlobalSearch !== false;
   const showColumnFilters =
@@ -100,7 +238,18 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
           columnFilters={showColumnFilters}
           globalSearchPlaceholder={ui?.globalSearchPlaceholder}
           showViewOptions={true}
+          density={density}
+          onDensityChange={handleDensityChange}
+          filterMode={filterMode}
+          onFilterModeChange={handleFilterModeChange}
         />
+      )}
+
+      {/* Bulk Actions */}
+      {actions?.bulk && actions.bulk.length > 0 && !isLoading && !hasError && (
+        <div className="mb-4">
+          <BulkActions table={table} actions={actions.bulk} />
+        </div>
       )}
 
       {/* Table Container */}
@@ -144,6 +293,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                         "text-muted-foreground dark:text-muted-foreground",
                         "[&:has([role=checkbox])]:pr-0",
                         variantClasses[variant],
+                        stickyHeader && "bg-background dark:bg-background",
                       )}
                     >
                       {header.isPlaceholder ? null : (
