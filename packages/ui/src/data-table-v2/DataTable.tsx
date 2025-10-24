@@ -419,7 +419,11 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                           variantClasses[variant],
                           (stickyHeader || isPinned) &&
                             "bg-background dark:bg-background",
-                          isPinned && "shadow-md",
+                          // Directional shadows for pinned columns
+                          isPinned === "left" &&
+                            "shadow-[4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                          isPinned === "right" &&
+                            "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.3)]",
                         )}
                       >
                         {header.isPlaceholder ? null : reorderingEnabled &&
@@ -735,8 +739,12 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                           "align-middle",
                           "[&:has([role=checkbox])]:pr-0",
                           variantClasses[variant],
-                          isPinned &&
-                            "bg-background dark:bg-background shadow-md",
+                          isPinned && "bg-background dark:bg-background",
+                          // Directional shadows for pinned columns
+                          isPinned === "left" &&
+                            "shadow-[4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                          isPinned === "right" &&
+                            "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.3)]",
                         )}
                       >
                         <div className="truncate">
