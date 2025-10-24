@@ -353,6 +353,9 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                   {headerGroup.headers.map((header) => {
                     const isPinned = header.column.getIsPinned();
                     const canResize = header.column.getCanResize();
+                    const columnDef = header.column.columnDef;
+                    const minWidth = columnDef.minSize ?? 80;
+                    const maxWidth = columnDef.maxSize ?? 500;
 
                     return (
                       <th
@@ -360,8 +363,8 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                         colSpan={header.colSpan}
                         style={{
                           width: `${header.getSize()}px`,
-                          minWidth: `${header.getSize()}px`,
-                          maxWidth: `${header.getSize()}px`,
+                          minWidth: `${minWidth}px`,
+                          maxWidth: `${maxWidth}px`,
                           // Pinning styles
                           position: isPinned ? "sticky" : "relative",
                           left:
@@ -666,14 +669,17 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                 >
                   {row.getVisibleCells().map((cell) => {
                     const isPinned = cell.column.getIsPinned();
+                    const columnDef = cell.column.columnDef;
+                    const minWidth = columnDef.minSize ?? 80;
+                    const maxWidth = columnDef.maxSize ?? 500;
 
                     return (
                       <td
                         key={cell.id}
                         style={{
                           width: `${cell.column.getSize()}px`,
-                          minWidth: `${cell.column.getSize()}px`,
-                          maxWidth: `${cell.column.getSize()}px`,
+                          minWidth: `${minWidth}px`,
+                          maxWidth: `${maxWidth}px`,
                           // Pinning styles
                           position: isPinned ? "sticky" : "relative",
                           left:
@@ -705,10 +711,12 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                             "bg-background dark:bg-background shadow-md",
                         )}
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
+                        <div className="truncate">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </div>
                       </td>
                     );
                   })}

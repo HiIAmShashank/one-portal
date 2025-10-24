@@ -138,6 +138,13 @@ export function useDataTable<TData>(
       data,
       columns: tanstackColumns,
 
+      // Default column settings (can be overridden per column)
+      defaultColumn: {
+        minSize: 80, // Button width (32px) + padding (48px) = 80px minimum
+        size: 150, // Default column width
+        maxSize: 500, // Reasonable maximum width
+      },
+
       // Core
       getCoreRowModel: getCoreRowModel(),
 
