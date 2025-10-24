@@ -759,6 +759,60 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                 </tr>
               ))}
           </tbody>
+
+          {/* Table Footer - for aggregations and summaries */}
+          <tfoot className="border-t border-border dark:border-border">
+            {table.getFooterGroups().map((footerGroup) => (
+              <tr
+                key={footerGroup.id}
+                className="bg-muted/50 dark:bg-muted/20 font-medium"
+              >
+                {footerGroup.headers.map((footer) => {
+                  const isPinned = footer.column.getIsPinned();
+
+                  return (
+                    <th
+                      key={footer.id}
+                      colSpan={footer.colSpan}
+                      style={{
+                        width: `${footer.getSize()}px`,
+                        // Pinning styles
+                        position: isPinned ? "sticky" : "relative",
+                        left:
+                          isPinned === "left"
+                            ? `${footer.column.getStart("left")}px`
+                            : undefined,
+                        right:
+                          isPinned === "right"
+                            ? `${footer.column.getAfter("right")}px`
+                            : undefined,
+                        zIndex: isPinned ? 10 : undefined,
+                      }}
+                      className={cn(
+                        cellPaddingClasses[density],
+                        "text-left align-middle",
+                        "text-muted-foreground dark:text-muted-foreground",
+                        variantClasses[variant],
+                        isPinned && "bg-muted/50 dark:bg-muted/20",
+                        // Directional shadows for pinned columns
+                        isPinned === "left" &&
+                          "shadow-[4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                        isPinned === "right" &&
+                          "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                      )}
+                    >
+                      {footer.isPlaceholder
+                        ? null
+                        : flexRender(
+                            footer.column.columnDef.footer,
+                            footer.getContext(),
+                          )}
+                    </th>
+                  );
+                })}
+              </tr>
+            ))}
+          </tfoot>
         </table>
       </div>
 
