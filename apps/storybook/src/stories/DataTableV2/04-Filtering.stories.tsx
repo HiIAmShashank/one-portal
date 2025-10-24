@@ -287,6 +287,8 @@ export const WithSortingAndPagination: Story = {
  * Override auto-detection by specifying filter type in column meta.
  *
  * Example: Force "experience" to be a select dropdown instead of number-range.
+ *
+ * This demonstrates a custom filterFn that maps category strings to numeric ranges.
  */
 export const ManualFilterConfiguration: Story = {
   args: {
@@ -303,9 +305,146 @@ export const ManualFilterConfiguration: Story = {
                 { label: "10+ years", value: "senior" },
               ],
             },
+            // Custom filter function that maps category values to numeric ranges
+            filterFn: (row, columnId, filterValue) => {
+              const experience = row.getValue(columnId) as number;
+              if (filterValue === "junior")
+                return experience >= 0 && experience < 5;
+              if (filterValue === "mid")
+                return experience >= 5 && experience < 10;
+              if (filterValue === "senior") return experience >= 10;
+              return true; // No filter selected
+            },
           }
         : col,
     ) as ColumnDef<Employee>[],
+  },
+};
+
+/**
+ * **Inline Filter Mode**
+ *
+ * Show filters directly in column headers instead of toolbar.
+ *
+ * Features:
+ * - Filters appear below each column header
+ * - Global search still available in toolbar
+ * - Saves vertical space by integrating filters into header row
+ * - Perfect for dense data tables where toolbar space is limited
+ *
+ * Try:
+ * - Notice filters appear directly under column names
+ * - Global search bar still works at top
+ * - All filter types render inline (text, select, number-range, etc.)
+ */
+export const InlineFilterMode: Story = {
+  args: {
+    data: employees,
+    columns,
+    ui: {
+      filterMode: "inline", // Key prop - moves filters to column headers
+      showToolbar: true, // Still shows toolbar for global search
+      showColumnFilters: false, // Hides toolbar filters (shown inline instead)
+    },
+  },
+};
+
+/**
+ * **Inline Filters with No Toolbar**
+ *
+ * Inline filters without any toolbar (no global search).
+ *
+ * Use this when you want filters integrated into headers and no global search.
+ */
+export const InlineFiltersNoToolbar: Story = {
+  args: {
+    data: employees,
+    columns,
+    ui: {
+      filterMode: "inline",
+      showToolbar: false, // Hide entire toolbar
+    },
+  },
+};
+
+/**
+ * **Multi-Select Filter**
+ *
+ * Demonstrate multi-select filter with Command/Popover UI.
+ *
+ * Features:
+ * - Select multiple values from dropdown
+ * - Searchable options with Command component
+ * - Shows "X selected" when items chosen
+ * - Checkbox UI with visual feedback
+ * - Click to toggle selection on/off
+ *
+ * In this example:
+ * - Department filter allows selecting multiple departments
+ * - Role filter also uses multi-select
+ * - Try selecting multiple departments to see results filtered by ANY match
+ */
+export const MultiSelectFilter: Story = {
+  args: {
+    data: employees,
+    columns: columns.map((col) => {
+      if (col.id === "department" || col.id === "role") {
+        return {
+          ...col,
+          meta: {
+            filterVariant: "multi-select" as const,
+            filterOptions:
+              col.id === "department"
+                ? [
+                    { label: "Engineering", value: "Engineering" },
+                    { label: "Marketing", value: "Marketing" },
+                    { label: "Sales", value: "Sales" },
+                    { label: "HR", value: "HR" },
+                    { label: "Finance", value: "Finance" },
+                  ]
+                : [
+                    { label: "Manager", value: "Manager" },
+                    { label: "Senior", value: "Senior" },
+                    { label: "Mid-Level", value: "Mid-Level" },
+                    { label: "Junior", value: "Junior" },
+                  ],
+          },
+          filterFn: "multiSelect",
+        };
+      }
+      return col;
+    }) as ColumnDef<Employee>[],
+  },
+};
+
+/**
+ * **Multi-Select with Custom Placeholder**
+ *
+ * Multi-select filter with custom placeholder text.
+ */
+export const MultiSelectWithPlaceholder: Story = {
+  args: {
+    data: employees,
+    columns: columns.map((col) => {
+      if (col.id === "department") {
+        return {
+          ...col,
+          meta: {
+            filterVariant: "multi-select" as const,
+            filterOptions: [
+              { label: "Engineering", value: "Engineering" },
+              { label: "Marketing", value: "Marketing" },
+              { label: "Sales", value: "Sales" },
+              { label: "HR", value: "HR" },
+              { label: "Finance", value: "Finance" },
+            ],
+            filterPlaceholder: "Choose departments to filter...",
+          },
+          filterFn: "multiSelect",
+        };
+      }
+      return col;
+    }) as ColumnDef<Employee>[],
   },
 };
 

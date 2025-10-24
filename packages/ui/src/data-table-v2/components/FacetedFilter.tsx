@@ -174,10 +174,10 @@ export function FacetedFilter<TData>({
 
   // Number range filter
   if (metadata.variant === "number-range") {
-    const [min, max] = (filterValue as [number, number]) || [
-      metadata.min,
-      metadata.max,
-    ];
+    const [min, max] = (filterValue as [
+      number | undefined,
+      number | undefined,
+    ]) || [undefined, undefined];
 
     return (
       <div className="space-y-2">
@@ -187,11 +187,22 @@ export function FacetedFilter<TData>({
             type="number"
             value={min ?? ""}
             onChange={(e) => {
-              const value = e.target.value ? Number(e.target.value) : undefined;
-              column.setFilterValue((old: [number, number]) => [
-                value,
-                old?.[1],
-              ]);
+              const newMin = e.target.value
+                ? Number(e.target.value)
+                : undefined;
+              const currentMax = (
+                column.getFilterValue() as [
+                  number | undefined,
+                  number | undefined,
+                ]
+              )?.[1];
+
+              // Clear filter if both values are undefined
+              if (newMin === undefined && currentMax === undefined) {
+                column.setFilterValue(undefined);
+              } else {
+                column.setFilterValue([newMin, currentMax]);
+              }
             }}
             placeholder="Min"
             className="h-8"
@@ -200,11 +211,22 @@ export function FacetedFilter<TData>({
             type="number"
             value={max ?? ""}
             onChange={(e) => {
-              const value = e.target.value ? Number(e.target.value) : undefined;
-              column.setFilterValue((old: [number, number]) => [
-                old?.[0],
-                value,
-              ]);
+              const newMax = e.target.value
+                ? Number(e.target.value)
+                : undefined;
+              const currentMin = (
+                column.getFilterValue() as [
+                  number | undefined,
+                  number | undefined,
+                ]
+              )?.[0];
+
+              // Clear filter if both values are undefined
+              if (currentMin === undefined && newMax === undefined) {
+                column.setFilterValue(undefined);
+              } else {
+                column.setFilterValue([currentMin, newMax]);
+              }
             }}
             placeholder="Max"
             className="h-8"
