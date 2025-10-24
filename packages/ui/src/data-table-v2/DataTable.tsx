@@ -66,9 +66,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   >(ui?.filterMode || "toolbar");
 
   // Column order state (internal if not controlled)
-  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>(
-    features?.columns?.initialOrder || [],
-  );
+  const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([]);
 
   // DnD sensors for drag and drop
   const sensors = useSensors(
@@ -152,6 +150,20 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
 
     return cols;
   }, [columns, features?.selection, actions?.row]);
+
+  // Initialize column order from finalColumns or use provided initialOrder
+  React.useEffect(() => {
+    if (
+      features?.columns?.initialOrder &&
+      features.columns.initialOrder.length > 0
+    ) {
+      setColumnOrder(features.columns.initialOrder);
+    } else {
+      // Initialize with column IDs from finalColumns
+      const colIds = finalColumns.map((col) => col.id);
+      setColumnOrder(colIds);
+    }
+  }, [finalColumns, features?.columns?.initialOrder]);
 
   // Handle row selection changes - this is the state updater for TanStack Table
   const handleRowSelectionChange = React.useCallback(
@@ -363,6 +375,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                           zIndex: isPinned ? 10 : undefined,
                         }}
                         className={cn(
+                          "group", // Add group for hover effects
                           cellPaddingClasses[density],
                           "text-left align-middle font-medium",
                           "text-muted-foreground dark:text-muted-foreground",
@@ -377,24 +390,28 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                           !isPinned ? (
                           <DraggableColumnHeader header={header}>
                             <div className="space-y-2">
-                              <div className="flex items-center gap-2 justify-between">
-                                <div className="flex items-center gap-2 flex-1 min-w-0">
-                                  {flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext(),
-                                  )}
+                              <div className="flex items-center gap-1 justify-between relative">
+                                <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+                                  <span className="truncate">
+                                    {flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext(),
+                                    )}
+                                  </span>
                                 </div>
-                                <ColumnHeaderMenu
-                                  column={header.column}
-                                  table={table}
-                                  title={
-                                    typeof header.column.columnDef.header ===
-                                    "string"
-                                      ? header.column.columnDef.header
-                                      : header.column.id
-                                  }
-                                  onFilterModeChange={handleFilterModeChange}
-                                />
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bg-background dark:bg-background">
+                                  <ColumnHeaderMenu
+                                    column={header.column}
+                                    table={table}
+                                    title={
+                                      typeof header.column.columnDef.header ===
+                                      "string"
+                                        ? header.column.columnDef.header
+                                        : header.column.id
+                                    }
+                                    onFilterModeChange={handleFilterModeChange}
+                                  />
+                                </div>
                               </div>
                               {/* Inline filter */}
                               {showInlineFilters &&
@@ -421,24 +438,28 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                           </DraggableColumnHeader>
                         ) : (
                           <div className="space-y-2">
-                            <div className="flex items-center gap-2 justify-between">
-                              <div className="flex items-center gap-2 flex-1 min-w-0">
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
+                            <div className="flex items-center gap-1 justify-between relative">
+                              <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+                                <span className="truncate">
+                                  {flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )}
+                                </span>
                               </div>
-                              <ColumnHeaderMenu
-                                column={header.column}
-                                table={table}
-                                title={
-                                  typeof header.column.columnDef.header ===
-                                  "string"
-                                    ? header.column.columnDef.header
-                                    : header.column.id
-                                }
-                                onFilterModeChange={handleFilterModeChange}
-                              />
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-0 bg-background dark:bg-background">
+                                <ColumnHeaderMenu
+                                  column={header.column}
+                                  table={table}
+                                  title={
+                                    typeof header.column.columnDef.header ===
+                                    "string"
+                                      ? header.column.columnDef.header
+                                      : header.column.id
+                                  }
+                                  onFilterModeChange={handleFilterModeChange}
+                                />
+                              </div>
                             </div>
                             {/* Inline filter */}
                             {showInlineFilters &&
