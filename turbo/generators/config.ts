@@ -141,18 +141,37 @@ $2`,
         // eslint-disable-next-line no-console
         console.log("   ✓ Menu configuration system");
 
+        if (includeDocumentation && includeExampleDashboard) {
+          // eslint-disable-next-line no-console
+          console.log(
+            "   ⚠️  Both documentation and dashboard selected - using documentation menu only",
+          );
+        }
+
         if (includeDocumentation) {
           // eslint-disable-next-line no-console
-          console.log("   ✓ OnePortal documentation routes (8 routes)");
-        }
-        if (includeExampleDashboard) {
+          console.log(
+            "   ✓ Menu structure for OnePortal documentation (8 menu items)",
+          );
           // eslint-disable-next-line no-console
-          console.log("   ✓ Dashboard example with nested routes (4 routes)");
-        }
-        if (!includeDocumentation && !includeExampleDashboard) {
+          console.log(
+            "      Note: Only menu structure created. Copy route files from apps/remote-domino/src/routes/",
+          );
+        } else if (includeExampleDashboard) {
           // eslint-disable-next-line no-console
-          console.log("   ✓ Minimal routing (home, sign-in, auth callback)");
+          console.log(
+            "   ✓ Menu structure for dashboard example (4 menu items with nesting)",
+          );
+          // eslint-disable-next-line no-console
+          console.log(
+            "      Note: Only menu structure created. Add route files manually in src/routes/",
+          );
+        } else {
+          // eslint-disable-next-line no-console
+          console.log("   ✓ Minimal menu (home and about)");
         }
+        // eslint-disable-next-line no-console
+        console.log("   ✓ Base routes: index, sign-in, auth/callback");
 
         // eslint-disable-next-line no-console
         console.log(
