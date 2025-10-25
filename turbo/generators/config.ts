@@ -52,6 +52,8 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
         message:
           "Include example dashboard with nested routes? (Events, Tasks, Workflows)",
         default: false,
+        when: (answers: Record<string, unknown>) =>
+          !answers.includeDocumentation,
       },
     ],
     actions: [
@@ -140,13 +142,6 @@ $2`,
         );
         // eslint-disable-next-line no-console
         console.log("   ✓ Menu configuration system");
-
-        if (includeDocumentation && includeExampleDashboard) {
-          // eslint-disable-next-line no-console
-          console.log(
-            "   ⚠️  Both documentation and dashboard selected - using documentation menu only",
-          );
-        }
 
         if (includeDocumentation) {
           // eslint-disable-next-line no-console
