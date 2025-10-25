@@ -67,7 +67,7 @@ export function LoadingState({
                       : "80%",
               }}
             >
-              <div className="h-4 rounded bg-muted/50 dark:bg-muted/30" />
+              <div className="h-4 rounded-sm bg-muted/50 dark:bg-muted/30" />
             </div>
           ))}
         </div>

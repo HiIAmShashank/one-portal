@@ -49,6 +49,8 @@
   --shadow-lg: 0 0.125rem 0.25rem 0 hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
   --shadow-xl: 0 0.125rem 0.25rem 0 hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
   --shadow-2xl: 0 0.125rem 0.25rem 0 hsl(0 0% 0% / 0.25);
+  --shadow-pinned-right: 4px 0 8px -2px hsl(0 0% 0% / 0.10);
+  --shadow-pinned-left: -4px 0 8px -2px hsl(0 0% 0% / 0.10);
   --tracking-normal: normal;
   --spacing: 0.25rem;
 }
@@ -104,6 +106,8 @@
   --shadow-lg: 0 0.125rem 0.25rem 0 hsl(0 0% 0% / 0.50), 0 4px 6px -1px hsl(0 0% 0% / 0.50);
   --shadow-xl: 0 0.125rem 0.25rem 0 hsl(0 0% 0% / 0.50), 0 8px 10px -1px hsl(0 0% 0% / 0.50);
   --shadow-2xl: 0 0.125rem 0.25rem 0 hsl(0 0% 0% / 1.25);
+  --shadow-pinned-right: 4px 0 8px -2px hsl(0 0% 100% / 0.10);
+  --shadow-pinned-left: -4px 0 8px -2px hsl(0 0% 100% / 0.10);
 }
 
 @theme inline {
@@ -157,6 +161,8 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+  --shadow-pinned-right: var(--shadow-pinned-right);
+  --shadow-pinned-left: var(--shadow-pinned-left);
 
   --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
   --tracking-tight: calc(var(--tracking-normal) - 0.025em);

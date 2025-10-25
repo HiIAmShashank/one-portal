@@ -6,8 +6,8 @@
  * a user-friendly fallback UI with recovery options.
  */
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertCircle, RefreshCw, Home } from 'lucide-react';
+import React, { Component, type ErrorInfo, type ReactNode } from "react";
+import { AlertCircle, RefreshCw, Home } from "lucide-react";
 
 interface Props {
   /** Child components to render */
@@ -65,7 +65,7 @@ export class RemoteErrorBoundary extends Component<Props, State> {
    * Log error details and invoke callback
    */
   override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('[RemoteErrorBoundary] Remote module error:', {
+    console.error("[RemoteErrorBoundary] Remote module error:", {
       remoteName: this.props.remoteName,
       error: {
         message: error.message,
@@ -103,7 +103,7 @@ export class RemoteErrorBoundary extends Component<Props, State> {
    * Navigate to home page
    */
   handleGoHome = () => {
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   /**
@@ -121,7 +121,8 @@ export class RemoteErrorBoundary extends Component<Props, State> {
       }
 
       const { remoteName } = this.props;
-      const errorMessage = this.state.error?.message || 'An unexpected error occurred';
+      const errorMessage =
+        this.state.error?.message || "An unexpected error occurred";
       const showDetails = import.meta.env.DEV && this.state.errorInfo;
 
       // Default fallback UI with enhanced Tailwind styling
@@ -129,7 +130,7 @@ export class RemoteErrorBoundary extends Component<Props, State> {
         <div className="flex min-h-[400px] w-full items-center justify-center p-6">
           <div className="w-full max-w-2xl space-y-4">
             {/* Main Error Card */}
-            <div className="overflow-hidden rounded-lg border border-red-200 bg-white shadow-sm dark:border-red-900/50 dark:bg-gray-950">
+            <div className="overflow-hidden rounded-lg border border-red-200 bg-white shadow-xs dark:border-red-900/50 dark:bg-gray-950">
               {/* Header */}
               <div className="border-b border-red-200 bg-red-50 px-6 py-4 dark:border-red-900/50 dark:bg-red-950/20">
                 <div className="flex items-start gap-4">
@@ -138,10 +139,13 @@ export class RemoteErrorBoundary extends Component<Props, State> {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold text-red-900 dark:text-red-100">
-                      {remoteName ? `Failed to Load ${remoteName}` : 'Module Loading Error'}
+                      {remoteName
+                        ? `Failed to Load ${remoteName}`
+                        : "Module Loading Error"}
                     </h3>
                     <p className="mt-1 text-sm text-red-700 dark:text-red-300">
-                      The application module encountered an error and couldn't be loaded
+                      The application module encountered an error and couldn't
+                      be loaded
                     </p>
                   </div>
                 </div>
@@ -173,7 +177,7 @@ export class RemoteErrorBoundary extends Component<Props, State> {
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={this.handleReset}
-                    className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   >
                     <RefreshCw className="h-4 w-4" />
                     Try Again
@@ -181,7 +185,7 @@ export class RemoteErrorBoundary extends Component<Props, State> {
 
                   <button
                     onClick={this.handleReload}
-                    className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                    className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                   >
                     <RefreshCw className="h-4 w-4" />
                     Reload Page
@@ -190,7 +194,7 @@ export class RemoteErrorBoundary extends Component<Props, State> {
                   {this.props.showHomeButton && (
                     <button
                       onClick={this.handleGoHome}
-                      className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                      className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                     >
                       <Home className="h-4 w-4" />
                       Go Home
@@ -203,7 +207,8 @@ export class RemoteErrorBoundary extends Component<Props, State> {
             {/* Help Text */}
             <div className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 dark:bg-blue-950/20 dark:border-blue-900/50">
               <p className="text-sm text-blue-800 dark:text-blue-200">
-                <strong className="font-semibold">What happened?</strong> This module failed to load or encountered an error during rendering.
+                <strong className="font-semibold">What happened?</strong> This
+                module failed to load or encountered an error during rendering.
                 The rest of the application should continue to work normally.
               </p>
             </div>
@@ -231,7 +236,7 @@ export function withRemoteErrorBoundary<P extends object>(
     onError?: (error: Error, errorInfo: ErrorInfo) => void;
     onReset?: () => void;
     showHomeButton?: boolean;
-  }
+  },
 ) {
   return function ErrorBoundaryWrapper(props: P) {
     return (

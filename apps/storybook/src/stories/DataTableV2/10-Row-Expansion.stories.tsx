@@ -252,7 +252,7 @@ export const CustomDetailPanel: Story = {
         showExpandColumn: true,
         getCanExpand: () => true, // All rows can expand
         renderExpandedRow: ({ row }: { row: Employee }) => (
-          <div className="p-4 space-y-3 bg-muted/20 dark:bg-muted/10 rounded">
+          <div className="p-4 space-y-3 bg-muted/20 dark:bg-muted/10 rounded-sm">
             <h4 className="font-semibold text-sm">Employee Details</h4>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>

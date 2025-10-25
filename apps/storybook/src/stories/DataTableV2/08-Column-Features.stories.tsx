@@ -358,18 +358,18 @@ export const ControlledColumnState: Story = {
                 supplier: !old.supplier,
               }))
             }
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="rounded-sm bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             Toggle Supplier Column
           </button>
           <button
             onClick={() => setColumnVisibility({})}
-            className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+            className="rounded-sm bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
           >
             Show All Columns
           </button>
         </div>
-        <div className="rounded border p-2 text-sm">
+        <div className="rounded-sm border p-2 text-sm">
           <strong>Current state:</strong> Supplier{" "}
           {columnVisibility.supplier === false ? "hidden" : "visible"}
         </div>
@@ -502,7 +502,7 @@ export const TextTruncationAndOverflow: Story = {
 
     return (
       <div className="space-y-4">
-        <div className="rounded border border-border bg-muted/50 p-4 text-sm">
+        <div className="rounded-sm border border-border bg-muted/50 p-4 text-sm">
           <p className="font-semibold mb-2">Testing Text Truncation:</p>
           <ul className="list-disc list-inside space-y-1 text-muted-foreground">
             <li>Column headers with very long names truncate with ellipsis</li>
