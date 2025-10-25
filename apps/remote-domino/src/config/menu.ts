@@ -1,99 +1,125 @@
-import type { MenuItem } from '../types/menu';
+import type { MenuItem } from "../types/menu";
 
 /**
- * Mock menu configuration for Domino application
- * 
- * In production, this would be fetched from an API endpoint.
- * The structure matches the expected API response format.
+ * Documentation menu configuration for OnePortal
+ *
+ * This app serves as a boilerplate and documentation reference
+ * for developers building micro-frontends in the OnePortal ecosystem.
  */
 export const menuItems: MenuItem[] = [
-    {
-        name: 'Dashboard',
-        path: '/dashboard',
-        icon: 'LayoutDashboard',
-        order: 1,
-        description: 'Overview and metrics',
-        children: [
-            {
-                name: 'Events',
-                path: '/dashboard/events',
-                icon: 'Calendar',
-                order: 1,
-                description: 'Event management',
-            },
-            {
-                name: 'Tasks',
-                path: '/dashboard/tasks',
-                icon: 'CheckSquare',
-                order: 2,
-                description: 'Task tracking',
-            },
-            {
-                name: 'Workflows',
-                path: '/dashboard/workflows',
-                icon: 'Workflow',
-                order: 3,
-                description: 'Workflow automation',
-            },
-        ],
-    },
+  {
+    name: "Home",
+    path: "/",
+    icon: "Home",
+    order: 1,
+    description: "Welcome to OnePortal",
+  },
+  {
+    name: "Getting Started",
+    path: "/getting-started",
+    icon: "Rocket",
+    order: 2,
+    description: "Quick start guide",
+  },
+  {
+    name: "Repository",
+    path: "/repository",
+    icon: "FolderTree",
+    order: 3,
+    description: "Project structure",
+  },
+  {
+    name: "Tech Stack",
+    path: "/tech-stack",
+    icon: "Layers",
+    order: 4,
+    description: "Technologies used",
+  },
+  {
+    name: "UI Components",
+    path: "/components",
+    icon: "Box",
+    order: 5,
+    description: "Shared component library",
+  },
+  {
+    name: "DataTable",
+    path: "/datatable",
+    icon: "Table",
+    order: 6,
+    description: "DataTable guide",
+  },
+  {
+    name: "Routing",
+    path: "/routing",
+    icon: "Route",
+    order: 7,
+    description: "TanStack Router",
+  },
+  {
+    name: "Styling",
+    path: "/styling",
+    icon: "Palette",
+    order: 8,
+    description: "Tailwind CSS",
+  },
 ];
 
 /**
  * Fetch menu configuration from API
- * 
+ *
  * @returns Promise resolving to menu items
  */
 export async function fetchMenuItems(): Promise<MenuItem[]> {
-    // TODO: Replace with actual API call
-    // const response = await fetch('/api/menu');
-    // const data = await response.json();
-    // return data.items;
+  // TODO: Replace with actual API call
+  // const response = await fetch('/api/menu');
+  // const data = await response.json();
+  // return data.items;
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
-    return menuItems;
+  return menuItems;
 }
 
 /**
  * Get menu item by path
- * 
+ *
  * @param path - The route path to search for
  * @returns The matching menu item or undefined
  */
 export function getMenuItemByPath(path: string): MenuItem | undefined {
-    const findInItems = (items: MenuItem[]): MenuItem | undefined => {
-        for (const item of items) {
-            if (item.path === path) {
-                return item;
-            }
-            if (item.children) {
-                const found = findInItems(item.children);
-                if (found) return found;
-            }
-        }
-        return undefined;
-    };
+  const findInItems = (items: MenuItem[]): MenuItem | undefined => {
+    for (const item of items) {
+      if (item.path === path) {
+        return item;
+      }
+      if (item.children) {
+        const found = findInItems(item.children);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  };
 
-    return findInItems(menuItems);
+  return findInItems(menuItems);
 }
 
 /**
  * Get all menu items flattened (including children)
- * 
+ *
  * @returns Array of all menu items
  */
 export function getAllMenuItems(): MenuItem[] {
-    const flatten = (items: MenuItem[]): MenuItem[] => {
-        return items.reduce<MenuItem[]>((acc, item) => {
-            acc.push(item);
-            if (item.children) {
-                acc.push(...flatten(item.children));
-            }
-            return acc;
-        }, []);
-    };
+  const flatten = (items: MenuItem[]): MenuItem[] => {
+    return items.reduce<MenuItem[]>((acc, item) => {
+      acc.push(item);
+      if (item.children) {
+        acc.push(...flatten(item.children));
+      }
+      return acc;
+    }, []);
+  };
 
-    return flatten(menuItems);
+  return flatten(menuItems);
 }

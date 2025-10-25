@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@one-portal/ui';
-import { AppSidebar } from './AppSidebar';
-import { AppBreadcrumb } from './AppBreadcrumb';
+import * as React from "react";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@one-portal/ui";
+import { AppSidebar } from "./AppSidebar";
+import { AppBreadcrumb } from "./AppBreadcrumb";
 
 /**
  * Application layout wrapper with sidebar and breadcrumb
- * 
+ *
  * Features:
  * - Responsive: Mobile drawer, desktop collapsible sidebar
  * - Cookie persistence for sidebar state (desktop only)
@@ -14,24 +14,24 @@ import { AppBreadcrumb } from './AppBreadcrumb';
  * - Contained layout for micro-frontend (doesn't overlap shell)
  */
 export function AppLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <div className="relative min-h-[calc(100vh-70px)] w-full overflow-hidden">
-            <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>
-                    <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                        <div className="flex items-center gap-2 px-4">
-                            <SidebarTrigger className="-ml-1" />
-                            <div className="flex-1">
-                                <AppBreadcrumb />
-                            </div>
-                        </div>
-                    </header>
-                    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                        {children}
-                    </div>
-                </SidebarInset>
-            </SidebarProvider>
-        </div>
-    );
+  return (
+    <div className="relative min-h-[calc(100vh-70px)] w-full overflow-hidden">
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <header className="border-b-1 border-b-muted shadow-xs flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+            <div className="flex items-center gap-2 px-4">
+              <SidebarTrigger className="-ml-1" />
+              <div className="flex-1">
+                <AppBreadcrumb />
+              </div>
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col p-4 pt-0 max-h-[calc(100vh-70px)] overflow-auto">
+            {children}
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
+  );
 }
