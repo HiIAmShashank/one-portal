@@ -57,6 +57,9 @@ export function createMsalConfig(authConfig: AuthConfig): Configuration {
       redirectUri: authConfig.redirectUri,
       postLogoutRedirectUri: authConfig.postLogoutRedirectUri,
       navigateToLoginRequestUrl: false,
+      OIDCOptions: {
+        defaultScopes: authConfig.scopes,
+      },
     },
     cache: {
       cacheLocation: "localStorage",
