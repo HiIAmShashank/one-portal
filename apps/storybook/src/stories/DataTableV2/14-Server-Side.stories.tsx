@@ -497,7 +497,7 @@ export const ServerSideWithErrors: Story = {
                 <p className="text-destructive font-medium">{error.message}</p>
                 <button
                   onClick={handleRetry}
-                  className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+                  className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-sm hover:bg-primary/90"
                 >
                   Retry Request
                 </button>

@@ -283,7 +283,7 @@ export const ControlledDensity: Story = {
           <span className="text-sm font-medium">External Density Control:</span>
           <button
             onClick={() => setDensity("compact")}
-            className={`rounded px-3 py-1 text-sm ${
+            className={`rounded-sm px-3 py-1 text-sm ${
               density === "compact"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
@@ -293,7 +293,7 @@ export const ControlledDensity: Story = {
           </button>
           <button
             onClick={() => setDensity("default")}
-            className={`rounded px-3 py-1 text-sm ${
+            className={`rounded-sm px-3 py-1 text-sm ${
               density === "default"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
@@ -303,7 +303,7 @@ export const ControlledDensity: Story = {
           </button>
           <button
             onClick={() => setDensity("comfortable")}
-            className={`rounded px-3 py-1 text-sm ${
+            className={`rounded-sm px-3 py-1 text-sm ${
               density === "comfortable"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"

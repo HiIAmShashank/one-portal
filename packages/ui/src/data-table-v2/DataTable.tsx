@@ -534,7 +534,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
             className={cn(
               "border-b border-border dark:border-border",
               stickyHeader &&
-                "sticky top-0 z-20 bg-background dark:bg-background shadow-sm",
+                "sticky top-0 z-20 bg-background dark:bg-background shadow-xs",
             )}
           >
             {table.getHeaderGroups().map((headerGroup) => {
@@ -578,10 +578,8 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                           (stickyHeader || isPinned) &&
                             "bg-background dark:bg-background",
                           // Directional shadows for pinned columns
-                          isPinned === "left" &&
-                            "shadow-[4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]",
-                          isPinned === "right" &&
-                            "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                          isPinned === "left" && "shadow-pinned-right",
+                          isPinned === "right" && "shadow-pinned-left",
                         )}
                       >
                         {header.isPlaceholder ? null : reorderingEnabled &&
@@ -706,10 +704,8 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                           (stickyHeader || isPinned) &&
                             "bg-muted/30 dark:bg-muted/20",
                           // Directional shadows for pinned columns
-                          isPinned === "left" &&
-                            "shadow-[4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_8px_-2px_rgba(0,0,0,0.3)]",
-                          isPinned === "right" &&
-                            "shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[-4px_0_8px_-2px_rgba(0,0,0,0.3)]",
+                          isPinned === "left" && "shadow-pinned-right",
+                          isPinned === "right" && "shadow-pinned-left",
                         )}
                       >
                         {/* Show filter only for non-special columns that allow filtering */}
@@ -929,7 +925,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                                   e.stopPropagation();
                                   row.toggleExpanded();
                                 }}
-                                className="inline-flex items-center justify-center h-6 w-6 rounded hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
+                                className="inline-flex items-center justify-center h-6 w-6 rounded-sm hover:bg-muted/50 dark:hover:bg-muted/50 transition-colors"
                               >
                                 {row.getIsExpanded() ? (
                                   <span className="text-sm">▼</span>

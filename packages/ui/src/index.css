@@ -1,8 +1,40 @@
-@import "tailwindcss";
+/* Set source base path to monorepo root (3 levels up from this file) */
+@import "tailwindcss" source("../../..");
+
+/* ============================================
+   Dark Mode - Class-Based Strategy
+   ============================================
+   Uses Tailwind Vite plugin which supports @custom-variant
+   The dark variant targets elements when .dark class is present
+   on any ancestor (typically <html> or <body>)
+   ============================================ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================
+   Scan all apps and packages from monorepo root
+   ============================================
+   Glob patterns scan:
+   - All apps: shell, remote-domino, storybook
+   - All packages: ui, auth, config, types
+
+   This generates comprehensive CSS with all
+   utility classes used anywhere in the monorepo.
+   ============================================ */
+
+/* Scan all app source code */
+@source "apps/*/src/**/*.{ts,tsx}";
+
+/* Scan all package source code */
+@source "packages/*/src/**/*.{ts,tsx}";
+
+/* Performance: Exclude test/config/type definition files */
+@source not "**/*.test.{ts,tsx}";
+@source not "**/*.spec.{ts,tsx}";
+@source not "**/*.config.{ts,tsx}";
+@source not "**/*.d.ts";
+
 @import "./theme.css";
 @import "tw-animate-css";
-
-@custom-variant dark (&:is(.dark *));
 
 :root {
   --sidebar: hsl(0 0% 98%);

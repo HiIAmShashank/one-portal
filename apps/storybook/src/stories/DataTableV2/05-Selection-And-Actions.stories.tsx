@@ -538,13 +538,13 @@ export const ControlledSelection: Story = {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setRowSelection({ "0": true, "1": true, "2": true })}
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="rounded-sm bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             Select First 3
           </button>
           <button
             onClick={() => setRowSelection({})}
-            className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+            className="rounded-sm bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
           >
             Clear Selection
           </button>
