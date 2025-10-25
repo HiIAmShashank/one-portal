@@ -45,11 +45,16 @@ A micro-frontend portal built with Module Federation, Turborepo, and Tailwind CS
 one-portal/
 ├── apps/
 │   ├── shell/                 # Host application (Module Federation shell)
-│   └── remote-*/              # Remote micro-frontend applications
+│   ├── remote-*/              # Remote micro-frontend applications
+│   └── storybook/             # Component documentation (dev only)
 ├── packages/
 │   ├── ui/                    # Shared UI component library (shadcn/ui)
+│   ├── auth/                  # Unified authentication utilities
+│   ├── config/                # Shared configuration and utilities
 │   ├── types/                 # Shared TypeScript types
-│   └── eslint-config/         # Shared ESLint configuration
+│   └── tailwind-config/       # Centralized design tokens
+├── docs/                      # Project documentation
+│   └── generators/            # Generator usage and architecture docs
 ├── scripts/
 │   └── combine-builds.js      # Combines remote builds for deployment
 └── turbo/
@@ -137,33 +142,93 @@ Use the Turborepo generator to scaffold new remote applications:
 # Run the generator
 pnpm turbo gen remote-app
 
-# Follow the prompts:
+# Follow the interactive prompts:
 # - App Name: billing (lowercase, no spaces)
 # - Display Name: Billing
 # - Description: Billing and invoicing management
 # - Display Order: 3
+# - Include OnePortal documentation routes? (Yes/No)
+#   If No:
+# - Include example dashboard with nested routes? (Yes/No)
 ```
 
+### Generation Modes
+
+The generator supports three modes:
+
+1. **Documentation Mode** - Creates menu structure for OnePortal documentation (8 menu items)
+   - Ideal for: Documentation or onboarding apps
+   - Note: Only menu structure created; copy actual route files from `apps/remote-domino/src/routes/` as needed
+
+2. **Dashboard Mode** - Creates dashboard menu with nested routes (4 menu items)
+   - Ideal for: Business applications with multiple sections
+   - Note: Basic menu structure generated; add your business logic
+
+3. **Minimal Mode** - Creates basic menu (home and about)
+   - Ideal for: Starting fresh with your own structure
+
 ### What the Generator Creates
+
+**Complete app structure** with 25+ files:
 
 ```
 apps/remote-{appName}/
 ├── src/
-│   ├── App.tsx              # Main component
-│   ├── bootstrap.tsx        # Module Federation mount/unmount
-│   ├── main.tsx             # Standalone entry point
-│   └── vite-env.d.ts        # Vite types
-├── index.html               # HTML template
-├── package.json             # Dependencies (includes @one-portal/ui)
-├── vite.config.ts           # Module Federation configuration
-├── tsconfig.json            # TypeScript config
-└── eslint.config.js         # ESLint config
+│   ├── App.tsx                   # Router and QueryClient setup
+│   ├── bootstrap.tsx             # Module Federation mount/unmount
+│   ├── main.tsx                  # Standalone entry point with conditional CSS
+│   ├── vite-env.d.ts             # Environment variable types
+│   ├── auth/
+│   │   └── msalInstance.ts       # MSAL factory configuration
+│   ├── components/
+│   │   ├── AppLayout.tsx         # Main layout wrapper
+│   │   ├── AppSidebar.tsx        # Navigation sidebar
+│   │   └── AppBreadcrumb.tsx     # Breadcrumb navigation
+│   ├── config/
+│   │   ├── menu.ts               # Menu configuration (mode-specific)
+│   │   └── routes.ts             # Public routes definition
+│   ├── routes/
+│   │   ├── __root.tsx            # Root route with auth guard
+│   │   ├── index.tsx             # Home page (mode-specific content)
+│   │   ├── sign-in.tsx           # Sign-in page
+│   │   └── auth/
+│   │       └── callback.tsx      # OAuth callback handler
+│   ├── types/
+│   │   └── menu.ts               # TypeScript types
+│   └── debug/
+│       └── authDebug.ts          # Development auth debugging
+├── .env.local.example            # Environment template
+├── .gitignore                    # Git ignore patterns
+├── index.html                    # HTML template
+├── package.json                  # All required dependencies
+├── vite.config.ts                # Module Federation + Tailwind
+├── tsconfig.json                 # TypeScript with path mappings
+├── tsconfig.node.json            # Node TypeScript config
+└── eslint.config.js              # ESLint configuration
 ```
 
-### Generator Also Updates
+**Modern Patterns Used:**
+
+- `UnifiedAuthProvider` from `@one-portal/auth` (not custom MSALProvider)
+- `createMsalInstanceWithConfig()` factory pattern
+- `createProtectedRouteGuard()` for route protection
+- `createQueryClient()` with auth-aware retry logic
+- Conditional CSS import for standalone/embedded modes
+
+### Shell Integration
+
+Generator automatically updates:
 
 1. **`scripts/combine-builds.js`** - Adds new remote to deployment script
-2. **Shell navigation** - Adds route to navigation menu
+2. **`apps/shell/src/routes/__root.tsx`** - Adds app to navigation
+3. **`apps/shell/src/routes/apps.$appId.tsx`** - Adds app to route loader
+
+### Documentation
+
+For detailed generator usage and customization:
+
+- **User Guide:** `docs/generators/README.md`
+- **Architecture:** `docs/generators/ARCHITECTURE.md`
 
 ### Important: Remote Apps Don't Need CSS
 
@@ -255,11 +320,11 @@ All shadcn components and Tailwind utilities automatically adapt to dark mode.
 
 ## Storybook - Component Documentation
 
-OnePortal includes a **Storybook application** for comprehensive DataTable component documentation and testing.
+OnePortal includes a **Storybook application** for comprehensive DataTable V2 component documentation and testing.
 
 ### What is Storybook?
 
-Storybook is an interactive component showcase that demonstrates all features of the `DataTable` component from `@one-portal/ui`. It includes:
+Storybook is an interactive component showcase that demonstrates all features of the `DataTable` component (V2) from `@one-portal/ui`. It includes:
 
 - Real-world examples with realistic mock data
 - Interactive controls for all component props
@@ -289,7 +354,7 @@ apps/storybook/
 ├── src/
 │   ├── stories/
 │   │   ├── Welcome.stories.tsx
-│   │   └── DataTable/       # DataTable feature stories
+│   │   └── DataTableV2/     # DataTable V2 feature stories
 │   └── mocks/
 │       ├── data-generators.ts    # Faker.js mock data generators
 │       └── column-definitions.tsx # Reusable column configurations
@@ -324,7 +389,7 @@ Storybook uses `@faker-js/faker` to generate realistic test data:
 
 ### Progress Tracking
 
-Implementation progress is tracked in `STORYBOOK_CHECKLIST.md` at the project root.
+Implementation progress is tracked in `docs/STORYBOOK_CHECKLIST.md`.
 
 ## Architecture
 

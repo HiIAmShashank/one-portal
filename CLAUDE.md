@@ -413,7 +413,7 @@ apps/storybook/
 │   └── storybook.css    # Custom Storybook styles
 ├── src/
 │   ├── stories/         # Story files organized by feature
-│   │   ├── DataTable/   # DataTable feature stories
+│   │   ├── DataTableV2/ # DataTable V2 feature stories
 │   │   └── Welcome.stories.tsx
 │   └── mocks/           # Mock data infrastructure
 │       ├── data-generators.ts   # Faker.js data generators
@@ -477,7 +477,7 @@ Stories are organized by feature area:
 
 ### Progress Tracking
 
-See `STORYBOOK_CHECKLIST.md` at project root for implementation progress. This file tracks:
+See `docs/STORYBOOK_CHECKLIST.md` for implementation progress. This file tracks:
 - Completed phases and tasks
 - Current implementation status
 - Next steps for story development
@@ -691,23 +691,45 @@ pnpm build
 ### Turborepo Generator
 
 Located in `turbo/generators/`:
-- `config.ts` - Generator configuration
-- `templates/remote-app/` - Template files with Handlebars syntax
+- `config.ts` - Generator configuration with prompts and actions
+- `templates/remote-app/` - 25+ Handlebars template files for complete app structure
+
+**Generator Creates:**
+- Complete app structure with authentication (MSAL), routing (TanStack Router), and layout
+- Modern patterns: UnifiedAuthProvider, createProtectedRouteGuard, factory patterns
+- Three generation modes:
+  1. **Documentation Mode** - Menu structure for OnePortal documentation (8 items)
+  2. **Dashboard Mode** - Menu structure with nested routes (4 items)
+  3. **Minimal Mode** - Basic menu (home and about)
+- Shell integration: Automatically updates combine-builds.js and shell navigation
 
 **Variables available in templates:**
 - `{{appName}}` - Lowercase name (e.g., "billing")
 - `{{displayName}}` - Display name (e.g., "Billing")
 - `{{description}}` - App description
 - `{{displayOrder}}` - Menu order number
+- `{{includeDocumentation}}` - Boolean for documentation mode
+- `{{includeExampleDashboard}}` - Boolean for dashboard mode (skipped if documentation=true)
+
+**Generator Documentation:**
+- `docs/generators/README.md` - User guide with usage examples and troubleshooting
+- `docs/generators/ARCHITECTURE.md` - Technical guide for modifying the generator
 
 ## Specs & Documentation
 
-The `specs/` directory contains design documents:
+**Design Specifications** (`specs/` directory):
 - `001-front-end-host/` - Initial shell architecture
 - `002-add-single-sign/` - SSO authentication design
 - `003-monorepo-css-isolation/` - Centralized CSS architecture
 
-Reference these when making architectural changes.
+**Project Documentation** (`docs/` directory):
+- `docs/generators/` - Turborepo generator documentation
+- `docs/DATATABLE_V2_PROGRESS.md` - DataTable V2 implementation tracking
+- `docs/STORYBOOK_CHECKLIST.md` - Storybook story implementation progress
+- `docs/IMPROVEMENT_SUMMARY.md` - Historical improvements and decisions
+- Other technical documentation and analysis files
+
+Reference these when making architectural changes or understanding implementation details.
 
 ## Important Notes
 
