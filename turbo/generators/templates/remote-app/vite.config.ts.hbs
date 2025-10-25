@@ -1,12 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import federation from '@originjs/vite-plugin-federation';
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   plugins: [
-    TanStackRouterVite(),
+    tanstackRouter(),
     react(),
+    tailwindcss(),
     federation({
       name: '{{ appName }}',
       filename: 'remoteEntry.js',
@@ -14,14 +16,40 @@ export default defineConfig({
         './App': './src/App.tsx',
         './bootstrap': './src/bootstrap.tsx',
       },
-      shared: ['react', 'react-dom'],
+      shared: {
+        react: {
+          singleton: true,
+          requiredVersion: '^19.2.0',
+        },
+        'react-dom': {
+          singleton: true,
+          requiredVersion: '^19.2.0',
+        },
+        '@tanstack/react-query': {
+          singleton: true,
+        },
+        '@tanstack/react-router': {
+          singleton: true,
+        },
+        'lucide-react': {
+          singleton: true,
+        },
+      },
     }),
   ],
   base: process.env.NODE_ENV === 'production' ? '/{{ appName }}/' : '/',
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
+  preview: {
+    port: 4173,
+    strictPort: true,
+  },
   build: {
     modulePreload: false,
     target: 'esnext',
-    minify: false,
+    minify: true,
     cssCodeSplit: false,
     rollupOptions: {
       output: {
