@@ -32,10 +32,7 @@ function SignInComponent() {
   const search = useSearch({ from: "/sign-in" });
   const signInButtonRef = useRef<HTMLButtonElement>(null);
 
-  const [srAnnouncement, setSrAnnouncement] = useState(""); /**
-   * Announce auth state changes to screen readers (T114: US7)
-   * Sets temporary announcement that auto-clears after 3 seconds
-   */
+  const [srAnnouncement, setSrAnnouncement] = useState("");
   const announceToScreenReader = (message: string) => {
     setSrAnnouncement(message);
     setTimeout(() => setSrAnnouncement(""), 3000);
@@ -63,7 +60,7 @@ function SignInComponent() {
         "Signed out successfully. You have been signed out of all apps.",
       );
     }
-  }, [search]); // If already authenticated, redirect to returnUrl or home
+  }, [search]);
   useEffect(() => {
     if (isAuthenticated) {
       const destination = search.returnUrl || "/";
@@ -71,11 +68,6 @@ function SignInComponent() {
     }
   }, [isAuthenticated, search.returnUrl, navigate]);
 
-  /**
-   * Handle interactive login
-   * After successful login, user will be redirected back via handleRedirectPromise
-   * which will read returnUrl from localStorage
-   */
   const handleSignIn = async () => {
     try {
       if (search.returnUrl) {

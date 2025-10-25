@@ -3,8 +3,13 @@
  * Tries acquireTokenSilent first, falls back to interactive methods when necessary.
  */
 
-import type { IPublicClientApplication, AccountInfo, SilentRequest, PopupRequest } from '@azure/msal-browser';
-import { InteractionRequiredAuthError } from '@azure/msal-browser';
+import type {
+  IPublicClientApplication,
+  AccountInfo,
+  SilentRequest,
+  PopupRequest,
+} from "@azure/msal-browser";
+import { InteractionRequiredAuthError } from "@azure/msal-browser";
 
 export interface AcquireTokenOptions {
   msalInstance: IPublicClientApplication;
@@ -24,17 +29,10 @@ export interface TokenResult {
 /**
  * Flow: Try silent acquisition (cache/refresh), fallback to popup if forceInteractive=true
  */
-export async function acquireToken(options: AcquireTokenOptions): Promise<TokenResult> {
+export async function acquireToken(
+  options: AcquireTokenOptions,
+): Promise<TokenResult> {
   const { msalInstance, account, scopes, forceInteractive = false } = options;
-
-  // Log attempt in dev mode (FR-010 Telemetry)
-  if (import.meta.env.DEV) {
-    console.log('[acquireToken] Attempting silent token acquisition', {
-      account: account.username,
-      scopes,
-      timestamp: new Date().toISOString(),
-    });
-  }
 
   const silentRequest: SilentRequest = {
     scopes,
@@ -44,15 +42,6 @@ export async function acquireToken(options: AcquireTokenOptions): Promise<TokenR
 
   try {
     const response = await msalInstance.acquireTokenSilent(silentRequest);
-
-    if (import.meta.env.DEV) {
-      console.log('[acquireToken] ✅ Silent token acquisition successful', {
-        account: response.account?.username,
-        scopes: response.scopes,
-        expiresOn: response.expiresOn,
-        timestamp: new Date().toISOString(),
-      });
-    }
 
     return {
       accessToken: response.accessToken,
@@ -64,7 +53,7 @@ export async function acquireToken(options: AcquireTokenOptions): Promise<TokenR
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {
       if (import.meta.env.DEV) {
-        console.warn('[acquireToken] ⚠️ Interaction required', {
+        console.warn("[acquireToken] ⚠️ Interaction required", {
           error: error.message,
           errorCode: error.errorCode,
           forceInteractive,
@@ -79,12 +68,12 @@ export async function acquireToken(options: AcquireTokenOptions): Promise<TokenR
       // Re-throw for caller to handle (e.g., redirect to sign-in)
       throw new Error(
         `Token acquisition requires user interaction. ${error.message}. ` +
-        `Error code: ${error.errorCode}`
+          `Error code: ${error.errorCode}`,
       );
     }
 
     if (import.meta.env.DEV) {
-      console.error('[acquireToken] ❌ Token acquisition failed', {
+      console.error("[acquireToken] ❌ Token acquisition failed", {
         error: error instanceof Error ? error.message : String(error),
         timestamp: new Date().toISOString(),
       });
@@ -92,38 +81,23 @@ export async function acquireToken(options: AcquireTokenOptions): Promise<TokenR
 
     throw error instanceof Error
       ? error
-      : new Error('Unknown error during token acquisition');
+      : new Error("Unknown error during token acquisition");
   }
 }
 
 async function acquireTokenInteractive(
   msalInstance: IPublicClientApplication,
   scopes: string[],
-  account: AccountInfo
+  account: AccountInfo,
 ): Promise<TokenResult> {
-  if (import.meta.env.DEV) {
-    console.log('[acquireToken] Starting interactive popup flow', {
-      scopes,
-      account: account.username,
-    });
-  }
-
   const popupRequest: PopupRequest = {
     scopes,
     account,
-    prompt: 'select_account', // Let user confirm account
+    prompt: "select_account", // Let user confirm account
   };
 
   try {
     const response = await msalInstance.acquireTokenPopup(popupRequest);
-
-    if (import.meta.env.DEV) {
-      console.log('[acquireToken] ✅ Interactive token acquisition successful', {
-        account: response.account?.username,
-        scopes: response.scopes,
-        expiresOn: response.expiresOn,
-      });
-    }
 
     return {
       accessToken: response.accessToken,
@@ -134,13 +108,13 @@ async function acquireTokenInteractive(
     };
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.error('[acquireToken] ❌ Interactive token acquisition failed', {
+      console.error("[acquireToken] ❌ Interactive token acquisition failed", {
         error: error instanceof Error ? error.message : String(error),
       });
     }
 
     throw new Error(
-      `Interactive token acquisition failed: ${error instanceof Error ? error.message : String(error)}`
+      `Interactive token acquisition failed: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }
@@ -148,7 +122,10 @@ async function acquireTokenInteractive(
 /**
  * Validates token with configurable buffer period before expiry
  */
-export function isTokenValid(expiresOn: Date | null, bufferMinutes: number = 5): boolean {
+export function isTokenValid(
+  expiresOn: Date | null,
+  bufferMinutes: number = 5,
+): boolean {
   if (!expiresOn) return false;
 
   const now = new Date();

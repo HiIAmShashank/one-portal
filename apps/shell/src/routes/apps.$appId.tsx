@@ -1,22 +1,30 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { RemoteMount } from '../components/RemoteMount';
+import { createFileRoute } from "@tanstack/react-router";
+import { RemoteMount } from "../components/RemoteMount";
 
-export const Route = createFileRoute('/apps/$appId')({
+export const Route = createFileRoute("/apps/$appId")({
   component: AppComponent,
 });
 
 function AppComponent() {
   const { appId } = Route.useParams();
 
-  const mockApps = [{
-    id: 'domino',
-    name: 'Domino',
-    remoteEntryUrl: '/domino/assets/remoteEntry.js',
-    moduleName: 'domino',
-    scope: 'domino',
-    displayOrder: 1,
-  },
-
+  const mockApps = [
+    {
+      id: "domino",
+      name: "Domino",
+      remoteEntryUrl: "/domino/assets/remoteEntry.js",
+      moduleName: "domino",
+      scope: "domino",
+      displayOrder: 1,
+    },
+    {
+      id: "one-portal-admin",
+      name: "One Portal Admin",
+      remoteEntryUrl: "/one-portal-admin/assets/remoteEntry.js",
+      moduleName: "one-portal-admin",
+      scope: "one-portal-admin",
+      displayOrder: 3,
+    },
   ];
 
   const app = mockApps.find((a) => a.id === appId);

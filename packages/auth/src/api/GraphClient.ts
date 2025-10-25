@@ -1,6 +1,6 @@
-import type { TokenResult } from '../utils/acquireToken';
+import type { TokenResult } from "../utils/acquireToken";
 
-const GRAPH_API_BASE = 'https://graph.microsoft.com/v1.0';
+const GRAPH_API_BASE = "https://graph.microsoft.com/v1.0";
 
 export interface GraphUser {
   id: string;
@@ -41,7 +41,7 @@ export interface GraphError {
     code: string;
     message: string;
     innerError?: {
-      'request-id': string;
+      "request-id": string;
       date: string;
     };
   };
@@ -59,24 +59,10 @@ export class GraphClient {
    */
   async getUserProfile(tokenResult: TokenResult): Promise<GraphUser> {
     const endpoint = `${this.baseUrl}/me`;
-
-    if (import.meta.env.DEV) {
-      console.log('[GraphClient] Fetching user profile', {
-        endpoint,
-        scopes: tokenResult.scopes,
-        account: tokenResult.account.username,
-      });
-    }
-
-    const response = await this.fetchGraphAPI<GraphUser>(endpoint, tokenResult.accessToken);
-
-    if (import.meta.env.DEV) {
-      console.log('[GraphClient] ✅ User profile fetched', {
-        userId: response.id,
-        displayName: response.displayName,
-      });
-    }
-
+    const response = await this.fetchGraphAPI<GraphUser>(
+      endpoint,
+      tokenResult.accessToken,
+    );
     return response;
   }
 
@@ -85,30 +71,14 @@ export class GraphClient {
    */
   async getManager(tokenResult: TokenResult): Promise<GraphManager | null> {
     const endpoint = `${this.baseUrl}/me/manager`;
-
-    if (import.meta.env.DEV) {
-      console.log('[GraphClient] Fetching user manager', {
-        endpoint,
-        scopes: tokenResult.scopes,
-      });
-    }
-
     try {
-      const response = await this.fetchGraphAPI<GraphManager>(endpoint, tokenResult.accessToken);
-
-      if (import.meta.env.DEV) {
-        console.log('[GraphClient] ✅ Manager fetched', {
-          managerId: response.id,
-          displayName: response.displayName,
-        });
-      }
-
+      const response = await this.fetchGraphAPI<GraphManager>(
+        endpoint,
+        tokenResult.accessToken,
+      );
       return response;
     } catch (error) {
       if (this.isNotFoundError(error)) {
-        if (import.meta.env.DEV) {
-          console.log('[GraphClient] ℹ️ No manager found');
-        }
         return null;
       }
       throw error;
@@ -118,49 +88,39 @@ export class GraphClient {
   /**
    * Requires scope: User.Read.All
    */
-  async getDirectReports(tokenResult: TokenResult): Promise<GraphDirectReport[]> {
+  async getDirectReports(
+    tokenResult: TokenResult,
+  ): Promise<GraphDirectReport[]> {
     const endpoint = `${this.baseUrl}/me/directReports`;
-
-    if (import.meta.env.DEV) {
-      console.log('[GraphClient] Fetching direct reports', {
-        endpoint,
-        scopes: tokenResult.scopes,
-      });
-    }
-
     const response = await this.fetchGraphAPI<{ value: GraphDirectReport[] }>(
       endpoint,
-      tokenResult.accessToken
+      tokenResult.accessToken,
     );
-
-    if (import.meta.env.DEV) {
-      console.log('[GraphClient] ✅ Direct reports fetched', {
-        count: response.value.length,
-      });
-    }
-
     return response.value;
   }
 
-  private async fetchGraphAPI<T>(endpoint: string, accessToken: string): Promise<T> {
+  private async fetchGraphAPI<T>(
+    endpoint: string,
+    accessToken: string,
+  ): Promise<T> {
     const response = await fetch(endpoint, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
     });
 
     if (!response.ok) {
       const errorData: GraphError = await response.json().catch(() => ({
         error: {
-          code: 'UnknownError',
+          code: "UnknownError",
           message: `HTTP ${response.status}: ${response.statusText}`,
         },
       }));
 
       if (import.meta.env.DEV) {
-        console.error('[GraphClient] ❌ API call failed', {
+        console.error("[GraphClient] ❌ API call failed", {
           endpoint,
           status: response.status,
           error: errorData.error,
@@ -171,7 +131,7 @@ export class GraphClient {
         errorData.error.message,
         errorData.error.code,
         response.status,
-        errorData
+        errorData,
       );
     }
 
@@ -188,10 +148,10 @@ export class GraphAPIError extends Error {
     message: string,
     public code: string,
     public statusCode: number,
-    public details?: GraphError
+    public details?: GraphError,
   ) {
     super(message);
-    this.name = 'GraphAPIError';
+    this.name = "GraphAPIError";
   }
 }
 

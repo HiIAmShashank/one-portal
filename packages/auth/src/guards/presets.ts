@@ -137,10 +137,6 @@ export function createProtectedRouteGuard(
     }) => {
       // Don't run guard during route preload (lazy-loaded routes)
       if (preload) {
-        console.log(
-          "[RouteGuard] Skipping guard during preload:",
-          location.href,
-        );
         return;
       }
       return guard({ location });
@@ -204,7 +200,6 @@ export function createCallbackRouteGuard(
     try {
       // Handle redirect promise to complete authentication
       await msalInstance.handleRedirectPromise();
-      console.log("[RouteGuard] OAuth callback handled successfully");
     } catch (error) {
       console.error("[RouteGuard] OAuth callback failed:", error);
       AuthErrorHandler.show(error);

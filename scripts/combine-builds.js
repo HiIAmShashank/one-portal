@@ -35,6 +35,13 @@ const APPS = [
     destination: path.join(BUILD_DIR, 'domino'),
     description: 'Domino Remote App'
   }
+,
+  {
+    name: 'one-portal-admin',
+    source: path.join(ROOT_DIR, 'apps/remote-one-portal-admin/dist'),
+    destination: path.join(BUILD_DIR, 'one-portal-admin'),
+    description: 'One Portal Admin Remote App'
+  }
 
 ];
 

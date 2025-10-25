@@ -10,37 +10,11 @@ import { PUBLIC_ROUTES } from "../config/routes";
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
-    // Debug: Log every route navigation
-    console.info("[Shell Root] beforeLoad START:", location.pathname);
-    console.info("[Shell Root] PUBLIC_ROUTES:", PUBLIC_ROUTES);
-    console.info(
-      "[Shell Root] isPublicRoute check:",
-      isPublicRoute(location.pathname, PUBLIC_ROUTES),
-    );
-
-    // Skip authentication for public routes
     if (isPublicRoute(location.pathname, PUBLIC_ROUTES)) {
-      console.info(
-        "[Shell Root] Public route, skipping guard:",
-        location.pathname,
-      );
       return;
     }
-
-    console.info(
-      "[Shell Root] Protected route, running guard:",
-      location.pathname,
-    );
-    console.info(
-      "[Shell Root] MSAL accounts:",
-      msalInstance.getAllAccounts().length,
-    );
-
-    // Use preset guard for protected routes
     const guard = createProtectedRouteGuard(msalInstance);
     await guard({ location });
-
-    console.info("[Shell Root] Guard completed for:", location.pathname);
   },
 
   component: () => {
@@ -52,6 +26,14 @@ export const Route = createRootRoute({
         moduleName: "domino",
         scope: "domino",
         displayOrder: 2,
+      },
+      {
+        id: "one-portal-admin",
+        name: "One Portal Admin",
+        remoteEntryUrl: "/one-portal-admin/assets/remoteEntry.js",
+        moduleName: "one-portal-admin",
+        scope: "one-portal-admin",
+        displayOrder: 3,
       },
     ];
 
