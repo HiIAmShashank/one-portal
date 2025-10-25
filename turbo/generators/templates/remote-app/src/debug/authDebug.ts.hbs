@@ -1,0 +1,56 @@
+/**
+ * Development-only authentication debugging utilities
+ *
+ * This file is automatically loaded in development mode by bootstrap.tsx.
+ * It provides console logging helpers for debugging authentication issues.
+ */
+
+if (import.meta.env.DEV) {
+  console.info('[{{ displayName }}] Auth debug utilities loaded');
+
+  // Add window helper for manual auth testing
+  (window as any).__{{ constantCase appName }}_AUTH_DEBUG__ = {
+    getMsalAccounts: async () => {
+      const { msalInstance } = await import('../auth/msalInstance');
+      const accounts = msalInstance.getAllAccounts();
+      console.table(accounts);
+      return accounts;
+    },
+    getActiveAccount: async () => {
+      const { msalInstance } = await import('../auth/msalInstance');
+      const account = msalInstance.getActiveAccount();
+      console.log('Active account:', account);
+      return account;
+    },
+    acquireToken: async (scopes: string[] = ['User.Read']) => {
+      const { msalInstance } = await import('../auth/msalInstance');
+      try {
+        const response = await msalInstance.acquireTokenSilent({
+          scopes,
+          account: msalInstance.getActiveAccount() || undefined,
+        });
+        console.log('Token acquired:', response);
+        return response;
+      } catch (error) {
+        console.error('Token acquisition failed:', error);
+        throw error;
+      }
+    },
+    logout: async () => {
+      const { msalInstance } = await import('../auth/msalInstance');
+      await msalInstance.logoutPopup();
+      console.log('Logged out');
+    },
+  };
+
+  console.info(
+    '[{{ displayName }}] Auth debug helpers available at window.__{{ constantCase appName }}_AUTH_DEBUG__'
+  );
+  console.info('Available methods:');
+  console.info('  - getMsalAccounts(): Get all MSAL accounts');
+  console.info('  - getActiveAccount(): Get the active MSAL account');
+  console.info('  - acquireToken(scopes?): Acquire an access token');
+  console.info('  - logout(): Sign out');
+}
+
+export {};
