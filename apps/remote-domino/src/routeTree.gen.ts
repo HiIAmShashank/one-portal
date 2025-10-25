@@ -9,8 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TechStackRouteImport } from './routes/tech-stack'
+import { Route as StylingRouteImport } from './routes/styling'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as RoutingRouteImport } from './routes/routing'
+import { Route as RepositoryRouteImport } from './routes/repository'
+import { Route as GettingStartedRouteImport } from './routes/getting-started'
+import { Route as DatatableRouteImport } from './routes/datatable'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ComponentsRouteImport } from './routes/components'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardWorkflowsRouteImport } from './routes/dashboard/workflows'
@@ -18,14 +25,49 @@ import { Route as DashboardTasksRouteImport } from './routes/dashboard/tasks'
 import { Route as DashboardEventsRouteImport } from './routes/dashboard/events'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 
+const TechStackRoute = TechStackRouteImport.update({
+  id: '/tech-stack',
+  path: '/tech-stack',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StylingRoute = StylingRouteImport.update({
+  id: '/styling',
+  path: '/styling',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoutingRoute = RoutingRouteImport.update({
+  id: '/routing',
+  path: '/routing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RepositoryRoute = RepositoryRouteImport.update({
+  id: '/repository',
+  path: '/repository',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GettingStartedRoute = GettingStartedRouteImport.update({
+  id: '/getting-started',
+  path: '/getting-started',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatatableRoute = DatatableRouteImport.update({
+  id: '/datatable',
+  path: '/datatable',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComponentsRoute = ComponentsRouteImport.update({
+  id: '/components',
+  path: '/components',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,8 +103,15 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/components': typeof ComponentsRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/datatable': typeof DatatableRoute
+  '/getting-started': typeof GettingStartedRoute
+  '/repository': typeof RepositoryRoute
+  '/routing': typeof RoutingRoute
   '/sign-in': typeof SignInRoute
+  '/styling': typeof StylingRoute
+  '/tech-stack': typeof TechStackRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
@@ -71,7 +120,14 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/components': typeof ComponentsRoute
+  '/datatable': typeof DatatableRoute
+  '/getting-started': typeof GettingStartedRoute
+  '/repository': typeof RepositoryRoute
+  '/routing': typeof RoutingRoute
   '/sign-in': typeof SignInRoute
+  '/styling': typeof StylingRoute
+  '/tech-stack': typeof TechStackRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
@@ -81,8 +137,15 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/components': typeof ComponentsRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/datatable': typeof DatatableRoute
+  '/getting-started': typeof GettingStartedRoute
+  '/repository': typeof RepositoryRoute
+  '/routing': typeof RoutingRoute
   '/sign-in': typeof SignInRoute
+  '/styling': typeof StylingRoute
+  '/tech-stack': typeof TechStackRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/dashboard/events': typeof DashboardEventsRoute
   '/dashboard/tasks': typeof DashboardTasksRoute
@@ -93,8 +156,15 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/components'
     | '/dashboard'
+    | '/datatable'
+    | '/getting-started'
+    | '/repository'
+    | '/routing'
     | '/sign-in'
+    | '/styling'
+    | '/tech-stack'
     | '/auth/callback'
     | '/dashboard/events'
     | '/dashboard/tasks'
@@ -103,7 +173,14 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/components'
+    | '/datatable'
+    | '/getting-started'
+    | '/repository'
+    | '/routing'
     | '/sign-in'
+    | '/styling'
+    | '/tech-stack'
     | '/auth/callback'
     | '/dashboard/events'
     | '/dashboard/tasks'
@@ -112,8 +189,15 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/components'
     | '/dashboard'
+    | '/datatable'
+    | '/getting-started'
+    | '/repository'
+    | '/routing'
     | '/sign-in'
+    | '/styling'
+    | '/tech-stack'
     | '/auth/callback'
     | '/dashboard/events'
     | '/dashboard/tasks'
@@ -123,13 +207,34 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ComponentsRoute: typeof ComponentsRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  DatatableRoute: typeof DatatableRoute
+  GettingStartedRoute: typeof GettingStartedRoute
+  RepositoryRoute: typeof RepositoryRoute
+  RoutingRoute: typeof RoutingRoute
   SignInRoute: typeof SignInRoute
+  StylingRoute: typeof StylingRoute
+  TechStackRoute: typeof TechStackRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tech-stack': {
+      id: '/tech-stack'
+      path: '/tech-stack'
+      fullPath: '/tech-stack'
+      preLoaderRoute: typeof TechStackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/styling': {
+      id: '/styling'
+      path: '/styling'
+      fullPath: '/styling'
+      preLoaderRoute: typeof StylingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-in': {
       id: '/sign-in'
       path: '/sign-in'
@@ -137,11 +242,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/routing': {
+      id: '/routing'
+      path: '/routing'
+      fullPath: '/routing'
+      preLoaderRoute: typeof RoutingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/repository': {
+      id: '/repository'
+      path: '/repository'
+      fullPath: '/repository'
+      preLoaderRoute: typeof RepositoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/getting-started': {
+      id: '/getting-started'
+      path: '/getting-started'
+      fullPath: '/getting-started'
+      preLoaderRoute: typeof GettingStartedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/datatable': {
+      id: '/datatable'
+      path: '/datatable'
+      fullPath: '/datatable'
+      preLoaderRoute: typeof DatatableRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/components': {
+      id: '/components'
+      path: '/components'
+      fullPath: '/components'
+      preLoaderRoute: typeof ComponentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -209,8 +349,15 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ComponentsRoute: ComponentsRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  DatatableRoute: DatatableRoute,
+  GettingStartedRoute: GettingStartedRoute,
+  RepositoryRoute: RepositoryRoute,
+  RoutingRoute: RoutingRoute,
   SignInRoute: SignInRoute,
+  StylingRoute: StylingRoute,
+  TechStackRoute: TechStackRoute,
   AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
